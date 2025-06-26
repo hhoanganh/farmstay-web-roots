@@ -143,7 +143,7 @@ const Homepage = () => {
             <h2 className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]">
               Begin your story
             </h2>
-            <p className="text-lg text-[hsl(var(--stone))] mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg text-[hsl(var(--stone))] mb-8 max-w-xl mx-auto leading-relaxed">
               Whether you're seeking a peaceful retreat, curious about farm life, or ready to adopt a tree, 
               we'd love to welcome you into our growing family of nature lovers.
             </p>
