@@ -137,8 +137,8 @@ const Homepage = () => {
         {/* Connect Section */}
         <TeaserSection className="mt-16 md:mt-24 border-t border-[hsl(var(--stone))] border-opacity-20 pt-12">
           <div 
-            ref={connectAnimation.ref}
-            className={`text-center fade-in-scroll ${connectAnimation.isVisible ? 'visible' : ''}`}
+            ref={connectAnimation.ref} // This ref should be on the outer div for scroll animation
+            className={`text-center fade-in-scroll max-w-2xl mx-auto ${connectAnimation.isVisible ? 'visible' : ''}`}
           >
             <h2 className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]">
               Begin your story
