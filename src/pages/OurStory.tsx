@@ -13,7 +13,7 @@ const OurStory = () => {
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('https://www.dautudat.vn/media/uploads/uploads/23194003-farmstay-uti-thon-tien-yen-bao-lam-bao-loc-lam-dong-5.jpg')` }}
+            style={{ backgroundImage: `url('https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg')` }}
           ></div>
           {/* Overlay for readability */}
           <div className="absolute inset-0 bg-black opacity-40"></div>
