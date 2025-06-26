@@ -38,7 +38,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg" 
+                src="https://dilinh.com.vn/wp-content/uploads/2023/02/DeMahi-River-Mountain-Retreat-quan-ca-phe-dep-o-di-linh-5.jpg" 
                 alt="Our homestay rooms nestled in the mountains"
                 className="max-w-md mx-auto"
               />
@@ -97,7 +97,7 @@ const Homepage = () => {
                 You can even adopt one and follow its journey through our digital tree journals.
               </p>
               <Link 
-                to="/farm-and-garden/trees" 
+                to="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg" 
                 className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
               >
                 Meet the trees →
@@ -131,7 +131,7 @@ const Homepage = () => {
                 watching the mist roll over the valley, these are the stories that make this place alive.
               </p>
               <Link 
-                to="/experiences/journal" 
+                to="https://thiennhienmoitruong.vn/upload2024/images/btv-n.linh/bvtnlinh-1/btv-1a/9274271d-c64e-41e8-addb-14e1fec660d0.jpg" 
                 className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
               >
                 Read our journal →
