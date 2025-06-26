@@ -31,8 +31,7 @@ const Homepage = () => {
 
         {/* Homestay Teaser */}
         <TeaserSection className="overflow-hidden">
-                    // New, staggered structure for the Homestay Teaser
-          <div className="w-full md:w-1/2 lg:w-5/12">
+            <div className="w-full md:w-1/2 lg:w-5/12">
             <div 
               ref={homestayAnimation.ref}
               className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
