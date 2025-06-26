@@ -38,7 +38,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="/placeholder.svg" 
+                src="https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg" 
                 alt="Our homestay rooms nestled in the mountains"
                 className="max-w-md mx-auto"
               />
