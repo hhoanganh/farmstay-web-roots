@@ -39,6 +39,27 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          role: Database["public"]["Enums"]["user_role"]
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+        }
+        Relationships: []
+      }
       rooms: {
         Row: {
           created_at: string | null
@@ -136,10 +157,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_my_claim: {
+        Args: { claim: string }
+        Returns: Json
+      }
     }
     Enums: {
       tree_status: "Available" | "Rented"
+      user_role: "owner" | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -256,6 +281,7 @@ export const Constants = {
   public: {
     Enums: {
       tree_status: ["Available", "Rented"],
+      user_role: ["owner", "staff"],
     },
   },
 } as const

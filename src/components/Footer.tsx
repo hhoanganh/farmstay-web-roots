@@ -1,8 +1,42 @@
 
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
-    <footer className="w-full p-4 bg-gray-100 text-center">
-      <p className="text-sm text-gray-600">Lâm Hà Farmstay Footer</p>
+    <footer className="bg-[hsl(var(--stone))] bg-opacity-10 py-8 px-4 border-t border-[hsl(var(--stone))] border-opacity-20">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="text-center md:text-left">
+            <p className="text-sm text-[hsl(var(--stone))] mb-2">
+              © 2024 Lâm Hà Farmstay. All stories shared with love.
+            </p>
+            <p className="text-xs text-[hsl(var(--stone))] opacity-80">
+              Central Highlands, Vietnam
+            </p>
+          </div>
+          
+          <div className="flex gap-6 items-center">
+            <Link 
+              to="/our-story" 
+              className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+            >
+              Our Story
+            </Link>
+            <Link 
+              to="/connect" 
+              className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+            >
+              Contact
+            </Link>
+            <Link 
+              to="/login" 
+              className="text-xs text-[hsl(var(--stone))] opacity-60 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+            >
+              Staff Login
+            </Link>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 };
