@@ -70,20 +70,14 @@ const Homepage = () => {
         <TeaserSection className="mt-[-4rem] md:mt-[-6rem]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div 
+              ref={farmAnimation.ref}
               className={`md:order-2 fade-in-scroll slide-in-right ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
-              <div 
-                ref={farmAnimation.ref}
-                className="w-64 h-64 mx-auto border-2 border-[hsl(var(--stone))] rounded-lg bg-white/50 flex items-center justify-center transform rotate-2 p-4"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[hsl(var(--green))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 22V10" />
-                  <path d="M12 10c-4 0-4-4-8-4" />
-                  <path d="M12 10c4 0 4-4 8-4" />
-                  <path d="M4 14c0 2 2 4 8 4s8-2 8-4" />
-                  <path d="M4 18c0 2 2 4 8 4s8-2 8-4" />
-                </svg>
-              </div>
+              <ImageWrapper 
+                src="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg" 
+                alt="A tree in the farm garden"
+                className="max-w-md mx-auto transform rotate-2"
+              />
             </div>
             
             <div 
@@ -114,7 +108,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${journalAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg" 
+                src="https://thiennhienmoitruong.vn/upload2024/images/btv-n.linh/bvtnlinh-1/btv-1a/9274271d-c64e-41e8-addb-14e1fec660d0.jpg" 
                 alt="Pages from our farmstay journal"
                 className="max-w-md mx-auto transform -rotate-1"
               />
