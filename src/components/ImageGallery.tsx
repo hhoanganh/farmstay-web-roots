@@ -8,11 +8,11 @@ const ImageGallery = () => {
       alt: "Our living room where guests gather for morning coffee"
     },
     {
-      src: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&h=500&fit=crop", 
+      src: "https://www.dalattrip.com/media/2015/01/strawberry-farm.jpg?w=400&h=500&fit=crop", 
       alt: "Fresh fruit from our trees, served daily"
     },
     {
-      src: "https://images.unsplash.com/photo-1472396961693-142e6e269027?w=400&h=500&fit=crop",
+      src: "https://mediaim.expedia.com/destination/1/d807fac75fa2e19c8999ecb7bdb18829.jpg?w=400&h=500&fit=crop",
       alt: "Wildlife that calls our farm home"
     },
     {
