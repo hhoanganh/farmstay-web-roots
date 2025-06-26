@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-[hsl(var(--stone))] bg-opacity-10 py-8 px-4 border-t border-[hsl(var(--stone))] border-opacity-20">
+    <footer className="bg-[hsl(var(--background-primary))] py-8 px-4 border-t border-[hsl(var(--stone))] border-opacity-20">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-center md:text-left">
