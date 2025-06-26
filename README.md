@@ -11,7 +11,6 @@ This project is built with:
 
 # Task Execution Instructions
 
----
 
 ### Senior Engineer Task Execution Rule
 
