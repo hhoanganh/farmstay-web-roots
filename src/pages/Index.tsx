@@ -114,7 +114,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${journalAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="/placeholder.svg" 
+                src="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg" 
                 alt="Pages from our farmstay journal"
                 className="max-w-md mx-auto transform -rotate-1"
               />
