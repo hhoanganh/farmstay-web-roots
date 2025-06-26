@@ -26,7 +26,7 @@ const ImageGallery = () => {
       <h3 className="text-xl text-[hsl(var(--text-primary))] mb-4" style={{ fontFamily: 'Caveat, cursive' }}>
         Moments from our daily life
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 md:gap-8">
+      <div className="grid grid-cols-2 lg:grid-cols-1 gap-6 md:gap-8">
         {galleryImages.map((image, index) => (
           <div key={index} className="flex justify-center lg:justify-start">
             <ImageWrapper 
