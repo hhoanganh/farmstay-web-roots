@@ -4,7 +4,7 @@ import ImageWrapper from './ImageWrapper';
 const ImageGallery = () => {
   const galleryImages = [
     {
-      src: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=400&h=500&fit=crop",
+      src: "https://cf.bstatic.com/xdata/images/hotel/max1024x768/529091728.jpg?k=62a2ca11a902cc66dd1cb0f2dc52b979478b86c50f8214762065fd7449c079e8&o=&hp=1?w=400&h=500&fit=crop",
       alt: "Our living room where guests gather for morning coffee"
     },
     {
