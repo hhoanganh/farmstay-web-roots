@@ -38,7 +38,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="https://dilinh.com.vn/wp-content/uploads/2023/02/DeMahi-River-Mountain-Retreat-quan-ca-phe-dep-o-di-linh-5.jpg" 
+                src="https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg" 
                 alt="Our homestay rooms nestled in the mountains"
                 className="max-w-md mx-auto"
               />
@@ -72,15 +72,18 @@ const Homepage = () => {
             <div 
               className={`md:order-2 fade-in-scroll slide-in-right ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
-              <Link to="/farm-and-garden/trees" className="block focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm">
-                <ImageWrapper
+              <div 
                 ref={farmAnimation.ref}
-                   src="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg"
-                  alt="A tree in the farm garden"
-                  className="max-w-md mx-auto transform rotate-2"
+                className="w-64 h-64 mx-auto border-2 border-[hsl(var(--stone))] rounded-lg bg-white/50 flex items-center justify-center transform rotate-2 p-4"
               >
-                  {/* The ImageWrapper component will render the image */}
-                </ImageWrapper>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[hsl(var(--green))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22V10" />
+                  <path d="M12 10c-4 0-4-4-8-4" />
+                  <path d="M12 10c4 0 4-4 8-4" />
+                  <path d="M4 14c0 2 2 4 8 4s8-2 8-4" />
+                  <path d="M4 18c0 2 2 4 8 4s8-2 8-4" />
+                </svg>
+              </div>
             </div>
             
             <div 
@@ -94,7 +97,7 @@ const Homepage = () => {
                 You can even adopt one and follow its journey through our digital tree journals.
               </p>
               <Link 
-                 to="/farm-and-garden/trees" 
+                to="/farm-and-garden/trees" 
                 className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
               >
                 Meet the trees →
@@ -111,7 +114,7 @@ const Homepage = () => {
               className={`fade-in-scroll slide-in-left ${journalAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="https://thiennhienmoitruong.vn/upload2024/images/btv-n.linh/bvtnlinh-1/btv-1a/9274271d-c64e-41e8-addb-14e1fec660d0.jpg" 
+                src="/placeholder.svg" 
                 alt="Pages from our farmstay journal"
                 className="max-w-md mx-auto transform -rotate-1"
               />
