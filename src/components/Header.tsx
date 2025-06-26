@@ -1,11 +1,12 @@
 // ABOUTME: This component is the single, universal site header.
 // ABOUTME: It is responsive and used on all pages.
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from "react-router-dom";
 
 const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +16,22 @@ const Header = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
   return (
     <header 
       className={`fixed top-0 left-0 right-0 z-50 px-4 py-4 transition-all duration-300 ${
@@ -31,7 +48,7 @@ const Header = () => {
         </div>
 
         <div className="flex-1 flex justify-center">
-          <div className="relative">
+          <div ref={menuRef} className="relative">
             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[hsl(var(--text-primary))] transition-colors font-medium ui-text focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px] flex items-center">
               Menu
             </button>
