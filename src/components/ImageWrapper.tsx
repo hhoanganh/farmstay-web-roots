@@ -1,4 +1,6 @@
 
+// ABOUTME: This component wraps an image with a polaroid-style frame.
+// ABOUTME: It provides a consistent visual treatment for images across the site.
 interface ImageWrapperProps {
   src: string;
   alt: string;
@@ -9,7 +11,7 @@ const ImageWrapper = ({ src, alt, className = '' }: ImageWrapperProps) => {
   return (
     <div className={`relative ${className}`}>
       <div 
-        className="bg-white p-2 shadow-lg transform rotate-1 hover:rotate-0 transition-transform duration-300"
+        className="bg-white p-2 shadow-lg transform rotate-1 transition-transform duration-300"
         style={{
           filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))'
         }}

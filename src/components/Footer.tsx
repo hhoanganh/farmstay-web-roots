@@ -1,4 +1,6 @@
 
+// ABOUTME: This component is the universal site footer.
+// ABOUTME: It contains copyright information and navigation links.
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -18,19 +20,19 @@ const Footer = () => {
           <div className="flex gap-6 items-center">
             <Link 
               to="/our-story" 
-              className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+              className="text-sm text-[hsl(var(--stone))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
             >
               Our Story
             </Link>
             <Link 
               to="/connect" 
-              className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+              className="text-sm text-[hsl(var(--stone))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
             >
               Contact
             </Link>
             <Link 
               to="/login" 
-              className="text-xs text-[hsl(var(--stone))] opacity-60 hover:opacity-80 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+               className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
             >
               Staff Login
             </Link>
