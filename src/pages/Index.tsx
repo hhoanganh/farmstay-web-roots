@@ -135,7 +135,7 @@ const Homepage = () => {
         </TeaserSection>
 
         {/* Connect Section */}
-        <TeaserSection className="bg-[hsl(var(--green))] bg-opacity-10 mt-[-2rem] md:mt-[-4rem]">
+        <TeaserSection className="mt-[-2rem] md:mt-[-4rem]">
           <div 
             ref={connectAnimation.ref}
             className={`text-center fade-in-scroll ${connectAnimation.isVisible ? 'visible' : ''}`}
