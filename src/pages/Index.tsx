@@ -1,6 +1,5 @@
 
 import { Link } from 'react-router-dom';
-import ScrollHeader from '../components/ScrollHeader';
 import ImageWrapper from '../components/ImageWrapper';
 import TeaserSection from '../components/TeaserSection';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
@@ -12,11 +11,10 @@ const Homepage = () => {
   const connectAnimation = useScrollAnimation();
 
   return (
-    <div className="min-h-screen bg-[hsl(var(--background-primary))]">
-      <ScrollHeader />
+    <>
       
       {/* Hero Section */}
-      <main className="pt-24">
+
         <section className="px-4 py-16 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-5xl md:text-6xl mb-6 text-[hsl(var(--text-primary))]">
@@ -154,8 +152,7 @@ const Homepage = () => {
             </Link>
           </div>
         </TeaserSection>
-      </main>
-    </div>
+      </>
   );
 };
 
