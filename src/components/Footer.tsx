@@ -32,7 +32,7 @@ const Footer = () => {
             </Link>
             <Link 
               to="/login" 
-               className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1"
+               className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-4 py-4 min-h-[44px] inline-flex items-center justify-center"
             >
               Staff Login
             </Link>
