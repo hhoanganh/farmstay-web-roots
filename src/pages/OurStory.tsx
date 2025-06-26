@@ -8,12 +8,23 @@ import ImageGallery from '../components/ImageGallery';
 const OurStory = () => {
   return (
     <main className="px-4 py-16 md:py-24">
-      <div className="max-w-6xl mx-auto">
-        <header className="text-center mb-12 md:mb-16">
-          <h1 className="text-5xl md:text-6xl text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Caveat, cursive' }}>
-            Our Story
-          </h1>
-          <p className="text-lg text-[hsl(var(--stone))] mt-2 ui-text">How our little farmstay came to be.</p>
+      <div className="max-w-6xl mx-auto relative">
+        <header className="relative text-center mb-12 md:mb-16 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+          {/* Background Image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('https://www.dautudat.vn/media/uploads/uploads/23194003-farmstay-uti-thon-tien-yen-bao-lam-bao-loc-lam-dong-5.jpg')` }}
+          ></div>
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-black opacity-40"></div>
+
+          {/* Content */}
+          <div className="relative z-10 text-white">
+            <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
+              Our Story
+            </h1>
+            <p className="text-lg md:text-xl mt-2 ui-text">How our little farmstay came to be.</p>
+          </div>
         </header>
 
         <div className="lg:grid lg:grid-cols-3 lg:gap-12 space-y-12 lg:space-y-0">
