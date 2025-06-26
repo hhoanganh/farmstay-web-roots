@@ -31,7 +31,8 @@ const Homepage = () => {
 
         {/* Homestay Teaser */}
         <TeaserSection className="overflow-hidden">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+                    // New, staggered structure for the Homestay Teaser
+          <div className="w-full md:w-1/2 lg:w-5/12">
             <div 
               ref={homestayAnimation.ref}
               className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
@@ -42,7 +43,9 @@ const Homepage = () => {
                 className="max-w-md mx-auto"
               />
             </div>
-            
+          </div>
+
+          <div className="w-full md:w-1/2 lg:w-7/12 md:pl-8 lg:pl-16">
             <div 
               className={`fade-in-scroll slide-in-right ${homestayAnimation.isVisible ? 'visible' : ''}`}
             >
