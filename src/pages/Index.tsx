@@ -17,10 +17,13 @@ const Homepage = () => {
 
         <section className="px-4 py-16 text-center">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl mb-6 text-[hsl(var(--text-primary))]">
+            <h1 
+              className="text-5xl md:text-6xl mb-6 text-[hsl(var(--text-primary))]"
+              style={{ fontFamily: 'Caveat, cursive' }}
+            >
               Our journal begins here
             </h1>
-            <p className="text-lg md:text-xl text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed ui-text">
               When we first found this land in Lâm Hà, we knew it held stories waiting to be shared. 
               Welcome to our corner of Vietnam's Central Highlands, where every sunrise brings new discoveries.
             </p>
@@ -28,7 +31,7 @@ const Homepage = () => {
         </section>
 
         {/* Homestay Teaser */}
-        <TeaserSection className="overflow-hidden">
+        <TeaserSection className="overflow-hidden mt-[-2rem] md:mt-[-4rem]">
             <div className="w-full md:w-1/2 lg:w-5/12">
             <div 
               ref={homestayAnimation.ref}
@@ -64,16 +67,22 @@ const Homepage = () => {
         </TeaserSection>
 
         {/* Farm & Garden Teaser */}
-        <TeaserSection>
+        <TeaserSection className="mt-[-4rem] md:mt-[-6rem]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div 
               className={`md:order-2 fade-in-scroll slide-in-right ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
               <div 
                 ref={farmAnimation.ref}
-                className="w-64 h-64 mx-auto border-2 border-[hsl(var(--stone))] rounded-lg bg-white/50 flex items-center justify-center transform rotate-2"
+                className="w-64 h-64 mx-auto border-2 border-[hsl(var(--stone))] rounded-lg bg-white/50 flex items-center justify-center transform rotate-2 p-4"
               >
-                <div className="text-6xl text-[hsl(var(--green))]">🌳</div>
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-[hsl(var(--green))]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="0.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22V10" />
+                  <path d="M12 10c-4 0-4-4-8-4" />
+                  <path d="M12 10c4 0 4-4 8-4" />
+                  <path d="M4 14c0 2 2 4 8 4s8-2 8-4" />
+                  <path d="M4 18c0 2 2 4 8 4s8-2 8-4" />
+                </svg>
               </div>
             </div>
             
@@ -98,7 +107,7 @@ const Homepage = () => {
         </TeaserSection>
 
         {/* Journal Teaser */}
-        <TeaserSection>
+        <TeaserSection className="mt-[-4rem] md:mt-[-6rem]">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div 
               ref={journalAnimation.ref}
@@ -132,7 +141,7 @@ const Homepage = () => {
         </TeaserSection>
 
         {/* Connect Section */}
-        <TeaserSection className="bg-[hsl(var(--green))] bg-opacity-10">
+        <TeaserSection className="bg-[hsl(var(--green))] bg-opacity-10 mt-[-2rem] md:mt-[-4rem]">
           <div 
             ref={connectAnimation.ref}
             className={`text-center fade-in-scroll ${connectAnimation.isVisible ? 'visible' : ''}`}
