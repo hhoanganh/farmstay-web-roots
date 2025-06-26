@@ -1,10 +1,10 @@
 
-const Index = () => {
+const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Homepage</h1>
+      <h1 className="text-4xl font-bold">Login</h1>
     </div>
   );
 };
 
-export default Index;
+export default Login;
