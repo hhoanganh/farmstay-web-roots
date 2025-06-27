@@ -6,6 +6,7 @@ import ImageWrapper from '../components/ImageWrapper';
 import TeaserSection from '../components/TeaserSection';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import CallToActionSection from '../components/CallToActionSection';
+import timelapseVideo from '/videos/timelapse.mp4'; // Import the video for asset hashing
 
 const Homepage = () => {
   const homestayAnimation = useScrollAnimation();
@@ -26,8 +27,8 @@ const Homepage = () => {
           playsInline
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
         >
-          {/* You should place your video in the `public/videos` directory */}
-          <source src="/videos/timelapse.mp4" type="video/mp4" />
+          {/* Video imported for asset hashing by Vite. Place the original video in `public/videos`. */}
+          <source src={timelapseVideo} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
