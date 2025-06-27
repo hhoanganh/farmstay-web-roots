@@ -81,7 +81,7 @@ const Homepage = () => {
                 </p>
                 <Link 
                   to="/homestay" 
-                  className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
+                  className="inline-flex text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] items-center w-fit"
                 >
                   Explore our rooms →
                 </Link>
@@ -116,7 +116,7 @@ const Homepage = () => {
               </p>
               <Link 
                 to="/farm-and-garden/trees" 
-                className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
+                  className="inline-flex text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] items-center w-fit"
               >
                 Meet the trees →
               </Link>
@@ -150,7 +150,7 @@ const Homepage = () => {
               </p>
               <Link 
                 to="/experiences/journal" 
-                className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
+                  className="inline-flex text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] items-center w-fit"
               >
                 Read our journal →
               </Link>
