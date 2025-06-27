@@ -21,7 +21,7 @@ export const rooms: Room[] = [
       "Direct access to the farm's main walking trails.",
       "Equipped with a small kitchenette and a reading nook."
     ],
-    imageSrc: "https://images.unsplash.com/photo-1559701723-b72b5a45a8f3?q=80&w=1974&auto=format&fit=crop",
+    imageSrc: "https://linindalat.com/wp-content/uploads/2021/12/266860173_211530054473987_6887647563830964848_n-1140x760.jpg?q=80&w=1974&auto=format&fit=crop",
     imageAlt: "A cozy loft room with large windows overlooking a green valley."
   },
   {
