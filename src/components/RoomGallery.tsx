@@ -1,5 +1,6 @@
+// ABOUTME: This component displays a horizontally scrollable image gallery for a specific room.
+// ABOUTME: It maps room names to a set of images to display.
 
-import ImageWrapper from './ImageWrapper';
 // Import specific images for "Coffee Loft"
 // You would need to import images for all rooms you want to display this way.
 // Ensure these image files exist in src/assets/images
@@ -8,9 +9,25 @@ import coffeeLoft2 from '../assets/images/coffee-loft-2.jpg';
 import coffeeLoft3 from '../assets/images/coffee-loft-3.jpg';
 import coffeeLoft4 from '../assets/images/coffee-loft-4.jpg';
 
-// Example imports for another room (if you had them)
-// import mountainViewSuite1 from '../assets/images/mountain-view-suite-1.jpg';
-// import mountainViewSuite2 from '../assets/images/mountain-view-suite-2.jpg';
+// Import specific images for "Mountain View Suite"
+import mountainViewSuite1 from '../assets/images/mountain-view-suite-1.jpg';
+import mountainViewSuite2 from '../assets/images/mountain-view-suite-2.jpg';
+import mountainViewSuite3 from '../assets/images/mountain-view-suite-3.jpg';
+import mountainViewSuite4 from '../assets/images/mountain-view-suite-4.jpg';
+
+// Import specific images for "Garden Retreat"
+import gardenRetreat1 from '../assets/images/garden-retreat-1.jpg';
+import gardenRetreat2 from '../assets/images/garden-retreat-2.jpg';
+import gardenRetreat3 from '../assets/images/garden-retreat-3.jpg';
+import gardenRetreat4 from '../assets/images/garden-retreat-4.jpg';
+
+// Import specific images for "Riverside Cabin"
+import riversideCabin1 from '../assets/images/riverside-cabin-1.jpg';
+import riversideCabin2 from '../assets/images/riverside-cabin-2.jpg';
+import riversideCabin3 from '../assets/images/riverside-cabin-3.jpg';
+import riversideCabin4 from '../assets/images/riverside-cabin-4.jpg';
+
+import ImageWrapper from './ImageWrapper';
 
 
 interface RoomGalleryProps {
@@ -18,12 +35,6 @@ interface RoomGalleryProps {
 }
 
 const RoomGallery = ({ roomName }: RoomGalleryProps) => {
-  // Define a mapping of room names to their specific gallery images.
-  // This approach is suitable for a fixed set of images known at build time
-  // and manually placed in src/assets/images.
-  // For truly dynamic, user-uploaded images (where users upload new images
-  // after the application is deployed), you would fetch image URLs from a
-  // backend API and store them in a database, as discussed previously.
   const roomImageMap: Record<string, { src: string; alt: string }[]> = {
     "Coffee Loft": [
       { src: coffeeLoft1, alt: `Interior view of ${roomName}` },
@@ -31,23 +42,29 @@ const RoomGallery = ({ roomName }: RoomGalleryProps) => {
       { src: coffeeLoft3, alt: `View from ${roomName}` },
       { src: coffeeLoft4, alt: `Evening ambiance in ${roomName}` }
     ],
-    // Add other rooms here as needed, e.g.:
-    // "Mountain View Suite": [
-    //   { src: mountainViewSuite1, alt: `Interior view of ${roomName}` },
-    //   { src: mountainViewSuite2, alt: `Bathroom in ${roomName}` },
-    //   // ...
-    // ],
-    // You can also define a default set of images if a room name doesn't have specific ones
-   // "Default": [
-   //   { src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop", alt: `Default interior view` },
-   //   { src: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop", alt: `Default bathroom` },
-   //   { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop", alt: `Default view` },
-   //   { src: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop", alt: `Default evening ambiance` }
-    //]
+    // Add other rooms here. Make sure you've imported the images at the top of the file.
+    "Mountain View Suite": [
+      { src: mountainViewSuite1, alt: `Interior view of ${roomName}` },
+      { src: mountainViewSuite2, alt: `Bathroom in ${roomName}` },
+      { src: mountainViewSuite3, alt: `Balcony view from ${roomName}` },
+      { src: mountainViewSuite4, alt: `Suite details in ${roomName}` },
+    ],
+    "Garden Retreat": [
+      { src: gardenRetreat1, alt: `Interior view of ${roomName}` },
+      { src: gardenRetreat2, alt: `Bathroom in ${roomName}` },
+      { src: gardenRetreat3, alt: `Garden view from ${roomName}` },
+      { src: gardenRetreat4, alt: `Relaxation area in ${roomName}` },
+    ],
+    "Riverside Cabin": [
+      { src: riversideCabin1, alt: `Interior view of ${roomName}` },
+      { src: riversideCabin2, alt: `Bathroom in ${roomName}` },
+      { src: riversideCabin3, alt: `Riverside view from ${roomName}` },
+      { src: riversideCabin4, alt: `Cabin exterior in ${roomName}` },
+    ],
   };
 
-  // Get the images for the current room, or the "Default" set if not found
-  const galleryImages = roomImageMap[roomName] || roomImageMap["Default"];
+  // Get the images for the current room. If the roomName is not found, it will return an empty array.
+  const galleryImages = roomImageMap[roomName] || [];
 
   
 
