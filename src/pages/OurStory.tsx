@@ -27,7 +27,7 @@ const OurStory = () => {
             <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
               Our Story
             </h1>
-            <p className="text-lg md:text-xl mt-2 ui-text">How our little farmstay came to be.</p>
+            <p className="text-base md:text-xl mt-2 ui-text">How our little farmstay came to be.</p>
           </div>
         </header>
 

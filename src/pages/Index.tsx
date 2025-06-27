@@ -44,7 +44,7 @@ const Homepage = () => {
             >
               Our journal begins here
             </h1>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed ui-text">
+            <p className="text-base md:text-xl max-w-2xl mx-auto leading-relaxed ui-text">
               When we first found this land in Lâm Hà, we knew it held stories waiting to be shared. 
               Welcome to our corner of Vietnam's Central Highlands, where every sunrise brings new discoveries.
             </p>
