@@ -1,11 +1,6 @@
 // ABOUTME: This file contains the static data for the homestay rooms.
 // ABOUTME: It is used to populate the Homestay page with room information.
 
-// Import local image assets for optimal performance and cache busting
-import coffeeLoftImage from '../assets/images/coffee-loft.jpg';
-import gardenBungalowImage from '../assets/images/garden-bungalow.jpg';
-import orchardHouseImage from '../assets/images/orchard-house.jpg';
-
 export interface Room {
   roomName: string;
   roomSlug: string;
@@ -26,7 +21,7 @@ export const rooms: Room[] = [
     "The daily rhythm of the farm at your doorstep.",
     "A selection of our own roasted beans for the perfect morning ritual."
     ],
-    imageSrc: coffeeLoftImage, // Use the imported local image
+    imageSrc: "https://ik.imagekit.io/offvxi40h/coffee-loft.jpg",
     imageAlt: "A cozy loft room with large windows overlooking a green valley."
   },
   {
@@ -39,7 +34,7 @@ export const rooms: Room[] = [
     "The simple joy of picking fresh herbs right outside your door.",
     "A calm interior crafted with natural wood and stone."
     ],
-    imageSrc: gardenBungalowImage, // Use the imported local image
+    imageSrc: "https://ik.imagekit.io/offvxi40h/garden-bungalow.jpg",
     imageAlt: "A serene bungalow with a garden view and an outdoor bathtub."
   },
   {
@@ -52,7 +47,7 @@ export const rooms: Room[] = [
     "Multiple bedrooms offering both private retreat and easy connection.",
     "The perfect home base for larger groups to explore the highlands."
     ],
-    imageSrc: orchardHouseImage, // Use the imported local image
+    imageSrc: "https://ik.imagekit.io/offvxi40h/orchard-house.jpg",
     imageAlt: "A spacious house with a large porch surrounded by fruit trees."
   }
 ];
