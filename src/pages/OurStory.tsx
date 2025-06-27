@@ -12,7 +12,8 @@ const OurStory = () => {
   const journeyAnimation = useScrollAnimation(); // Add animation hook for this section
   return (
     <main className="px-4 py-16 md:py-24">
-      <div className="max-w-6xl mx-auto relative">
+      {/* Main content wrapper for consistent max-width and centering */}
+      <div className="max-w-6xl mx-auto"> 
         <header className="relative text-center mb-12 md:mb-16 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
           {/* Background Image */}
           <div
@@ -31,36 +32,34 @@ const OurStory = () => {
           </div>
         </header>
 
-        {/* This div now only wraps the main content, not the CallToActionSection */}
-        <div className="max-w-6xl mx-auto relative">
-          <div className="lg:grid lg:grid-cols-3 lg:gap-12 space-y-12 lg:space-y-0">
-            <div className="lg:col-span-2">
-              <FounderLetter />
-            </div>
-            <div className="lg:col-span-1">
-              <ImageGallery />
-            </div>
+        <div className="lg:grid lg:grid-cols-3 lg:gap-12 space-y-12 lg:space-y-0">
+          <div className="lg:col-span-2">
+            <FounderLetter />
+          </div>
+          <div className="lg:col-span-1">
+            <ImageGallery />
           </div>
         </div>
 
-        {/* Call to Action Section - Now using the reusable CallToActionSection component */}
-      <CallToActionSection
-        heading="Continue your journey"
-        animationRef={journeyAnimation.ref}
-        isVisible={journeyAnimation.isVisible}
-      >
-        <Link
-          to="/homestay"
-          className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+        {/* Call to Action Section - Now using the reusable CallToActionSection component, within the main content wrapper */}
+        <CallToActionSection
+          heading="Continue your journey"
+          animationRef={journeyAnimation.ref}
+          isVisible={journeyAnimation.isVisible}
         >
-          Explore Our Rooms
-        </Link>
-        <Link
-          to="/connect"
-          className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
-        >
-          Connect With Us
-        </Link>
+          <Link
+            to="/homestay"
+            className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+          >
+            Explore Our Rooms
+          </Link>
+          <Link
+            to="/connect"
+            className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+          >
+            Connect With Us
+          </Link>
+        </CallToActionSection>
       </div>
     </main>
   );
