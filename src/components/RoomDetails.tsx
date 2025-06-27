@@ -1,3 +1,5 @@
+// ABOUTME: This component displays a list of special features or "highlights" for a room.
+// ABOUTME: It presents them in a styled list format.
 
 interface RoomDetailsProps {
   highlights: string[];
