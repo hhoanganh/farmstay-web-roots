@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="flex flex-col md:flex-row justify-between items-center gap-8 md:gap-4">
           <div className="text-center md:text-left order-2 md:order-1">
             <p className="text-sm text-[hsl(var(--stone))] mb-2">
-              © 2024 Lâm Hà Farmstay. All stories shared with love.
+              © 2025 Lâm Hà Farmstay. All stories shared with love.
             </p>
             <p className="text-xs text-[hsl(var(--stone))] opacity-80">
               Central Highlands, Vietnam
