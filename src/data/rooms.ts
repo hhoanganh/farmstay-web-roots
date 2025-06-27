@@ -1,6 +1,11 @@
 // ABOUTME: This file contains the static data for the homestay rooms.
 // ABOUTME: It is used to populate the Homestay page with room information.
 
+// Import local image assets for optimal performance and cache busting
+import coffeeLoftImage from '../assets/images/coffee-loft.jpg';
+import gardenBungalowImage from '../assets/images/garden-bungalow.jpg';
+import orchardHouseImage from '../assets/images/orchard-house.jpg';
+
 export interface Room {
   roomName: string;
   roomSlug: string;
@@ -21,7 +26,7 @@ export const rooms: Room[] = [
       "Direct access to the farm's main walking trails.",
       "Equipped with a small kitchenette and a reading nook."
     ],
-    imageSrc: "https://linindalat.com/wp-content/uploads/2021/12/266860173_211530054473987_6887647563830964848_n-1140x760.jpg?q=80&w=1974&auto=format&fit=crop",
+    imageSrc: coffeeLoftImage, // Use the imported local image
     imageAlt: "A cozy loft room with large windows overlooking a green valley."
   },
   {
@@ -34,7 +39,7 @@ export const rooms: Room[] = [
       "Fresh-picked ingredients available right outside your door.",
       "A spacious interior with natural materials and earthy tones."
     ],
-    imageSrc: "https://images.unsplash.com/photo-1618221195710-dd6b41fa2247?q=80&w=1974&auto=format&fit=crop",
+    imageSrc: gardenBungalowImage, // Use the imported local image
     imageAlt: "A serene bungalow with a garden view and an outdoor bathtub."
   },
   {
@@ -42,7 +47,7 @@ export const rooms: Room[] = [
     roomSlug: "orchard-house",
     description: "A spacious, family-friendly house situated in the heart of our fruit orchard. With multiple rooms and a large common area, it's perfect for groups or families. Enjoy the simple pleasure of picking fruit right from the trees during harvest season.",
     highlights: ["Sleeps up to 6 guests comfortably.", "Fully equipped kitchen for self-catering.", "Large, shared porch with views of the durian and mango trees.", "Ideal for longer stays and family gatherings."],
-    imageSrc: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?q=80&w=2070&auto=format&fit=crop",
+    imageSrc: orchardHouseImage, // Use the imported local image
     imageAlt: "A spacious house with a large porch surrounded by fruit trees."
   }
 ];
