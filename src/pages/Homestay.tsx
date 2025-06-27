@@ -28,7 +28,7 @@ const Homestay = () => {
         </section>
 
         {/* Room Story Sections */}
-        <div className="space-y-6 md:space-y-8">
+        <div className="space-y-2 md:space-y-4">
           {rooms.map((room, index) => (
             <RoomStorySection 
               key={room.roomSlug}

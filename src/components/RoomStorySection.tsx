@@ -28,7 +28,7 @@ const RoomStorySection = ({
   const animation = useScrollAnimation();
 
   return (
-    <section className="py-6 md:py-8">
+    <section className="py-2 md:py-4">
       <div 
         ref={animation.ref}
         className={`fade-in-scroll ${animation.isVisible ? 'visible' : ''}`}
