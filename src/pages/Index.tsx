@@ -52,42 +52,44 @@ const Homepage = () => {
 
         {/* Homestay Teaser */}
         <TeaserSection className="overflow-hidden mt-[-2rem] md:mt-[-4rem]">
-            <div className="w-full md:w-1/2 lg:w-5/12">
-            <div 
-              ref={homestayAnimation.ref}
-              className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
-            >
-              <ImageWrapper 
-                src="https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg" 
-                alt="Our homestay rooms nestled in the mountains"
-                className="max-w-md mx-auto"
-              />
-            </div>
-          </div>
-
-          <div className="w-full md:w-1/2 lg:w-7/12 md:pl-8 lg:pl-16">
-            <div 
-              className={`fade-in-scroll slide-in-right ${homestayAnimation.isVisible ? 'visible' : ''}`}
-            >
-              <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
-                Rest among the coffee trees
-              </h3>
-              <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
-                Our rooms are simple sanctuaries where the mountain air flows freely and the sound of rustling leaves 
-                becomes your lullaby. Each space tells its own story of comfort and connection to the land.
-              </p>
-              <Link 
-                to="/homestay" 
-                className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <div 
+                ref={homestayAnimation.ref}
+                className={`fade-in-scroll slide-in-left ${homestayAnimation.isVisible ? 'visible' : ''}`}
               >
-                Explore our rooms →
-              </Link>
+                <ImageWrapper 
+                  src="https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg" 
+                  alt="Our homestay rooms nestled in the mountains"
+                  className="max-w-md mx-auto"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div 
+                className={`fade-in-scroll slide-in-right ${homestayAnimation.isVisible ? 'visible' : ''}`}
+              >
+                <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
+                  Rest among the coffee trees
+                </h3>
+                <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
+                  Our rooms are simple sanctuaries where the mountain air flows freely and the sound of rustling leaves 
+                  becomes your lullaby. Each space tells its own story of comfort and connection to the land.
+                </p>
+                <Link 
+                  to="/homestay" 
+                  className="inline-block text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-1 min-h-[44px] flex items-center w-fit"
+                >
+                  Explore our rooms →
+                </Link>
+              </div>
             </div>
           </div>
         </TeaserSection>
 
         {/* Farm & Garden Teaser */}
-        <TeaserSection className="mt-[-4rem] md:mt-[-6rem]">
+        <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div 
               ref={farmAnimation.ref}
@@ -121,7 +123,7 @@ const Homepage = () => {
         </TeaserSection>
 
         {/* Journal Teaser */}
-        <TeaserSection className="mt-[-4rem] md:mt-[-6rem]">
+        <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div 
               ref={journalAnimation.ref}
