@@ -38,12 +38,12 @@ const RoomGallery = ({ roomName }: RoomGalleryProps) => {
     //   // ...
     // ],
     // You can also define a default set of images if a room name doesn't have specific ones
-    "Default": [
-      { src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop", alt: `Default interior view` },
-      { src: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop", alt: `Default bathroom` },
-      { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop", alt: `Default view` },
-      { src: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop", alt: `Default evening ambiance` }
-    ]
+   // "Default": [
+   //   { src: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop", alt: `Default interior view` },
+   //   { src: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop", alt: `Default bathroom` },
+   //   { src: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop", alt: `Default view` },
+   //   { src: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=300&fit=crop", alt: `Default evening ambiance` }
+    //]
   };
 
   // Get the images for the current room, or the "Default" set if not found
