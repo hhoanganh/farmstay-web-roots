@@ -1,3 +1,5 @@
+// ABOUTME: This is the main homepage for the farmstay website.
+// ABOUTME: It features a hero section and teasers for other pages.
 
 import { Link } from 'react-router-dom';
 import ImageWrapper from '../components/ImageWrapper';
@@ -14,21 +16,39 @@ const Homepage = () => {
     <>
       
       {/* Hero Section */}
+      <section className="relative h-[60vh] md:h-[70vh] min-h-[400px] flex items-center justify-center text-center overflow-hidden">
+        {/* Background Video */}
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="absolute top-0 left-0 w-full h-full object-cover z-0"
+        >
+          {/* You should place your video in the `public/videos` directory */}
+          <source src="/videos/timelapse.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
 
-        <section className="px-4 py-16 text-center">
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-black opacity-40 z-10"></div>
+
+        {/* Content */}
+        <div className="relative z-20 px-4 text-white">
           <div className="max-w-4xl mx-auto">
             <h1 
-              className="text-5xl md:text-6xl mb-6 text-[hsl(var(--text-primary))]"
+              className="text-5xl md:text-6xl mb-6"
               style={{ fontFamily: 'Caveat, cursive' }}
             >
               Our journal begins here
             </h1>
-            <p className="text-lg md:text-xl text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed ui-text">
+            <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed ui-text">
               When we first found this land in Lâm Hà, we knew it held stories waiting to be shared. 
               Welcome to our corner of Vietnam's Central Highlands, where every sunrise brings new discoveries.
             </p>
           </div>
-        </section>
+        </div>
+      </section>
 
         {/* Homestay Teaser */}
         <TeaserSection className="overflow-hidden mt-[-2rem] md:mt-[-4rem]">
