@@ -31,34 +31,36 @@ const OurStory = () => {
           </div>
         </header>
 
-        <div className="lg:grid lg:grid-cols-3 lg:gap-12 space-y-12 lg:space-y-0">
-          <div className="lg:col-span-2">
-            <FounderLetter />
-          </div>
-          <div className="lg:col-span-1">
-            <ImageGallery />
+        {/* This div now only wraps the main content, not the CallToActionSection */}
+        <div className="max-w-6xl mx-auto relative">
+          <div className="lg:grid lg:grid-cols-3 lg:gap-12 space-y-12 lg:space-y-0">
+            <div className="lg:col-span-2">
+              <FounderLetter />
+            </div>
+            <div className="lg:col-span-1">
+              <ImageGallery />
+            </div>
           </div>
         </div>
 
         {/* Call to Action Section - Now using the reusable CallToActionSection component */}
-        <CallToActionSection
-          heading="Continue your journey"
-          animationRef={journeyAnimation.ref}
-          isVisible={journeyAnimation.isVisible}
+      <CallToActionSection
+        heading="Continue your journey"
+        animationRef={journeyAnimation.ref}
+        isVisible={journeyAnimation.isVisible}
+      >
+        <Link
+          to="/homestay"
+          className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
         >
-          <Link 
-            to="/homestay" 
-            className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
-          >
-            Explore Our Rooms
-          </Link>
-          <Link 
-            to="/connect" 
-            className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
-          >
-            Connect With Us
-          </Link>
-        </CallToActionSection>
+          Explore Our Rooms
+        </Link>
+        <Link
+          to="/connect"
+          className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+        >
+          Connect With Us
+        </Link>
       </div>
     </main>
   );
