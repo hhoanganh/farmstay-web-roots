@@ -42,14 +42,14 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex-1 flex justify-start">
-          <Link to="/" className="text-2xl font-bold text-[hsl(var(--text-accent))] transition-opacity focus:outline-none focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)] rounded-sm px-3 py-2 min-h-[44px] inline-flex items-center" style={{ fontFamily: 'Caveat, cursive' }}>
+          <Link to="/" className="text-2xl font-bold text-[hsl(var(--text-accent))] transition-opacity focus:outline-none focus-visible:[background-color:hsla(var(--stone),0.2)] hover:[background-color:hsla(var(--stone),0.2)] rounded-sm px-3 py-2 min-h-[44px] inline-flex items-center" style={{ fontFamily: 'Caveat, cursive' }}>
             Lâm Hà Farmstay
           </Link>
         </div>
 
         <div className="flex-1 flex justify-center">
           <div ref={menuRef} className="relative">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[hsl(var(--text-primary))] transition-colors font-medium ui-text focus:outline-none focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)] rounded-sm px-3 py-2 min-h-[44px] flex items-center">
+            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-[hsl(var(--text-primary))] transition-colors font-medium ui-text focus:outline-none focus-visible:[background-color:hsla(var(--stone),0.2)] hover:[background-color:hsla(var(--stone),0.2)] rounded-sm px-3 py-2 min-h-[44px] flex items-center">
               Menu
             </button>
             {isMenuOpen && (
@@ -64,7 +64,7 @@ const Header = () => {
         </div>
 
         <div className="flex-1 flex justify-end">
-          <Link to="/connect" className="text-[hsl(var(--text-primary))] transition-colors font-medium ui-text focus:outline-none focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)] rounded-sm px-3 py-2 min-h-[44px] flex items-center">
+          <Link to="/connect" className="text-[hsl(var(--text-primary))] transition-colors font-medium ui-text focus:outline-none focus-visible:[background-color:hsla(var(--stone),0.2)] hover:[background-color:hsla(var(--stone),0.2)] rounded-sm px-3 py-2 min-h-[44px] flex items-center">
             Connect
           </Link>
         </div>   
