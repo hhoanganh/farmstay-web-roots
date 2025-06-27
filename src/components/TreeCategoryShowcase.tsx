@@ -39,7 +39,10 @@ const TreeCategoryShowcase = () => {
                   provide shelter for smaller plants, and their creamy fruit ripens slowly 
                   through the highland seasons.
                 </p>
-                <p className="text-xs text-[hsl(var(--text-accent))] font-medium ui-text">
+                <p className="text-sm text-[hsl(var(--text-accent))] font-medium ui-text group-hover:underline">
+                  Follow its journey →
+                </p>
+                <p className="text-xs text-[hsl(var(--stone))] font-medium ui-text mt-2">
                   Available: 12 trees • Next harvest: March-May
                 </p>
               </div>
@@ -68,7 +71,10 @@ const TreeCategoryShowcase = () => {
                   The aristocrats of our grove, these trees burst into fragrant blossoms each spring 
                   before gifting us with golden, honey-sweet mangoes that taste like captured sunshine.
                 </p>
-                <p className="text-xs text-[hsl(var(--text-accent))] font-medium ui-text">
+                <p className="text-sm text-[hsl(var(--text-accent))] font-medium ui-text group-hover:underline">
+                  Discover its story →
+                </p>
+                <p className="text-xs text-[hsl(var(--stone))] font-medium ui-text mt-2">
                   Available: 8 trees • Next harvest: April-June
                 </p>
               </div>
@@ -112,7 +118,10 @@ const TreeCategoryShowcase = () => {
                   The most mysterious members of our orchard family. These towering trees take years 
                   to mature but reward patience with the king of fruits—complex, bold, and unforgettable.
                 </p>
-                <p className="text-xs text-[hsl(var(--text-accent))] font-medium ui-text">
+                <p className="text-sm text-[hsl(var(--text-accent))] font-medium ui-text group-hover:underline">
+                  Uncover its secrets →
+                </p>
+                <p className="text-xs text-[hsl(var(--stone))] font-medium ui-text mt-2">
                   Available: 5 trees • Next harvest: June-August
                 </p>
               </div>
