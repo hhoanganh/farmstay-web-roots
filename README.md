@@ -10,7 +10,10 @@ This project is built with:
 - Tailwind CSS
 
 # Task Execution Instructions
-
+Prioritize standard Tailwind utilities: Always try to use the most direct Tailwind utility classes first (e.g., bg-stone-200 if you had that color defined).
+Understand arbitrary values: When you need custom values, Tailwind's arbitrary value syntax ([value]) is powerful.
+Be aware of parser limitations: If you encounter rendering issues with external tools, especially with complex CSS functions, CSS variables, or opacity modifiers within arbitrary values, try alternative, more explicit CSS syntaxes within the arbitrary property ([property:value]) or simpler color definitions.
+The [property:value] syntax is often more robust for complex CSS: When a direct Tailwind class doesn't exist or causes issues, defining the full CSS property and value within [] can sometimes bypass parser limitations.
 
 ### Senior Engineer Task Execution Rule
 
