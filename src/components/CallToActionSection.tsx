@@ -12,7 +12,7 @@ interface CallToActionSectionProps {
 
 const CallToActionSection = ({ heading, children, animationRef, isVisible }: CallToActionSectionProps) => {
   return (
-    <section className="mt-16 md:mt-24 text-center border-t border-[hsl(var(--stone))] border-opacity-20 py-16 mb-16">
+    <section className="mt-16 md:mt-24 text-center border-t border-[hsl(var(--stone))] border-opacity-20 py-12 mb-12">
       <div 
         ref={animationRef} 
         className={`max-w-2xl mx-auto fade-in-scroll ${isVisible ? 'visible' : ''}`}
