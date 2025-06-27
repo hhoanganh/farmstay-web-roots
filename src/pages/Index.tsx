@@ -108,14 +108,14 @@ const Homepage = () => {
               className={`md:order-1 fade-in-scroll slide-in-left ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
               <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
-                Meet the trees that call this home
+                Our Living Garden & Tree Rentals
               </h3>
               <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
-                From ancient durian giants to young mango saplings, each tree here has become part of our family. 
-                You can even adopt one and follow its journey through our digital tree journals.
+                Our garden is a vibrant ecosystem of local flora. We also offer a unique service where you can rent a tree, 
+                follow its growth, and enjoy its harvest. It's a special way to connect with the land, even from afar.
               </p>
               <Link 
-                to="/farm-and-garden/trees" 
+                to="/farm-and-garden" 
                   className="relative z-10 flex items-center justify-center text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px] w-fit focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)]"
               >
                 Meet the trees →
