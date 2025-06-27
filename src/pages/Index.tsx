@@ -16,7 +16,7 @@ const Homepage = () => {
     <>
       
       {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[70vh] min-h-[400px] flex items-center justify-center text-center overflow-hidden">
+      <section className="relative h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center text-center overflow-hidden rounded-lg shadow-lg mb-12 md:mb-16">
         {/* Background Video */}
         <video 
           autoPlay 
