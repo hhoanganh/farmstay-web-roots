@@ -11,8 +11,9 @@ import CallToActionSection from '../components/CallToActionSection'; // Import t
 const OurStory = () => {
   const journeyAnimation = useScrollAnimation(); // Add animation hook for this section
   return (
-    <main className="px-4 py-16 md:py-24">
-      {/* Main content wrapper for consistent max-width and centering */}
+    // This container div provides horizontal padding for the page and top padding to space it from the header.
+    // The bottom padding was removed to ensure consistent spacing with the footer across all pages.
+    <div className="px-4 pt-16 md:pt-24">
       <div className="max-w-6xl mx-auto"> 
         <header className="relative text-center mb-12 md:mb-16 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
           {/* Background Image */}
@@ -61,7 +62,7 @@ const OurStory = () => {
           </Link>
         </CallToActionSection>
       </div>
-    </main>
+    </div>
   );
 };
 
