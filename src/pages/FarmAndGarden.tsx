@@ -35,10 +35,10 @@ const FarmAndGarden = () => {
 
       {/* The Story of the Garden Section */}
       <TeaserSection className="overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div 
+        <div className="grid md:grid-cols-5 gap-12 items-center">
+          <div
             ref={storyAnimation.ref}
-            className={`fade-in-scroll slide-in-left ${storyAnimation.isVisible ? 'visible' : ''}`}
+            className={`md:col-span-2 fade-in-scroll slide-in-left ${storyAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
               src="https://images.unsplash.com/photo-1472396961693-142e6e269027" 
@@ -47,8 +47,8 @@ const FarmAndGarden = () => {
             />
           </div>
           
-          <div 
-            className={`fade-in-scroll slide-in-right ${storyAnimation.isVisible ? 'visible' : ''}`}
+          <div
+            className={`md:col-span-3 fade-in-scroll slide-in-right ${storyAnimation.isVisible ? 'visible' : ''}`}
           >
             <h2 
               className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
@@ -78,10 +78,10 @@ const FarmAndGarden = () => {
 
       {/* Tree Adoption Concept Section */}
       <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div 
+        <div className="grid md:grid-cols-5 gap-12 items-center">
+          <div
             ref={conceptAnimation.ref}
-            className={`md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
+            className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
               src="https://images.unsplash.com/photo-1493962853295-0fd70327578a" 
@@ -90,8 +90,8 @@ const FarmAndGarden = () => {
             />
           </div>
           
-          <div 
-            className={`md:order-1 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
+          <div
+            className={`md:col-span-3 md:order-1 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <h2 
               className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
