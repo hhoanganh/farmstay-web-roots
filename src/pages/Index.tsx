@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import ImageWrapper from '../components/ImageWrapper';
 import TeaserSection from '../components/TeaserSection';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import CallToActionSection from '../components/CallToActionSection';
 
 const Homepage = () => {
   const homestayAnimation = useScrollAnimation();
@@ -156,27 +157,26 @@ const Homepage = () => {
           </div>
         </TeaserSection>
 
-        {/* Connect Section */}
-        <TeaserSection className="mt-16 md:mt-24 border-t border-[hsl(var(--stone))] border-opacity-20 pt-12">
-          <div 
-            ref={connectAnimation.ref} // This ref should be on the outer div for scroll animation
-            className={`text-center fade-in-scroll max-w-2xl mx-auto ${connectAnimation.isVisible ? 'visible' : ''}`}
+        {/* Connect Section - Now using the reusable CallToActionSection component */}
+        <CallToActionSection
+          heading="Begin your story"
+          animationRef={connectAnimation.ref}
+          isVisible={connectAnimation.isVisible}
+        >
+          <Link 
+            to="/homestay" 
+            className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
           >
-            <h2 className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]">
-              Begin your story
-            </h2>
-            <p className="text-lg text-[hsl(var(--stone))] mb-8 max-w-xl mx-auto leading-relaxed">
-              Whether you're seeking a peaceful retreat, curious about farm life, or ready to adopt a tree, 
-              we'd love to welcome you into our growing family of nature lovers.
-            </p>
-            <Link 
-              to="/connect" 
-              className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center w-fit mx-auto"
-            >
-              Connect with us
-            </Link>
-          </div>
-        </TeaserSection>
+            Explore Our Rooms
+          </Link>
+          <Link 
+            to="/connect" 
+            className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+          >
+            Connect With Us
+          </Link>
+        </CallToActionSection>
+
       </>
   );
 };
