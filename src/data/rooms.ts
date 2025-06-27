@@ -19,12 +19,12 @@ export const rooms: Room[] = [
   {
     roomName: "The Coffee Loft",
     roomSlug: "coffee-loft",
-    description: "I find myself drawn to the loft most mornings, just as the sun begins to burn the mist off the valley below. From here, you can see the entire farm laid out before you, and the air is thick with the rich, earthy smell of our Robusta coffee fields. We designed it with floor-to-ceiling windows, so you feel like you’re floating just above the treetops. It’s our favorite spot for quiet reflection with a freshly brewed phin filter coffee, simply watching the day begin.",
+    description: "Perched above our Robusta coffee fields, this loft offers panoramic views of the misty valley. We designed this cozy, elevated lookout for quiet mornings watching the farm come to life, feeling as if you're floating just above the treetops.",
     highlights: [
-    "Unobstructed, panoramic views of the coffee valley and surrounding highlands.",
-    "A cozy, elevated space designed to feel like a private lookout.",
-    "The daily farm rhythm at your doorstep, from the morning harvest to the evening quiet.",
-    "A selection of our own roasted beans and a traditional phin filter for the perfect morning ritual."
+    "Unobstructed, panoramic views of the coffee valley",
+    "A cozy, elevated space designed as a private lookout.",
+    "The daily rhythm of the farm at your doorstep.",
+    "A selection of our own roasted beans for the perfect morning ritual."
     ],
     imageSrc: coffeeLoftImage, // Use the imported local image
     imageAlt: "A cozy loft room with large windows overlooking a green valley."
@@ -32,12 +32,12 @@ export const rooms: Room[] = [
   {
     roomName: "The Garden Bungalow",
     roomSlug: "garden-bungalow",
-    description: "We built this bungalow in the quietest corner of the property, tucked away where the air always seems to hold the scent of lemongrass and damp earth after the morning mist. It was meant to be a sanctuary, a place where the boundary between the garden and the home completely dissolves. We find that a morning spent here, with a cup of tea and the sounds of the garden, is a powerful reminder of the simple, good things in life.",
+    description: "Tucked into a quiet corner of our property, this bungalow is a peaceful sanctuary where the fragrant herb garden and the living space become one. It was built for those looking to feel deeply connected to the earth.",
     highlights: [
-    "A private patio completely enveloped by our organic herb and flower garden.",
+    "A private patio completely enveloped by the herb garden.",
     "An outdoor stone bathtub for a quiet soak under the stars.",
-    "The simple joy of picking fresh herbs for your morning tea right outside the door.",
-    "A calm, spacious interior crafted with natural wood and stone to echo the nature outside."
+    "The simple joy of picking fresh herbs right outside your door.",
+    "A calm interior crafted with natural wood and stone."
     ],
     imageSrc: gardenBungalowImage, // Use the imported local image
     imageAlt: "A serene bungalow with a garden view and an outdoor bathtub."
@@ -45,12 +45,12 @@ export const rooms: Room[] = [
   {
     roomName: "The Orchard House",
     roomSlug: "orchard-house",
-    description: "This house holds so many of our own family memories. We built it from reclaimed wood from the original farm structure, right in the heart of our avocado and rambutan orchard. We always believed that the best connections are made around a shared meal, so we designed the large, open kitchen and living area to be the soul of the house. It's less of a rental and more of our home that we open up to families and groups of friends looking to create their own stories together.",
+    description: "Situated in the heart of our fruit orchard, this spacious house was designed for connection. With its large, open kitchen, it’s our family home that we open to groups and friends looking to gather and create their own stories together.",
     highlights: [
-    "A spacious, communal kitchen and living area designed for gathering and shared meals.",
-    "Situated within our fruit orchard, with the simple pleasure of picking your own avocados for breakfast (when in season).",
-    "Multiple bedrooms that offer both private retreat and easy connection to the main house.",
-    "The perfect home base for larger groups to explore the highlands and reconnect with each other."
+    "A spacious, communal kitchen designed for shared meals.",
+    "The simple pleasure of picking your own avocados for breakfast (when in season).",
+    "Multiple bedrooms offering both private retreat and easy connection.",
+    "The perfect home base for larger groups to explore the highlands."
     ],
     imageSrc: orchardHouseImage, // Use the imported local image
     imageAlt: "A spacious house with a large porch surrounded by fruit trees."
