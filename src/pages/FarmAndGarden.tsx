@@ -1,4 +1,3 @@
-
 // ABOUTME: This page details the farm's garden and the unique tree adoption program.
 // ABOUTME: It explains the concept and showcases the types of trees available.
 
