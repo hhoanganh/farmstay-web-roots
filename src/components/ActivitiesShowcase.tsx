@@ -17,7 +17,7 @@ const ActivitiesShowcase = () => {
       id: '2',
       title: 'Farm-to-Table Cooking',
       description: 'Our kitchen becomes a classroom where we transform fresh ingredients from our garden into traditional Vietnamese dishes. I\'ll share family recipes passed down through generations, and you\'ll discover how the highland terroir influences the flavors of our vegetables, herbs, and fruits.',
-      imageUrl: 'https://ik.imagekit.io/offvxi40h/cooking-class.jpg?tr=w-400,q-80',
+      imageUrl: 'https://ik.imagekit.io/offvxi40h/farm-table.jpg?tr=w-400,q-80',
       altText: 'Traditional Vietnamese cooking using fresh farm ingredients'
     },
     {
