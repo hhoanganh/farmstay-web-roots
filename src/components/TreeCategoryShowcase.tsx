@@ -22,7 +22,7 @@ const TreeCategoryShowcase = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
             <div className="w-full md:w-3/5 z-0">
               <ImageWrapper 
-                src="https://images.unsplash.com/photo-1618160702438-9b02ab6515c9" 
+                src="https://ik.imagekit.io/offvxi40h/avocado-2.jpg" 
                 alt="Avocado trees in our highland orchard"
                 className="w-full max-w-sm mx-auto transform rotate-1 group-hover:rotate-2 transition-transform duration-300"
               />
@@ -87,7 +87,7 @@ const TreeCategoryShowcase = () => {
             </div>
             <div className="w-full md:w-3/5 z-0">
               <ImageWrapper 
-                src="https://images.unsplash.com/photo-1466721591366-2d5fba72006d" 
+                src="https://ik.imagekit.io/offvxi40h/mango-2.jpg" 
                 alt="Mango trees heavy with fruit"
                 className="w-full max-w-sm mx-auto transform -rotate-2 group-hover:-rotate-1 transition-transform duration-300"
               />
@@ -108,7 +108,7 @@ const TreeCategoryShowcase = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
             <div className="w-full md:w-3/5 z-0">
               <ImageWrapper 
-                src="https://images.unsplash.com/photo-1485833077593-4278bba3f11f" 
+                src="https://ik.imagekit.io/offvxi40h/durian-1.jpg" 
                 alt="Our prized durian trees in the highland soil"
                 className="w-full max-w-sm mx-auto transform rotate-1 group-hover:rotate-2 transition-transform duration-300"
               />
