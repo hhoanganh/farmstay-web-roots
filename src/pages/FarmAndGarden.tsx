@@ -81,19 +81,9 @@ const FarmAndGarden = () => {
       {/* Tree Adoption Concept Section */}
       <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
         <div className="grid md:grid-cols-5 gap-12 items-center">
+          {/* Text content is now first to appear above the image on mobile */}
           <div
-            ref={conceptAnimation.ref}
-            className={`order-2 md:order-2 md:col-span-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <ImageWrapper 
-              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
-              alt="A young tree being tended in our garden"
-              className="max-w-md mx-auto transform -rotate-2"
-            />
-          </div>
-          
-          <div
-            className={`order-1 md:order-1 md:col-span-3 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
+            className={`md:col-span-3 md:order-1 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <h2 
               className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
@@ -117,6 +107,18 @@ const FarmAndGarden = () => {
               You'll follow your tree's unique life cycle journal, from pruning to flowering to harvest, 
               creating a tangible connection to this land even from afar.
             </p>
+          </div>
+
+          {/* Image content is now second */}
+          <div
+            ref={conceptAnimation.ref}
+            className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <ImageWrapper 
+              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
+              alt="A young tree being tended in our garden"
+              className="max-w-md mx-auto transform -rotate-2"
+            />
           </div>
         </div>
       </TeaserSection>
@@ -231,5 +233,4 @@ const FarmAndGarden = () => {
   );
 };
 
-export default FarmAndGarden;
 export default FarmAndGarden;
