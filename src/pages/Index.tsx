@@ -45,7 +45,7 @@ const Homepage = () => {
               Our journal begins here
             </h1>
             <p 
-              className="text-base md:text-xl max-w-2xl mx-auto leading-relaxed"
+              className="text-sm md:text-lg max-w-2xl mx-auto leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
               When we first found this land in Lâm Hà, we knew it held stories waiting to be shared. 
