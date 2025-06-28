@@ -84,7 +84,7 @@ const FarmAndGarden = () => {
             className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
-              src="https://ik.imagekit.io/offvxi40h/garden-2.jpg" 
+              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
               alt="A young tree being tended in our garden"
               className="max-w-md mx-auto transform -rotate-2"
             />
