@@ -1,0 +1,110 @@
+
+1.7 Design System: The Field Journal
+The Layout: Instead of a wide, horizontal collage, we'll design it as a vertical, endlessly scrolling journal page. The user experience will be like unfurling a long, beautiful scroll of paper. The layered, scrapbook feel is maintained, but it's optimized for a natural vertical thumb-scroll. Elements can be positioned left and right of a central line, creating a dynamic but easy-to-follow flow.
+Interactions (The Key Change): All hover-based interactions are replaced with tap-based interactions.
+Instead of hovering on a sketch to see its name, the sketch will have a small (+) icon. Tapping it will expand a small text box with the information and a (x) to close it. This is a common and intuitive mobile pattern.
+Animations will be tied to scrolling. As the user scrolls down, new photos can slide into place, and sketches can "draw" themselves onto the screen. This makes the scroll feel engaging and alive.
+1.7.1 Visual Language
+
+Color Palette
+The palette is muted, natural, and designed for a calm, authentic feel. All color pairings of text on a background meet a minimum WCAG 2.1 AA contrast ratio of 4.5:1.
+
+Base Semantic Tokens (The Palette)
+
+--paper: #F9F6F1 (The primary off-white background) 
+--ink: #312E2B (The primary dark text color for body content) 
+--stone: #78716C (A secondary, softer grey for meta text or borders) 
+--brown: #8C6D54 (An earthy accent for UI elements or links) 
+--green: #6A7C5B (A leafy accent for UI elements or success states) 
+--focus: #4C8BF5 (A distinct blue, used exclusively for focus rings to ensure visibility)
+Theme Semantic Tokens (The Purpose)
+
+--background-primary: hsl(var(--paper))
+--background-secondary: hsl(var(--stone) / 0.1) (e.g., for subtle card backgrounds)
+--text-primary: hsl(var(--ink))
+--text-secondary: hsl(var(--stone))
+--text-accent: hsl(var(--brown))
+--border-primary: hsl(var(--stone) / 0.2)
+--ring-focus: hsl(var(--focus))
+--interactive-primary: hsl(var(--brown))
+--interactive-primary-foreground: hsl(var(--paper))
+Typography Scale
+We will use a deliberate mix of three font families to create a rich, layered personality.
+
+
+Font Families:
+
+Script (Headings): Caveat (from Google Fonts) - Feels personal and handwritten. 
+
+
+Typewriter (Body): IBM Plex Mono (from Google Fonts) - A clean, legible monospace font for storytelling. 
+
+Sans-serif (UI & Clarity): Inter (from Google Fonts) - A highly readable font for UI elements like buttons, captions, and critical info. 
+
+Scale (Mobile-First):
+
+h1 (Page Titles): Caveat, 36px, 1.2 line-height
+h2 (Section Titles): Caveat, 28px, 1.3 line-height
+h3 (Card Titles): Caveat, 22px, 1.4 line-height
+p (Body/Paragraph): IBM Plex Mono, 16px, 1.6 line-height
+small (Meta/Captions): Inter, 14px, 1.5 line-height
+button (Button Text): Inter, 15px, 1 line-height
+Grid & Spacing System
+The layout is "asymmetrical & layered," not based on a rigid column grid. However, consistent spacing is critical for visual rhythm.
+
+
+Principle: All spacing and sizing will be based on a 4px base unit.
+Spacing Scale (Tailwind CSS compatible):
+space-1: 4px
+space-2: 8px
+space-3: 12px
+space-4: 16px (base for component padding)
+space-6: 24px
+space-8: 32px (base for section padding)
+...and so on.
+Accessibility (A11y) Standards (WCAG 2.1 AA)
+Color Contrast: All default text/background combinations in the palette exceed the 4.5:1 ratio.
+Focus States: All interactive elements (links, buttons, inputs) MUST have a highly visible focus ring: 2px solid hsl(var(--ring-focus)). This will be a global style.
+Touch Target Sizes: All interactive elements MUST have a minimum touch target size of 44x44px to ensure they are easily tappable on mobile devices.
+Alternative Text: All <img> tags that convey information MUST have descriptive alt text. Decorative images will have an empty alt="".
+
+1.7.2 Voice and Content
+
+Voice: The core voice is Authentic, Reflective, and Gentle. It speaks from the heart and values genuine connection over commercialism. It is knowledgeable but humble.
+Tone (Adaptable):
+Storytelling (Journal/About Pages): Warm, personal, and narrative. Uses "I" and "we." (e.g., "When we first found this land, I remember feeling..."). 
+Informational (Room Details): Helpful and descriptive. Still warm, but clear and direct. (e.g., "The Forest Bungalow has a small porch where you can enjoy your morning coffee.").
+Admin Panel: Clear, simple, and encouraging. (e.g., "Post a new life cycle update for this tree.").
+Terminology Glossary:
+Use "Journal" instead of "Blog" or "News."
+Use "Experiences" instead of "Activities" or "Services" in main navigation.
+Use "Connect" instead of "Contact Us."
+Use "Life Cycle Update" for the tree journal entries.
+
+1.7.3 Components
+
+General Components
+Button:
+Variants: primary (with --interactive-primary background for key actions), secondary (with a subtle border), ghost (text-only for less important actions).
+States: default, hover (slight brightness/darkness change), focus (displays the --ring-focus outline), disabled (semi-opaque, non-interactive).
+Input (for Admin Panel):
+Includes: label, input field, helper text.
+States: default, focus (displays focus ring), error (red border, error message).
+Icon:
+Variants: A consistent icon set (e.g., Lucide icons, which integrate with shadcn). Used for the + reveal icon, admin panel navigation, etc.
+
+Layout & Navigation Components
+Header: Contains the logo and primary navigation links. Will have a mobile version (e.g., a "hamburger" menu).
+Footer: Contains secondary links, social media icons, and copyright info.
+AdminSidebar (for /admin): The main navigation for the backend portal, visible only after login.
+Content Display Components
+Card: A highly reusable component for lists.
+Variants: RoomCard, JournalCard, TreeCard. While variants share a base style, they will have slightly different content structures.
+ImageWrapper: A component that takes an image and applies the "Polaroid" or "taped-on" style with a box-shadow and slight transform: rotate(). 
+LifeCycleEntry: A component for displaying a single update in the tree's journal. Includes an icon/title for the activity type, a timestamp, a text description, and an optional image.
+StatelessMap: An embedded map component for the /connect page.
+Specific Feature Components
+LoginForm: The component for /login, containing email/password inputs and a submit button.
+AdminDataTable (Insight/Suggestion): We should build a single, powerful data table component for the admin panel using a library like TanStack Table. This can be reused for displaying bookings, trees, and staff lists, and will include built-in sorting and filtering, greatly improving the admin experience.
+RichTextEditor (for Admin Panel): A component for the Owner to write and format Journal articles and page content.
+ImageUploader (for Admin Panel): A component for uploading photos for rooms, articles, and tree updates.
