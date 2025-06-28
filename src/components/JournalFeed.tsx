@@ -49,7 +49,7 @@ const JournalFeed = () => {
       title: 'Morning Mist Over the Coffee Grove',
       content: 'This morning, as I walked through our coffee grove, the mist hung low between the trees like a gentle blanket. The highland air was crisp and clean, carrying the earthy scent of fertile soil and growing things...',
       slug: 'morning-mist-coffee-grove',
-      image_url: 'https://ik.imagekit.io/offvxi40h/coffee-grove-mist.jpg?tr=w-800,q-80',
+      image_url: 'https://ik.imagekit.io/offvxi40h/morning-mist.jpg?tr=w-800,q-80',
       created_at: '2024-12-01T08:00:00Z'
     },
     {
@@ -57,7 +57,7 @@ const JournalFeed = () => {
       title: 'The Avocado Trees Are Flowering',
       content: 'Something magical is happening in our avocado grove. The trees have begun their flowering season, and tiny cream-colored blossoms dot every branch. Each small flower holds the promise of fruit to come...',
       slug: 'avocado-trees-flowering',
-      image_url: 'https://ik.imagekit.io/offvxi40h/avocado-flowers.jpg?tr=w-800,q-80',
+      image_url: 'https://ik.imagekit.io/offvxi40h/avocado-flowering.jpg?tr=w-800,q-80',
       created_at: '2024-11-28T15:30:00Z'
     },
     {
@@ -65,7 +65,7 @@ const JournalFeed = () => {
       title: 'Building the New Greenhouse',
       content: 'We broke ground on our new greenhouse this week. It will be a place where we can nurture seedlings through the cooler highland months and experiment with growing techniques...',
       slug: 'building-new-greenhouse',
-      image_url: 'https://ik.imagekit.io/offvxi40h/greenhouse-construction.jpg?tr=w-800,q-80',
+      image_url: 'https://ik.imagekit.io/offvxi40h/build-house.jpg?tr=w-800,q-80',
       created_at: '2024-11-25T10:15:00Z'
     }
   ];
