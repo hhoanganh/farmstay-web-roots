@@ -111,7 +111,7 @@ const JournalFeed = () => {
       <div className="pt-8 text-center">
         <Link
           to="/experiences"
-          className="inline-flex items-center gap-2 text-[hsl(var(--text-accent))] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px]"
+          className="inline-flex items-center gap-2 text-[hsl(var(--text-accent))] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px] focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)]"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
           View All Stories
