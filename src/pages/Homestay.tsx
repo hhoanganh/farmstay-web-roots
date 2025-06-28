@@ -15,20 +15,28 @@ const Homestay = () => {
     <div className="px-4 pt-16 md:pt-24">
       <div className="max-w-6xl mx-auto">
         {/* Page Introduction Section */}
-        <section className="text-center mb-16 md:mb-24">
-          <h1 
-            className="text-5xl md:text-6xl mb-6 text-[hsl(var(--text-primary))]"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            Our Sanctuaries
-          </h1>
-          <p 
-            className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed text-[hsl(var(--stone))]"
-            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-          >
-            Here, every room tells a story, a quiet corner crafted for connection—with nature, with yourself, and with the rhythm of the farm. We've poured our hearts into creating spaces where you can truly unwind and feel at home.
-          </p>
-        </section>
+        <header className="relative text-center mb-16 md:mb-24 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+          {/* Background Image - TODO: Replace with the direct image link for the homestay */}
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/homestay-exterior-placeholder.jpg')` }}
+          ></div>
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-black opacity-40"></div>
+
+          {/* Content */}
+          <div className="relative z-10 text-white max-w-3xl mx-auto px-4">
+            <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
+              Our Sanctuaries
+            </h1>
+            <p 
+              className="text-lg md:text-xl leading-relaxed"
+              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              Here, every room tells a story, a quiet corner crafted for connection—with nature, with yourself, and with the rhythm of the farm. We've poured our hearts into creating spaces where you can truly unwind and feel at home.
+            </p>
+          </div>
+        </header>
 
         {/* Room Story Sections */}
         <div className="space-y-2 md:space-y-4">
