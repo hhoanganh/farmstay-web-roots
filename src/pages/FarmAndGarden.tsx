@@ -1,4 +1,7 @@
 
+// ABOUTME: This page details the farm's garden and the unique tree adoption program.
+// ABOUTME: It explains the concept and showcases the types of trees available.
+
 import { Link } from 'react-router-dom';
 import ImageWrapper from '../components/ImageWrapper';
 import TeaserSection from '../components/TeaserSection';
@@ -12,7 +15,7 @@ const FarmAndGarden = () => {
   const showcaseAnimation = useScrollAnimation();
 
   return (
-    <main className="px-4 pt-16 md:pt-24">
+    <main className="px-4 pt-16 md:pt-24 overflow-hidden">
       {/* Page Introduction Section */}
       <section className="text-center mb-16 md:mb-24">
         <div className="max-w-4xl mx-auto">
