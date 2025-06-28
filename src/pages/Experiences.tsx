@@ -1,7 +1,6 @@
 
 // ABOUTME: This page presents farm experiences in a split journal layout.
 // ABOUTME: It features a dynamic journal feed alongside a static activities showcase.
-
 import JournalFeed from '../components/JournalFeed';
 import ActivitiesShowcase from '../components/ActivitiesShowcase';
 
