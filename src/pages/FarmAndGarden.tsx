@@ -26,16 +26,18 @@ const FarmAndGarden = () => {
         <div className="absolute inset-0 bg-black opacity-40"></div>
 
         {/* Content */}
-        <div className="relative z-10 text-white max-w-3xl mx-auto px-4">
-          <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
-            Our Highland Roots
-          </h1>
-          <p 
-            className="text-lg md:text-xl leading-relaxed"
-            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-          >
-            Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, our land tells its own story through the rich, red basalt soil. Every tree we've planted has become part of this ancient landscape, and now we invite you to become part of theirs.
-          </p>
+        <div className="relative z-20 px-4 text-white">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
+              Our Highland Roots
+            </h1>
+            <p 
+              className="text-xs md:text-base max-w-2xl mx-auto leading-relaxed"
+              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+            >
+              Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, our land tells its own story through the rich, red basalt soil. Every tree we've planted has become part of this ancient landscape, and now we invite you to become part of theirs.
+            </p>
+          </div>
         </div>
       </header>
 
