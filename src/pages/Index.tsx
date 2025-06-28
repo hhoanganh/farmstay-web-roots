@@ -107,7 +107,7 @@ const Homepage = () => {
               className={`md:order-2 fade-in-scroll slide-in-right ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
               <ImageWrapper 
-                src="https://thoibaonganhang.vn/stores/news_dataimages/minhvl/012022/17/02/1220_d2010mh-1603226412403.jpg" 
+                src="https://ik.imagekit.io/offvxi40h/our-farmstay-2.jpg" 
                 alt="A tree in the farm garden"
                 className="max-w-md mx-auto transform rotate-2"
               />
