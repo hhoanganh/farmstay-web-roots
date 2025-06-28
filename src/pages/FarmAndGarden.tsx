@@ -1,4 +1,3 @@
-
 // ABOUTME: This page details the farm's garden and the unique tree adoption program.
 // ABOUTME: It explains the concept and showcases the types of trees available.
 
@@ -82,17 +81,7 @@ const FarmAndGarden = () => {
       {/* Tree Adoption Concept Section */}
       <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
         <div className="grid md:grid-cols-5 gap-12 items-center">
-          <div
-            ref={conceptAnimation.ref}
-            className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <ImageWrapper 
-              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
-              alt="A young tree being tended in our garden"
-              className="max-w-md mx-auto transform -rotate-2"
-            />
-          </div>
-          
+          {/* Put text first for mobile, image second */}
           <div
             className={`md:col-span-3 md:order-1 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
@@ -118,6 +107,16 @@ const FarmAndGarden = () => {
               You'll follow your tree's unique life cycle journal, from pruning to flowering to harvest, 
               creating a tangible connection to this land even from afar.
             </p>
+          </div>
+          <div
+            ref={conceptAnimation.ref}
+            className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
+          >
+            <ImageWrapper 
+              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
+              alt="A young tree being tended in our garden"
+              className="max-w-md mx-auto transform -rotate-2"
+            />
           </div>
         </div>
       </TeaserSection>
@@ -232,4 +231,5 @@ const FarmAndGarden = () => {
   );
 };
 
+export default FarmAndGarden;
 export default FarmAndGarden;
