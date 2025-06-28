@@ -19,7 +19,7 @@ const Homestay = () => {
           {/* Background Image - TODO: Replace with the direct image link for the homestay */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/our-farmstay.jpg')` }}
+            style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/our-farmstay.jpg?tr=w-1200,q-80')` }}
           ></div>
           {/* Overlay for readability */}
           <div className="absolute inset-0 bg-black opacity-40"></div>
