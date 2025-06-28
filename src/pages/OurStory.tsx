@@ -19,20 +19,22 @@ const OurStory = () => {
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/our-story.jpg')` }}
+            style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/our-story.jpg?tr=w-1200,q-80')` }}
           ></div>
           {/* Overlay for readability */}
           <div className="absolute inset-0 bg-black opacity-40"></div>
 
           {/* Content */}
-          <div className="relative z-10 text-white">
+          <div className="relative z-10 text-white max-w-3xl mx-auto px-4">
             <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
               Our Story
             </h1>
             <p 
-              className="text-base md:text-xl mt-2"
+              className="text-lg md:text-xl leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-            >How our little farmstay came to be.</p>
+            >
+              How our little farmstay came to be.
+            </p>
           </div>
         </header>
 
