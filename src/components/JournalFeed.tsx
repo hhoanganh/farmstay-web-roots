@@ -2,7 +2,8 @@
 // ABOUTME: This component displays a vertical feed of journal entries.
 // ABOUTME: Each entry is presented as a card with image, title, excerpt, and read more link.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import JournalCard from './JournalCard';
 import { supabase } from '../integrations/supabase/client';
 
@@ -67,6 +68,14 @@ const JournalFeed = () => {
       slug: 'building-new-greenhouse',
       image_url: 'https://ik.imagekit.io/offvxi40h/build-house.jpg?tr=w-800,q-80',
       created_at: '2024-11-25T10:15:00Z'
+    },
+    {
+      id: '4',
+      title: 'A Symphony of Bees and Blossoms',
+      content: 'The air is buzzing with life as our fruit trees are in full bloom. Honeybees from our hives are busy at work, dancing from blossom to blossom. It\'s a beautiful reminder of the intricate web of life that sustains our farm and brings us the sweet fruits of summer.',
+      slug: 'bees-and-blossoms',
+      image_url: 'https://ik.imagekit.io/offvxi40h/bee-blossom.jpg?tr=w-800,q-80',
+      created_at: '2024-11-22T14:00:00Z'
     }
   ];
 
@@ -75,7 +84,7 @@ const JournalFeed = () => {
   if (loading) {
     return (
       <div className="space-y-8">
-        {[1, 2, 3].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <div key={i} className="animate-pulse">
             <div className="bg-[hsl(var(--stone))] bg-opacity-20 rounded-lg h-64 mb-4"></div>
             <div className="h-4 bg-[hsl(var(--stone))] bg-opacity-20 rounded mb-2"></div>
@@ -98,6 +107,27 @@ const JournalFeed = () => {
       {displayArticles.map((article) => (
         <JournalCard key={article.id} article={article} />
       ))}
+
+      <div className="pt-8 text-center">
+        <Link
+          to="/experiences"
+          className="inline-flex items-center gap-2 text-[hsl(var(--text-accent))] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px]"
+          style={{ fontFamily: 'Inter, sans-serif' }}
+        >
+          View All Stories
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="16" 
+            height="16" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          ><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </Link>
+      </div>
     </div>
   );
 };
