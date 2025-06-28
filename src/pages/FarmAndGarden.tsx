@@ -14,26 +14,27 @@ const FarmAndGarden = () => {
   const showcaseAnimation = useScrollAnimation();
 
   return (
-    <main className="px-4 pt-16 md:pt-24 overflow-hidden">
-      {/* Page Introduction Section */}
-      <section className="text-center mb-16 md:mb-24">
-        <div className="max-w-4xl mx-auto">
-          <h1 
-            className="text-5xl md:text-6xl mb-8 text-[hsl(var(--text-primary))]"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            Our Highland Roots
-          </h1>
-          <p 
-            className="text-lg md:text-xl text-[hsl(var(--stone))] leading-relaxed max-w-3xl mx-auto"
-            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-          >
-            Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, 
-            our land tells its own story through the rich, red basalt soil. Every tree we've planted 
-            has become part of this ancient landscape, and now we invite you to become part of theirs.
-          </p>
-        </div>
-      </section>
+    <div className="px-4 pt-16 md:pt-24 overflow-hidden">
+      <header className="relative text-center mb-12 md:mb-16 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+          {/* Background Image */}
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('https://bdsquan9.vn/wp-content/uploads/2021/06/%C4%91%E1%BA%A5t-n%E1%BB%81n-h%E1%BB%93-%C4%91%E1%BA%A1-sar-l%C3%A2m-h%C3%A0.jpg')` }}
+          ></div>
+          {/* Overlay for readability */}
+          <div className="absolute inset-0 bg-black opacity-40"></div>
+
+          {/* Content */}
+          <div className="relative z-10 text-white">
+            <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
+              Our Highland Roots
+            </h1>
+            <p 
+              className="text-base md:text-xl mt-2"
+              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+            >How our little farmstay came to be.</p>
+          </div>
+        </header>
 
       {/* The Story of the Garden Section */}
       <TeaserSection className="overflow-hidden">
