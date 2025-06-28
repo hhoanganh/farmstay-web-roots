@@ -15,25 +15,29 @@ const FarmAndGarden = () => {
 
   return (
     <main className="px-4 pt-16 md:pt-24 overflow-hidden">
-      {/* Page Introduction Section */}
-      <section className="text-center mb-16 md:mb-24">
-        <div className="max-w-4xl mx-auto">
-          <h1 
-            className="text-5xl md:text-6xl mb-8 text-[hsl(var(--text-primary))]"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
+      {/* Hero Section */}
+      <header className="relative text-center mb-12 md:mb-16 overflow-hidden h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+        {/* Background Image - TODO: Replace with the direct image link */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/tea-farm-1.jpg?tr=w-1200,q-80')` }}
+        ></div>
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+
+        {/* Content */}
+        <div className="relative z-10 text-white max-w-3xl mx-auto px-4">
+          <h1 className="text-5xl md:text-6xl mb-6" style={{ fontFamily: 'Caveat, cursive' }}>
             Our Highland Roots
           </h1>
           <p 
-            className="text-lg md:text-xl text-[hsl(var(--stone))] leading-relaxed max-w-3xl mx-auto"
+            className="text-lg md:text-xl leading-relaxed"
             style={{ fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, 
-            our land tells its own story through the rich, red basalt soil. Every tree we've planted 
-            has become part of this ancient landscape, and now we invite you to become part of theirs.
+            Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, our land tells its own story through the rich, red basalt soil. Every tree we've planted has become part of this ancient landscape, and now we invite you to become part of theirs.
           </p>
         </div>
-      </section>
+      </header>
 
       {/* The Story of the Garden Section */}
       <TeaserSection className="overflow-hidden">
