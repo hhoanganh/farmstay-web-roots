@@ -18,7 +18,7 @@ const ContactDetails = () => {
         {/* Phone Card */}
         <div className="bg-[hsl(var(--background-primary))] p-6 rounded-lg border border-[hsl(var(--stone))] border-opacity-20 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-[hsl(var(--stone))] bg-opacity-10">
+            <div className="p-3 rounded-full bg-[hsl(var(--brown))] bg-opacity-10">
               <Phone className="w-5 h-5 text-[hsl(var(--brown))]" />
             </div>
             <div>
@@ -41,7 +41,7 @@ const ContactDetails = () => {
         {/* Email Card */}
         <div className="bg-[hsl(var(--background-primary))] p-6 rounded-lg border border-[hsl(var(--stone))] border-opacity-20 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-[hsl(var(--stone))] bg-opacity-10">
+            <div className="p-3 rounded-full bg-[hsl(var(--brown))] bg-opacity-10">
               <Mail className="w-5 h-5 text-[hsl(var(--brown))]" />
             </div>
             <div>
@@ -64,7 +64,7 @@ const ContactDetails = () => {
         {/* Address Card */}
         <div className="bg-[hsl(var(--background-primary))] p-6 rounded-lg border border-[hsl(var(--stone))] border-opacity-20 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="p-3 rounded-full bg-[hsl(var(--stone))] bg-opacity-10 mt-1">
+            <div className="p-3 rounded-full bg-[hsl(var(--brown))] bg-opacity-10 mt-1">
               <svg className="w-5 h-5 text-[hsl(var(--brown))]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -103,7 +103,7 @@ const ContactDetails = () => {
             href="https://facebook.com" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-3 rounded-full bg-[hsl(var(--stone))] bg-opacity-10 hover:bg-[hsl(var(--brown))] hover:bg-opacity-10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2"
+            className="p-3 rounded-full bg-[hsl(var(--brown))] bg-opacity-10 hover:bg-opacity-20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2"
             aria-label="Facebook"
           >
             <svg className="w-5 h-5 text-[hsl(var(--brown))]" fill="currentColor" viewBox="0 0 24 24">
@@ -114,7 +114,7 @@ const ContactDetails = () => {
             href="https://instagram.com" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="p-3 rounded-full bg-[hsl(var(--stone))] bg-opacity-10 hover:bg-[hsl(var(--brown))] hover:bg-opacity-10 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2"
+            className="p-3 rounded-full bg-[hsl(var(--brown))] bg-opacity-10 hover:bg-opacity-20 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2"
             aria-label="Instagram"
           >
             <svg className="w-5 h-5 text-[hsl(var(--brown))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
