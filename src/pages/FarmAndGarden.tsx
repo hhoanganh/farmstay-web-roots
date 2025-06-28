@@ -28,173 +28,89 @@ const FarmAndGarden = () => {
             className="text-lg md:text-xl text-[hsl(var(--stone))] leading-relaxed max-w-3xl mx-auto"
             style={{ fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            Here in Vietnam's Central Highlands, where rolling hills meet cool, misty mornings, 
-            our land tells its own story through the rich, red basalt soil. Every tree we've planted 
-            has become part of this ancient landscape, and now we invite you to become part of theirs.
+            Here in Vietnam's Central Highlands, where the air is crisp and the soil is rich, lies the heart of our farm. The Lovable Farm & Garden is a sanctuary for unique botanicals and a testament to our family's dedication to sustainable agriculture.
           </p>
         </div>
       </section>
 
-      {/* The Story of the Garden Section */}
-      <TeaserSection className="overflow-hidden">
-        <div className="grid md:grid-cols-5 gap-12 items-center">
-          <div
-            ref={storyAnimation.ref}
-            className={`md:col-span-2 fade-in-scroll slide-in-left ${storyAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <ImageWrapper 
-              src="https://ik.imagekit.io/offvxi40h/garden-6.jpg" 
-              alt="The highland landscape of our farm"
-              className="max-w-md mx-auto transform rotate-1"
-            />
-          </div>
-          
-          <div
-            className={`md:col-span-3 fade-in-scroll slide-in-right ${storyAnimation.isVisible ? 'visible' : ''}`}
-          >
+      {/* Our Tree Adoption Story Section */}
+      <section 
+        ref={storyAnimation.ref}
+        className={`py-12 md:py-20 transition-all duration-1000 ${storyAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+      >
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 items-center">
+          <div className="md:w-1/2">
             <h2 
-              className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
-              style={{ fontFamily: 'Caveat, cursive' }}
-            >
-              Stewarding this sacred ground
-            </h2>
-            <p 
-              className="text-base text-[hsl(var(--stone))] mb-4 leading-relaxed"
-              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-            >
-              When we first walked this land, we could feel its potential humming beneath our feet. 
-              The soil here has been enriched by volcanic activity for millennia, creating the perfect 
-              conditions for fruit trees to flourish.
-            </p>
-            <p 
-              className="text-base text-[hsl(var(--stone))] leading-relaxed"
-              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-            >
-              Our approach isn't about conquering nature—it's about partnering with it. Each tree we 
-              tend is both a commitment to this ecosystem and a bridge connecting distant hearts 
-              to our highland home.
-            </p>
-          </div>
-        </div>
-      </TeaserSection>
-
-      {/* Tree Adoption Concept Section */}
-      <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
-        <div className="grid md:grid-cols-5 gap-12 items-center">
-          <div
-            ref={conceptAnimation.ref}
-            className={`order-2 md:order-2 md:col-span-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <ImageWrapper 
-              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
-              alt="A young tree being tended in our garden"
-              className="max-w-md mx-auto transform -rotate-2"
-            />
-          </div>
-          
-          <div
-            className={`order-1 md:order-1 md:col-span-3 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <h2 
-              className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
+              className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))] leading-tight"
               style={{ fontFamily: 'Caveat, cursive' }}
             >
               Our Tree Adoption Story
             </h2>
             <p 
-              className="text-base text-[hsl(var(--stone))] mb-4 leading-relaxed"
+              className="mb-6 text-[hsl(var(--stone))] text-lg leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
-              The idea came to us during harvest season, when we realized how much joy each tree 
-              brought us throughout the year. Why not share that connection? Why not let others 
-              experience the quiet magic of watching a tree grow, season by season?
+              The Lovable Farm & Garden is more than just land; it's a promise to the future. We believe that every tree planted is a step towards a greener, more sustainable world. Our adoption program invites you to be a part of this journey. When you adopt a tree, you're not just getting a plant; you're nurturing a legacy.
             </p>
             <p 
-              className="text-base text-[hsl(var(--stone))] leading-relaxed"
+              className="text-[hsl(var(--stone))] text-lg leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
-              When you adopt one of our trees, you're not just buying fruit—you're joining a story. 
-              You'll follow your tree's unique life cycle journal, from pruning to flowering to harvest, 
-              creating a tangible connection to this land even from afar.
+              Each tree has a unique story, a connection to the land and the community. Your adoption helps us continue our work, from maintaining the groves to supporting local biodiversity. It's a gift that grows, offering beauty, shade, and a tangible connection to nature's cycle.
             </p>
           </div>
+          <div className="md:w-1/2">
+            <ImageWrapper 
+              src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg"
+              alt="Hands holding a young sapling in rich soil"
+              className="rounded-lg shadow-lg overflow-hidden"
+            />
+          </div>
         </div>
-      </TeaserSection>
+      </section>
 
-      {/* How It Works Section */}
-      <TeaserSection className="mt-[-4rem] md:mt-[-6rem] overflow-hidden">
-        <div 
-          ref={howItWorksAnimation.ref}
-          className={`text-center fade-in-scroll ${howItWorksAnimation.isVisible ? 'visible' : ''}`}
-        >
+      {/* The Concept Section */}
+      <section 
+        ref={conceptAnimation.ref}
+        className={`py-12 md:py-20 bg-[hsl(var(--stone-light))] transition-all duration-1000 ${conceptAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+      >
+        <div className="max-w-4xl mx-auto text-center">
           <h2 
-            className="text-3xl md:text-4xl mb-12 text-[hsl(var(--text-primary))]"
+            className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))] leading-tight"
             style={{ fontFamily: 'Caveat, cursive' }}
           >
-            How It Works
+            A Digital Garden with Real Roots
           </h2>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[hsl(var(--text-accent))] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl ui-text">1</span>
-              </div>
-              <h3 className="text-xl mb-2 text-[hsl(var(--text-primary))]">Choose Your Tree</h3>
-              <p 
-                className="text-sm text-[hsl(var(--stone))] leading-relaxed"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                Browse our living library and select an avocado, mango, or durian tree that speaks to you.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[hsl(var(--text-accent))] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl ui-text">2</span>
-              </div>
-              <h3 className="text-xl mb-2 text-[hsl(var(--text-primary))]">Follow Its Journey</h3>
-              <p 
-                className="text-sm text-[hsl(var(--stone))] leading-relaxed"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                Receive regular updates with photos and stories as your tree grows through the seasons.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-[hsl(var(--text-accent))] rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-white font-bold text-xl ui-text">3</span>
-              </div>
-              <h3 className="text-xl mb-2 text-[hsl(var(--text-primary))]">Share the Harvest</h3>
-              <p 
-                className="text-sm text-[hsl(var(--stone))] leading-relaxed"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                When harvest time comes, enjoy the fruits of your tree's labor shipped fresh to you.
-              </p>
-            </div>
-          </div>
-        </div>
-      </TeaserSection>
-
-      {/* Tree Category Showcase Section */}
-      <section className="py-16">
-        <div className="max-w-6xl mx-auto">
-          <div 
-            ref={showcaseAnimation.ref}
-            className={`text-center mb-16 fade-in-scroll ${showcaseAnimation.isVisible ? 'visible' : ''}`}
+          <p 
+            className="text-lg text-[hsl(var(--stone))] leading-relaxed"
+            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
           >
+            Our program bridges the digital and natural worlds. You adopt a tree online and receive updates on its growth, but the tree itself thrives here on our farm. It's a tangible link to your contribution, a piece of nature you can call your own, cared for by our expert hands.
+          </p>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <TeaserSection />
+
+      {/* Tree Showcase Section */}
+      <section 
+        ref={showcaseAnimation.ref}
+        className={`py-12 md:py-20 transition-all duration-1000 ${showcaseAnimation.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-2xl mx-auto mb-12">
             <h2 
-              className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]"
+              className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))] leading-tight"
               style={{ fontFamily: 'Caveat, cursive' }}
             >
-              Which Tree Will You Nurture?
+              Choose Your Tree
             </h2>
             <p 
-              className="text-lg text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed"
+              className="text-lg text-[hsl(var(--stone))] leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
-              Our avocados, mangos, and durians are more than just trees—they are living journals. Find the one that speaks to you and begin following its journey.
+              From the fragrant Camellia to the resilient Juniper, each tree has its own character. Find the one that resonates with you.
             </p>
           </div>
 
@@ -220,9 +136,9 @@ const FarmAndGarden = () => {
             </Link>
             <Link 
               to="/connect" 
-              className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
+              className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center hover:bg-[hsl(var(--text-accent))] hover:text-white"
             >
-              Ask Questions
+              Ask a Question
             </Link>
           </div>
         </div>
@@ -231,5 +147,4 @@ const FarmAndGarden = () => {
   );
 };
 
-export default FarmAndGarden;
 export default FarmAndGarden;
