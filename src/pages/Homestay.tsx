@@ -18,7 +18,7 @@ const Homestay = () => {
         <header className="relative text-center mb-16 md:mb-24 overflow-hidden h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
           {/* Background Image - TODO: Replace with the direct image link for the homestay */}
           <div
-            className="absolute inset-0 bg-contain bg-no-repeat bg-center"
+            className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url('https://ik.imagekit.io/offvxi40h/our-farmstay.jpg?tr=w-1200,q-80')` }}
           ></div>
           {/* Overlay for readability */}
