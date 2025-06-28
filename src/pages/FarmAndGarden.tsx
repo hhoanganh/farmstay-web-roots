@@ -41,7 +41,7 @@ const FarmAndGarden = () => {
             className={`md:col-span-2 fade-in-scroll slide-in-left ${storyAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
-              src="https://images.unsplash.com/photo-1472396961693-142e6e269027" 
+              src="https://ik.imagekit.io/offvxi40h/garden-6.jpg" 
               alt="The highland landscape of our farm"
               className="max-w-md mx-auto transform rotate-1"
             />
@@ -84,7 +84,7 @@ const FarmAndGarden = () => {
             className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
-              src="https://images.unsplash.com/photo-1493962853295-0fd70327578a" 
+              src="https://ik.imagekit.io/offvxi40h/garden-2.jpg" 
               alt="A young tree being tended in our garden"
               className="max-w-md mx-auto transform -rotate-2"
             />

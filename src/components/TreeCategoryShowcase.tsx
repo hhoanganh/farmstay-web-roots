@@ -22,7 +22,7 @@ const TreeCategoryShowcase = () => {
           <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-0">
             <div className="w-full md:w-3/5 z-0">
               <ImageWrapper 
-                src="https://ik.imagekit.io/offvxi40h/avocado-2.jpg" 
+                src="https://ik.imagekit.io/offvxi40h/avocado-1.jpg" 
                 alt="Avocado trees in our highland orchard"
                 className="w-full max-w-sm mx-auto transform rotate-1 group-hover:rotate-2 transition-transform duration-300"
               />
