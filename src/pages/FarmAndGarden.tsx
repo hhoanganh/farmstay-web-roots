@@ -209,32 +209,6 @@ const FarmAndGarden = () => {
           <TreeCategoryShowcase />
         </div>
       </section>
-
-      {/* Call to Action */}
-      <section className="text-center border-t border-[hsl(var(--stone))] border-opacity-20 py-12 mb-12">
-        <div className="max-w-2xl mx-auto">
-          <h2 
-            className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            Begin your tree's story
-          </h2>
-          <div className="flex justify-center gap-4 flex-wrap">
-            <Link 
-              to="/farm-and-garden/trees" 
-              className="inline-block bg-[hsl(var(--text-accent))] text-white px-8 py-3 rounded-md transition-opacity ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
-            >
-              Browse All Trees
-            </Link>
-            <Link 
-              to="/connect" 
-              className="inline-block bg-transparent border border-[hsl(var(--text-accent))] text-[hsl(var(--text-accent))] px-8 py-3 rounded-md transition-colors ui-text font-medium focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 min-h-[44px] flex items-center"
-            >
-              Ask Questions
-            </Link>
-          </div>
-        </div>
-      </section>
     </main>
   );
 };
