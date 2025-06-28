@@ -44,7 +44,10 @@ const Homepage = () => {
             >
               Our journal begins here
             </h1>
-            <p className="text-base md:text-xl max-w-2xl mx-auto leading-relaxed ui-text">
+            <p 
+              className="text-base md:text-xl max-w-2xl mx-auto leading-relaxed"
+              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+            >
               When we first found this land in Lâm Hà, we knew it held stories waiting to be shared. 
               Welcome to our corner of Vietnam's Central Highlands, where every sunrise brings new discoveries.
             </p>
@@ -72,10 +75,16 @@ const Homepage = () => {
               <div 
                 className={`fade-in-scroll slide-in-right ${homestayAnimation.isVisible ? 'visible' : ''}`}
               >
-                <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
+                <h3 
+                  className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
                   Rest among the coffee trees
                 </h3>
-                <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
+                <p 
+                  className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed"
+                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                >
                   Our rooms are simple sanctuaries where the mountain air flows freely and the sound of rustling leaves 
                   becomes your lullaby. Each space tells its own story of comfort and connection to the land.
                 </p>
@@ -107,10 +116,16 @@ const Homepage = () => {
             <div 
               className={`md:order-1 fade-in-scroll slide-in-left ${farmAnimation.isVisible ? 'visible' : ''}`}
             >
-              <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
+              <h3 
+                className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
                 Our Living Garden & Tree Rentals
               </h3>
-              <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
+              <p 
+                className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed"
+                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+              >
                 Our garden is a vibrant ecosystem of local flora. We also offer a unique service where you can rent a tree, 
                 follow its growth, and enjoy its harvest. It's a special way to connect with the land, even from afar.
               </p>
@@ -141,10 +156,16 @@ const Homepage = () => {
             <div 
               className={`fade-in-scroll slide-in-right ${journalAnimation.isVisible ? 'visible' : ''}`}
             >
-              <h3 className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]">
+              <h3 
+                className="text-3xl md:text-4xl mb-4 text-[hsl(var(--text-primary))]"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
                 Stories from the field
               </h3>
-              <p className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed">
+              <p 
+                className="text-lg text-[hsl(var(--stone))] mb-6 leading-relaxed"
+                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+              >
                 Every day brings new moments worth capturing. From the first harvest of the season to quiet mornings 
                 watching the mist roll over the valley, these are the stories that make this place alive.
               </p>

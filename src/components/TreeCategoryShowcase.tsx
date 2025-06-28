@@ -31,7 +31,10 @@ const TreeCategoryShowcase = () => {
             <div className="w-full md:w-3/5 md:-ml-24 z-10 -translate-x-2 md:translate-x-0">
               <div className="bg-[hsl(var(--paper))] p-6 shadow-lg transform -rotate-1 group-hover:rotate-0 group-hover:shadow-xl group-hover:scale-105 transition-all duration-300" 
                    style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))' }}>
-                <h3 className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]">
+                <h3 
+                  className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
                   Avocado Trees
                 </h3>
                 <p className="text-sm text-[hsl(var(--stone))] leading-relaxed mb-4" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
@@ -64,7 +67,10 @@ const TreeCategoryShowcase = () => {
             <div className="w-full md:w-3/5 md:-mr-24 z-10 translate-x-2 md:translate-x-0">
               <div className="bg-[hsl(var(--paper))] p-6 shadow-lg transform rotate-2 group-hover:rotate-1 group-hover:shadow-xl group-hover:scale-105 transition-all duration-300" 
                    style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))' }}>
-                <h3 className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]">
+                <h3 
+                  className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
                   Mango Trees
                 </h3>
                 <p className="text-sm text-[hsl(var(--stone))] leading-relaxed mb-4" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
@@ -111,7 +117,10 @@ const TreeCategoryShowcase = () => {
             <div className="w-full md:w-3/5 md:-ml-20 z-10 -translate-x-2 md:translate-x-0">
               <div className="bg-[hsl(var(--paper))] p-6 shadow-lg transform -rotate-2 group-hover:-rotate-1 group-hover:shadow-xl group-hover:scale-105 transition-all duration-300" 
                    style={{ filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1))' }}>
-                <h3 className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]">
+                <h3 
+                  className="text-2xl md:text-3xl mb-4 text-[hsl(var(--text-primary))]"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
                   Durian Trees
                 </h3>
                 <p className="text-sm text-[hsl(var(--stone))] leading-relaxed mb-4" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>

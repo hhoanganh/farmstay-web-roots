@@ -22,7 +22,10 @@ const Homestay = () => {
           >
             Our Sanctuaries
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed ui-text text-[hsl(var(--stone))]">
+          <p 
+            className="text-lg md:text-xl max-w-2xl mx-auto leading-relaxed text-[hsl(var(--stone))]"
+            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+          >
             Here, every room tells a story, a quiet corner crafted for connection—with nature, with yourself, and with the rhythm of the farm. We've poured our hearts into creating spaces where you can truly unwind and feel at home.
           </p>
         </section>

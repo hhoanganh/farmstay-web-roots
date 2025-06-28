@@ -60,7 +60,7 @@ const RoomStorySection = ({
             {/* Highlights */}
             <div className="space-y-3">
               <h3 
-                className="text-xl text-[hsl(var(--text-primary))] font-medium ui-text"
+                className="text-xl text-[hsl(var(--text-primary))] font-medium"
                 style={{ fontFamily: 'Caveat, cursive' }}
               >
                 What makes this special:

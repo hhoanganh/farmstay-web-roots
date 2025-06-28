@@ -17,7 +17,10 @@ const CallToActionSection = ({ heading, children, animationRef, isVisible }: Cal
         ref={animationRef} 
         className={`max-w-2xl mx-auto fade-in-scroll ${isVisible ? 'visible' : ''}`}
       >
-        <h2 className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]">
+        <h2 
+          className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]"
+          style={{ fontFamily: 'Caveat, cursive' }}
+        >
           {heading}
         </h2>
         <div className="flex justify-center gap-4 flex-wrap">
