@@ -66,7 +66,7 @@ const JournalFeed = () => {
       title: 'Building the New Greenhouse',
       content: 'We broke ground on our new greenhouse this week. It will be a place where we can nurture seedlings through the cooler highland months and experiment with growing techniques...',
       slug: 'building-new-greenhouse',
-      image_url: 'https://ik.imagekit.io/offvxi40h/build-house.jpg?tr=w-800,q-80',
+      image_url: 'https://ik.imagekit.io/offvxi40h/new-greenhouse.jpg?tr=w-800,q-80',
       created_at: '2024-11-25T10:15:00Z'
     },
     {
