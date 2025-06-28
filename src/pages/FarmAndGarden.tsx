@@ -186,13 +186,13 @@ const FarmAndGarden = () => {
               className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]"
               style={{ fontFamily: 'Caveat, cursive' }}
             >
-              A Living Library
+              Which Tree Will You Nurture?
             </h2>
             <p 
               className="text-lg text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed"
               style={{ fontFamily: 'IBM Plex Mono, monospace' }}
             >
-              Each type of tree offers its own unique character and gifts. Choose the one that calls to you.
+              Our avocados, mangos, and durians are more than just trees—they are living journals. Find the one that speaks to you and begin following its journey.
             </p>
           </div>
 
