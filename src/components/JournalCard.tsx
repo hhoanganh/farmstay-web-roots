@@ -75,7 +75,7 @@ const JournalCard = ({ article }: JournalCardProps) => {
         {/* Read More Link */}
         <Link
           to={`/experiences/journal/${article.slug}`}
-          className="inline-flex items-center gap-2 text-[hsl(var(--text-accent))] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-2 py-2 min-h-[44px]"
+          className="inline-flex items-center gap-2 text-[hsl(var(--text-accent))] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px]"
           style={{ fontFamily: 'Inter, sans-serif' }}
         >
           Read More
