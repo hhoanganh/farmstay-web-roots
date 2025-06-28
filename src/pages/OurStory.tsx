@@ -15,7 +15,7 @@ const OurStory = () => {
     // The bottom padding was removed to ensure consistent spacing with the footer across all pages.
     <div className="px-4 pt-16 md:pt-24">
       <div className="max-w-6xl mx-auto"> 
-        <header className="relative text-center mb-12 md:mb-16 overflow-hidden min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+        <header className="relative text-center mb-12 md:mb-16 overflow-hidden h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
           {/* Background Image */}
           <div
             className="absolute inset-0 bg-cover bg-center"

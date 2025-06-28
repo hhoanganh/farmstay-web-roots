@@ -15,7 +15,7 @@ const Homestay = () => {
     <div className="px-4 pt-16 md:pt-24">
       <div className="max-w-6xl mx-auto">
         {/* Page Introduction Section */}
-        <header className="relative text-center mb-16 md:mb-24 overflow-hidden h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
+        <header className="relative text-center mb-12 md:mb-16 overflow-hidden h-[40vh] md:h-[50vh] min-h-[300px] flex items-center justify-center rounded-lg shadow-lg">
           {/* Background Image - TODO: Replace with the direct image link for the homestay */}
           <div
             className="absolute inset-0 bg-cover bg-center"
