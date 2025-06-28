@@ -84,7 +84,7 @@ const FarmAndGarden = () => {
         <div className="grid md:grid-cols-5 gap-12 items-center">
           <div
             ref={conceptAnimation.ref}
-            className={`md:col-span-2 md:order-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
+            className={`order-2 md:order-2 md:col-span-2 fade-in-scroll slide-in-right ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <ImageWrapper 
               src="https://ik.imagekit.io/offvxi40h/adoption-1.jpg" 
@@ -94,7 +94,7 @@ const FarmAndGarden = () => {
           </div>
           
           <div
-            className={`md:col-span-3 md:order-1 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
+            className={`order-1 md:order-1 md:col-span-3 fade-in-scroll slide-in-left ${conceptAnimation.isVisible ? 'visible' : ''}`}
           >
             <h2 
               className="text-3xl md:text-4xl mb-6 text-[hsl(var(--text-primary))]"
@@ -232,4 +232,5 @@ const FarmAndGarden = () => {
   );
 };
 
+export default FarmAndGarden;
 export default FarmAndGarden;
