@@ -1,4 +1,6 @@
 
+// ABOUTME: This component displays a placeholder for an interactive map.
+// ABOUTME: It shows the physical location of the farmstay.
 const StatelessMap = () => {
   return (
     <div className="w-full">

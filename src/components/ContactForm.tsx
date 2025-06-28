@@ -1,4 +1,6 @@
 
+// ABOUTME: This component provides a form for users to send a message.
+// ABOUTME: It captures name, email, and message, and is ready for backend integration.
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';

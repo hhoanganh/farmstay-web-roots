@@ -1,4 +1,6 @@
 
+// ABOUTME: This component displays static contact information like phone, email, and address.
+// ABOUTME: It also includes links to social media profiles.
 import { Mail, Phone } from 'lucide-react';
 
 const ContactDetails = () => {
