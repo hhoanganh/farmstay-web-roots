@@ -1,9 +1,11 @@
 
 // ABOUTME: This component is the universal site footer.
 // ABOUTME: It contains copyright information and navigation links.
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { useAuthSession } from '@/hooks/useAuthSession';
 
 const Footer = () => {
+  const { session, handleLogout } = useAuthSession();
   return (
     <footer className="bg-[hsl(var(--background-primary))] py-8 px-4 border-t border-[hsl(var(--stone))] border-opacity-20">
       <div className="max-w-6xl mx-auto">
@@ -30,12 +32,21 @@ const Footer = () => {
             >
               Contact
             </Link>
-            <Link 
-              to="/login" 
-               className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-4 py-4 min-h-[44px] inline-flex items-center justify-center"
-            >
-              Staff Login
-            </Link>
+            {session ? (
+              <button
+                onClick={handleLogout}
+                className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-4 py-4 min-h-[44px] inline-flex items-center justify-center"
+              >
+                Log Out
+              </button>
+            ) : (
+              <Link
+                to="/login"
+                className="text-xs text-[hsl(var(--stone))] opacity-60 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-4 py-4 min-h-[44px] inline-flex items-center justify-center"
+              >
+                Staff Login
+              </a >
+            )}
 
             <div className="hidden md:block w-px h-4 bg-[hsl(var(--stone))] opacity-30" aria-hidden="true"></div>
 
