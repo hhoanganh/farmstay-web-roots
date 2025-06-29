@@ -1,4 +1,6 @@
 
+// ABOUTME: This file defines the staff login page.
+// ABOUTME: It provides a secure gateway for staff to access the admin portal.
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
