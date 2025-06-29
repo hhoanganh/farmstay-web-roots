@@ -16,9 +16,20 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [activeView, setActiveView] = useState('dashboard');
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    // Prevent multiple logout attempts
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error("Error logging out:", error.message);
+      // A toast notification could be added here for the user
+    }
+
     // The AuthProvider will automatically update the session to null.
     // The ProtectedRoute component will then redirect the user to the login page.
     // A direct navigation call ensures faster UI feedback.
@@ -70,10 +81,11 @@ const AdminDashboard = () => {
               </h1>
               <Button 
                 onClick={handleLogout}
+                disabled={isLoggingOut}
                 variant="outline"
                 className="border-[hsl(var(--border-primary))]"
               >
-                Logout
+                {isLoggingOut ? 'Logging out...' : 'Logout'}
               </Button>
             </div>
 
