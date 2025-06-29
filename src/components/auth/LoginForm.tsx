@@ -122,7 +122,7 @@ export const LoginForm = () => {
       <div className="text-center mt-6">
         <a
           href="#"
-          className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] rounded px-1 py-1 ui-text"
+          className="text-sm text-[hsl(var(--stone))] hover:text-[hsl(var(--text-accent))] transition-colors focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] rounded-sm px-3 py-2 min-h-[44px] inline-flex items-center justify-center ui-text"
           onClick={(e) => {
             e.preventDefault();
             toast({
