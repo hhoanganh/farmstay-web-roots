@@ -1,8 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthSession } from '@/hooks/useAuthSession';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { WelcomeSection } from '@/components/dashboard/WelcomeSection';
 import { MetricsSection } from '@/components/dashboard/MetricsSection';
@@ -12,33 +12,41 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminDashboard = () => {
-  const { session, handleLogout } = useAuthSession();
+  const { session } = useAuth();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [activeView, setActiveView] = useState('dashboard');
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    // The AuthProvider will automatically update the session to null.
+    // The ProtectedRoute component will then redirect the user to the login page.
+    // A direct navigation call ensures faster UI feedback.
+    navigate('/login', { replace: true });
+  };
+
   useEffect(() => {
-    if (!session) {
-      navigate('/login');
-      return;
+    // If a session exists, fetch the user's profile.
+    // If the session becomes null (e.g., after logout), clear the user profile.
+    if (session) {
+      const fetchUserProfile = async () => {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (data) {
+          setUserProfile(data);
+        }
+      };
+      fetchUserProfile();
+    } else {
+      setUserProfile(null);
     }
+  }, [session]);
 
-    const fetchUserProfile = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-      
-      if (data) {
-        setUserProfile(data);
-      }
-    };
-
-    fetchUserProfile();
-  }, [session, navigate]);
-
-  if (!session || !userProfile) {
+  if (!userProfile) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
