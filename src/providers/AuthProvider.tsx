@@ -7,6 +7,7 @@ import { Session } from '@supabase/supabase-js';
 // Define the shape of your context data
 interface AuthContextType {
   session: Session | null;
+  userProfile: any | null;
 }
 
 // Create the context with a default undefined value
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Create the Provider component
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
+  const [userProfile, setUserProfile] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -33,9 +35,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
+  // When the session changes, fetch the user's profile
+  useEffect(() => {
+    if (session?.user) {
+      // Don't set loading to true here to avoid a full page reload flicker on simple profile updates
+      supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single()
+        .then(({ data }) => {
+          setUserProfile(data ?? null);
+          setIsLoading(false); // Set loading to false after the first profile fetch
+        });
+    } else {
+      // If there is no session, clear the profile and stop loading
+      setUserProfile(null);
+      setIsLoading(false);
+    }
+  }, [session]);
+
   // While loading the session, render the children only when loading is complete.
   return (
-    <AuthContext.Provider value={{ session }}>
+    <AuthContext.Provider value={{ session, userProfile }}>
       {!isLoading && children}
     </AuthContext.Provider>
   );

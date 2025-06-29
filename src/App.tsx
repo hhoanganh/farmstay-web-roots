@@ -58,14 +58,19 @@ const App = () => (
           <Route path="login" element={<Login />} />
 
           {/* Admin routes (protected) */}
-          <Route element={<ProtectedRoute />}>
+          {/* Routes accessible to both admin and staff */}
+          <Route element={<ProtectedRoute allowedRoles={['admin', 'staff']} />}>
             {/* Admin dashboard uses its own layout */}
             <Route path="admin/dashboard" element={<AdminDashboard />} />
-            
-            {/* Other admin routes with shared layout */}
             <Route path="admin" element={<Layout />}>
               <Route path="bookings" element={<AdminBookings />} />
               <Route path="trees" element={<AdminTrees />} />
+            </Route>
+          </Route>
+
+          {/* Routes accessible only to admin */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="admin" element={<Layout />}>
               <Route path="content/pages" element={<AdminPages />} />
               <Route path="content/journal" element={<AdminJournal />} />
               <Route path="settings/staff" element={<AdminStaff />} />

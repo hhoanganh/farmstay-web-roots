@@ -12,9 +12,8 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminDashboard = () => {
-  const { session } = useAuth();
+  const { userProfile } = useAuth();
   const navigate = useNavigate();
-  const [userProfile, setUserProfile] = useState<any>(null);
   const [activeView, setActiveView] = useState('dashboard');
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -35,27 +34,6 @@ const AdminDashboard = () => {
     // A direct navigation call ensures faster UI feedback.
     navigate('/login', { replace: true });
   };
-
-  useEffect(() => {
-    // If a session exists, fetch the user's profile.
-    // If the session becomes null (e.g., after logout), clear the user profile.
-    if (session) {
-      const fetchUserProfile = async () => {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (data) {
-          setUserProfile(data);
-        }
-      };
-      fetchUserProfile();
-    } else {
-      setUserProfile(null);
-    }
-  }, [session]);
 
   if (!userProfile) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
