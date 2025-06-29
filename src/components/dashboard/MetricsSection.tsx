@@ -15,26 +15,38 @@ export function MetricsSection() {
       const today = new Date().toISOString().split('T')[0];
       
       // Today's bookings (check-ins and check-outs)
-      const { data: bookingsData } = await supabase
+      const { count: todayBookingsCount } = await supabase
         .from('bookings')
-        .select('*')
+        .select('*', { count: 'exact', head: true })
         .or(`check_in_date.eq.${today},check_out_date.eq.${today}`);
 
       // Available rooms (not currently booked)
-      const { data: roomsData } = await supabase
+      // 1. Get total number of rooms
+      const { count: totalRoomsCount } = await supabase
         .from('rooms')
-        .select('*');
+        .select('*', { count: 'exact', head: true });
+
+      // 2. Get IDs of rooms that are currently booked today
+      const { data: activeBookings } = await supabase
+        .from('bookings')
+        .select('room_id')
+        .eq('booking_status', 'confirmed')
+        .lte('check_in_date', today) // Booking started on or before today
+        .gt('check_out_date', today); // Booking ends after today
+      
+      const bookedRoomIds = activeBookings ? [...new Set(activeBookings.map((b: any) => b.room_id))] : [];
+      const availableRoomsCount = (totalRoomsCount || 0) - bookedRoomIds.length;
 
       // Available trees
-      const { data: treesData } = await supabase
+      const { count: availableTreesCount } = await supabase
         .from('trees')
-        .select('*')
+        .select('*', { count: 'exact', head: true })
         .eq('status', 'available');
 
       setMetrics({
-        todayBookings: bookingsData?.length || 0,
-        availableRooms: roomsData?.length || 0,
-        availableTrees: treesData?.length || 0,
+        todayBookings: todayBookingsCount || 0,
+        availableRooms: availableRoomsCount < 0 ? 0 : availableRoomsCount,
+        availableTrees: availableTreesCount || 0,
       });
     };
 
