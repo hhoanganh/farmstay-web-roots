@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
+// Login and Logout handle
+import { AuthProvider } from '@/providers/AuthProvider';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Public pages
 import Index from "./pages/Index";
@@ -29,6 +32,22 @@ import AdminJournal from "./pages/admin/content/Journal";
 import AdminStaff from "./pages/admin/settings/Staff";
 
 import NotFound from "./pages/NotFound";
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider> {/* Wrap your entire app with the AuthProvider */}
+        {/* Your Header, Main Content, and Footer components go here */}
+        {/* For example: */}
+        {/* <Header /> */}
+        {/* <main> */}
+        {/* <Routes> ... your routes ... </Routes> */}
+        {/* </main> */}
+        {/* <Footer /> */}
+      </AuthProvider>
+    </Router>
+  );
+}
 
 const queryClient = new QueryClient();
 
