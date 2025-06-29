@@ -12,38 +12,33 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 
 const AdminDashboard = () => {
-  // Destructure the new `loading` state from our hook
-  const { session, loading, handleLogout } = useAuthSession();
+  const { session, handleLogout } = useAuthSession();
   const navigate = useNavigate();
   const [userProfile, setUserProfile] = useState<any>(null);
-  // ... rest of your state
+  const [activeView, setActiveView] = useState('dashboard');
 
   useEffect(() => {
-    // This effect now correctly waits for the initial auth check to complete
-    if (!loading && !session) {
+    if (!session) {
       navigate('/login');
       return;
     }
 
-    if (session) {
-      const fetchUserProfile = async () => {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        if (data) {
-          setUserProfile(data);
-        }
-      };
+    const fetchUserProfile = async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (data) {
+        setUserProfile(data);
+      }
+    };
 
-      fetchUserProfile();
-    }
-  }, [session, loading, navigate]);
+    fetchUserProfile();
+  }, [session, navigate]);
 
-  // Use the loading state for a proper loading screen
-  if (loading || !userProfile) {
+  if (!session || !userProfile) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
