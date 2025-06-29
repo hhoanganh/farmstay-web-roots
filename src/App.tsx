@@ -20,6 +20,7 @@ import Connect from "./pages/Connect";
 
 // Auth and Admin pages
 import Login from "./pages/auth/Login";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminTrees from "./pages/admin/Trees";
@@ -56,16 +57,19 @@ const App = () => (
           {/* Auth routes without layout */}
           <Route path="login" element={<Login />} />
 
-          {/* Admin routes - dashboard uses its own layout */}
-          <Route path="admin/dashboard" element={<AdminDashboard />} />
-          
-          {/* Other admin routes with shared layout */}
-          <Route path="admin" element={<Layout />}>
-            <Route path="bookings" element={<AdminBookings />} />
-            <Route path="trees" element={<AdminTrees />} />
-            <Route path="content/pages" element={<AdminPages />} />
-            <Route path="content/journal" element={<AdminJournal />} />
-            <Route path="settings/staff" element={<AdminStaff />} />
+          {/* Admin routes (protected) */}
+          <Route element={<ProtectedRoute />}>
+            {/* Admin dashboard uses its own layout */}
+            <Route path="admin/dashboard" element={<AdminDashboard />} />
+            
+            {/* Other admin routes with shared layout */}
+            <Route path="admin" element={<Layout />}>
+              <Route path="bookings" element={<AdminBookings />} />
+              <Route path="trees" element={<AdminTrees />} />
+              <Route path="content/pages" element={<AdminPages />} />
+              <Route path="content/journal" element={<AdminJournal />} />
+              <Route path="settings/staff" element={<AdminStaff />} />
+            </Route>
           </Route>
 
           {/* Catch-all route */}
