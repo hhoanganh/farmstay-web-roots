@@ -1,6 +1,7 @@
 
 // ABOUTME: This component is the universal site footer.
 // ABOUTME: It contains copyright information and navigation links.
+
 import { Link } from 'react-router-dom';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
