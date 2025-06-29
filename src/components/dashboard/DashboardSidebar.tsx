@@ -1,4 +1,5 @@
-
+// ABOUTME: This component defines the navigation sidebar for the admin dashboard.
+// ABOUTME: It displays different menu items based on the user's role.
 import { Home, Calendar, TreePine, Settings, Users } from 'lucide-react';
 import {
   Sidebar,
@@ -58,7 +59,7 @@ export function DashboardSidebar({ activeView, setActiveView, userRole }: Dashbo
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {userRole === 'owner' && (
+        {userRole === 'admin' && (
           <SidebarGroup>
             <SidebarGroupLabel className="text-sm text-[hsl(var(--text-secondary))]">
               Owner Only

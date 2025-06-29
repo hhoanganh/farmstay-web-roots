@@ -1,4 +1,5 @@
-
+// ABOUTME: This component displays a grid of quick-action buttons on the dashboard.
+// ABOUTME: It shows different tasks based on the user's role (admin vs. staff).
 import { useState } from 'react';
 import { Calendar, TreePine, Book, Settings, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -56,7 +57,7 @@ export function QuickTasksSection({ userRole }: QuickTasksSectionProps) {
     },
   ];
 
-  const allTasks = userRole === 'owner' ? [...staffTasks, ...ownerTasks] : staffTasks;
+  const allTasks = userRole === 'admin' ? [...staffTasks, ...ownerTasks] : staffTasks;
 
   return (
     <div>
@@ -95,7 +96,7 @@ export function QuickTasksSection({ userRole }: QuickTasksSectionProps) {
         open={openModal === 'tree-update'} 
         onClose={() => setOpenModal(null)} 
       />
-      {userRole === 'owner' && (
+      {userRole === 'admin' && (
         <>
           <ArticleModal 
             open={openModal === 'article'} 

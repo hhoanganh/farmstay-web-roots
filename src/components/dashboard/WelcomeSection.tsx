@@ -1,4 +1,5 @@
-
+// ABOUTME: This component displays a personalized greeting on the admin dashboard.
+// ABOUTME: It shows the user's name and their role within the farmstay.
 interface WelcomeSectionProps {
   userProfile: {
     full_name?: string;
@@ -18,7 +19,7 @@ export function WelcomeSection({ userProfile }: WelcomeSectionProps) {
         Welcome back, {displayName}.
       </p>
       <p className="text-sm text-[hsl(var(--text-secondary))]">
-        Role: {userProfile.role === 'owner' ? 'Farm Owner' : 'Staff Member'}
+        Role: {userProfile.role === 'admin' ? 'Farmstay Owner' : 'Farmstay Staff'}
       </p>
       <p 
         className="text-sm text-[hsl(var(--text-secondary))] mt-2"
