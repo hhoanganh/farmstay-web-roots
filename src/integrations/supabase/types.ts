@@ -39,6 +39,44 @@ export type Database = {
         }
         Relationships: []
       }
+      bookings: {
+        Row: {
+          booking_status: string
+          check_in_date: string
+          check_out_date: string
+          created_at: string | null
+          guest_id: string
+          id: string
+          room_id: string
+        }
+        Insert: {
+          booking_status?: string
+          check_in_date: string
+          check_out_date: string
+          created_at?: string | null
+          guest_id: string
+          id?: string
+          room_id: string
+        }
+        Update: {
+          booking_status?: string
+          check_in_date?: string
+          check_out_date?: string
+          created_at?: string | null
+          guest_id?: string
+          id?: string
+          room_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -125,29 +163,32 @@ export type Database = {
       trees: {
         Row: {
           created_at: string | null
+          current_renter_id: string | null
           description: string | null
           id: string
           image_url: string | null
           name: string
-          status: Database["public"]["Enums"]["tree_status"] | null
+          status: string | null
           type: string | null
         }
         Insert: {
           created_at?: string | null
+          current_renter_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
           name: string
-          status?: Database["public"]["Enums"]["tree_status"] | null
+          status?: string | null
           type?: string | null
         }
         Update: {
           created_at?: string | null
+          current_renter_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
           name?: string
-          status?: Database["public"]["Enums"]["tree_status"] | null
+          status?: string | null
           type?: string | null
         }
         Relationships: []
@@ -164,7 +205,7 @@ export type Database = {
     }
     Enums: {
       tree_status: "Available" | "Rented"
-      user_role: "owner" | "staff"
+      user_role: "owner" | "staff" | "customer" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -281,7 +322,7 @@ export const Constants = {
   public: {
     Enums: {
       tree_status: ["Available", "Rented"],
-      user_role: ["owner", "staff"],
+      user_role: ["owner", "staff", "customer", "admin"],
     },
   },
 } as const
