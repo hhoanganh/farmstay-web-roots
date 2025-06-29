@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,9 +56,11 @@ const App = () => (
           {/* Auth routes without layout */}
           <Route path="login" element={<Login />} />
 
-          {/* Admin routes with shared layout */}
+          {/* Admin routes - dashboard uses its own layout */}
+          <Route path="admin/dashboard" element={<AdminDashboard />} />
+          
+          {/* Other admin routes with shared layout */}
           <Route path="admin" element={<Layout />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="bookings" element={<AdminBookings />} />
             <Route path="trees" element={<AdminTrees />} />
             <Route path="content/pages" element={<AdminPages />} />
