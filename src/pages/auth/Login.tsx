@@ -26,7 +26,7 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" 
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8" 
          style={{ backgroundColor: 'hsl(var(--background-primary))' }}>
       <Card className="w-full max-w-md border border-[hsl(var(--stone))] border-opacity-20 shadow-lg">
         <CardHeader className="text-center space-y-4">
@@ -40,6 +40,9 @@ const Login = () => {
             >
               Lâm Hà Farmstay
             </h2>
+            <p className="text-xs text-[hsl(var(--stone))] ui-text -mt-1">
+              ← Back to Home
+            </p>
           </a>
           <h1 
             className="text-2xl text-[hsl(var(--text-primary))]"
@@ -52,6 +55,19 @@ const Login = () => {
           <LoginForm />
         </CardContent>
       </Card>
+
+      <div className="mt-6 w-full max-w-md text-center text-sm text-[hsl(var(--stone))] p-4 bg-[hsl(var(--background-secondary))] rounded-lg border border-[hsl(var(--border-primary))]">
+        <h3 
+          className="font-medium text-[hsl(var(--text-primary))] mb-2"
+          style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+        >
+          For Testing Purposes
+        </h3>
+        <div className="space-y-1" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+          <p><strong>Email:</strong> staff@lamhafarmstay.com</p>
+          <p><strong>Password:</strong> staff@lamhafarmstay.com</p>
+        </div>
+      </div>
     </div>
   );
 };
