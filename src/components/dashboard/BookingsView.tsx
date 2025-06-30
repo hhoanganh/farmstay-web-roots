@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Calendar, Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
+import { BookingModal } from './BookingModal';
+import { RoomManagementModal } from './RoomManagementModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 interface BookingsViewProps {
   userRole: string;
@@ -38,6 +41,12 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('rooms');
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [roomModalOpen, setRoomModalOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
 
   useEffect(() => {
     fetchRooms();
@@ -73,6 +82,29 @@ export function BookingsView({ userRole }: BookingsViewProps) {
     return bookings.filter(booking => booking.room_id === roomId);
   };
 
+  const handleAddBooking = () => {
+    setEditingBooking(null);
+    setBookingModalOpen(true);
+  };
+
+  const handleEditBooking = (booking: Booking) => {
+    setEditingBooking(booking);
+    setBookingModalOpen(true);
+  };
+
+  const handleDeleteBooking = (booking: Booking) => {
+    setBookingToDelete(booking);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteBooking = async () => {
+    if (!bookingToDelete) return;
+    await supabase.from('bookings').delete().eq('id', bookingToDelete.id);
+    setDeleteDialogOpen(false);
+    setBookingToDelete(null);
+    fetchBookings();
+  };
+
   const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -95,13 +127,26 @@ export function BookingsView({ userRole }: BookingsViewProps) {
             Manage room bookings and reservations
           </p>
         </div>
-        <Button 
-          className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
-          style={{ fontFamily: 'Inter, sans-serif' }}
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Add New Booking
-        </Button>
+        <div className="flex gap-2">
+          {userRole === 'admin' && (
+            <Button
+              variant="outline"
+              onClick={() => setRoomModalOpen(true)}
+              className="h-12"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Manage Rooms
+            </Button>
+          )}
+          <Button 
+            className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+            onClick={handleAddBooking}
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add New Booking
+          </Button>
+        </div>
       </div>
 
       {/* Search */}
@@ -202,6 +247,34 @@ export function BookingsView({ userRole }: BookingsViewProps) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Booking Modal */}
+      <BookingModal
+        open={bookingModalOpen}
+        onClose={() => setBookingModalOpen(false)}
+        // Pass booking and refresh logic as needed
+      />
+      {/* RoomManagementModal would go here for admin */}
+      {userRole === 'admin' && (
+        <RoomManagementModal
+          open={roomModalOpen}
+          onClose={() => setRoomModalOpen(false)}
+          refreshRooms={fetchRooms}
+        />
+      )}
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Booking</DialogTitle>
+          </DialogHeader>
+          <div>Are you sure you want to delete this booking? This action cannot be undone.</div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={confirmDeleteBooking}>Delete</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

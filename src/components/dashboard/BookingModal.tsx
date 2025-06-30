@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -22,9 +21,11 @@ import { useToast } from '@/hooks/use-toast';
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
+  booking?: any | null;
+  refreshBookings?: () => void;
 }
 
-export function BookingModal({ open, onClose }: BookingModalProps) {
+export function BookingModal({ open, onClose, booking, refreshBookings }: BookingModalProps) {
   const [rooms, setRooms] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState('');
   const [guestName, setGuestName] = useState('');
@@ -38,68 +39,125 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
   useEffect(() => {
     if (open) {
       fetchRooms();
+      if (booking) {
+        setSelectedRoom(booking.room_id || '');
+        setGuestName(booking.customers?.full_name || '');
+        setGuestEmail(booking.customers?.email || '');
+        setCheckInDate(booking.check_in_date ? booking.check_in_date.slice(0, 10) : '');
+        setCheckOutDate(booking.check_out_date ? booking.check_out_date.slice(0, 10) : '');
+        setStatus(booking.booking_status || 'confirmed');
+      } else {
+        setSelectedRoom('');
+        setGuestName('');
+        setGuestEmail('');
+        setCheckInDate('');
+        setCheckOutDate('');
+        setStatus('confirmed');
+      }
     }
-  }, [open]);
+  }, [open, booking]);
 
   const fetchRooms = async () => {
     const { data } = await supabase
       .from('rooms')
       .select('*')
       .order('name');
-    
     if (data) {
       setRooms(data);
     }
   };
 
+  const checkOverlap = async () => {
+    if (!selectedRoom || !checkInDate || !checkOutDate) return false;
+    const { data } = await supabase
+      .from('bookings')
+      .select('*')
+      .eq('room_id', selectedRoom)
+      .neq('id', booking?.id || '')
+      .or(`and(check_in_date,lte.${checkOutDate}),and(check_out_date,gte.${checkInDate})`);
+    return data && data.length > 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    // Validation
+    if (!selectedRoom || !guestName || !checkInDate || !checkOutDate || !status) {
+      toast({ title: 'All fields except email are required.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    if (checkInDate > checkOutDate) {
+      toast({ title: 'Check-in date must be before check-out date.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    // Overlap check
+    const overlap = await checkOverlap();
+    if (overlap) {
+      toast({ title: 'This room is already booked for the selected dates.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
     try {
-      // First create the customer
-      const { data: customerData, error: customerError } = await supabase
-        .from('customers')
-        .insert({
-          full_name: guestName,
-          email: guestEmail,
-        })
-        .select()
-        .single();
-
-      if (customerError) throw customerError;
-
-      // Then create the booking with the customer_id
-      const { error: bookingError } = await supabase
-        .from('bookings')
-        .insert({
-          room_id: selectedRoom,
-          customer_id: customerData.id,
-          guest_id: customerData.id, // Keep guest_id for compatibility
-          check_in_date: checkInDate,
-          check_out_date: checkOutDate,
-          booking_status: status,
-        });
-
-      if (bookingError) throw bookingError;
-
-      toast({
-        title: 'Success',
-        description: 'Booking created successfully',
-      });
-
-      // Reset form
-      setSelectedRoom('');
-      setGuestName('');
-      setGuestEmail('');
-      setCheckInDate('');
-      setCheckOutDate('');
-      setStatus('confirmed');
+      let customerId = booking?.customer_id;
+      // If creating or guest info changed, create/update customer
+      if (!customerId || guestName !== booking?.customers?.full_name || guestEmail !== booking?.customers?.email) {
+        // Try to find existing customer by email
+        let customerData = null;
+        if (guestEmail) {
+          const { data } = await supabase.from('customers').select('*').eq('email', guestEmail).single();
+          customerData = data;
+        }
+        if (!customerData) {
+          // Create new customer
+          const { data: newCustomer, error: customerError } = await supabase
+            .from('customers')
+            .insert({ full_name: guestName, email: guestEmail })
+            .select()
+            .single();
+          if (customerError) throw customerError;
+          customerId = newCustomer.id;
+        } else {
+          customerId = customerData.id;
+        }
+      }
+      if (booking) {
+        // Edit mode
+        const { error } = await supabase
+          .from('bookings')
+          .update({
+            room_id: selectedRoom,
+            customer_id: customerId,
+            guest_id: customerId,
+            check_in_date: checkInDate,
+            check_out_date: checkOutDate,
+            booking_status: status,
+          })
+          .eq('id', booking.id);
+        if (error) throw error;
+        toast({ title: 'Booking updated' });
+      } else {
+        // Create mode
+        const { error } = await supabase
+          .from('bookings')
+          .insert({
+            room_id: selectedRoom,
+            customer_id: customerId,
+            guest_id: customerId,
+            check_in_date: checkInDate,
+            check_out_date: checkOutDate,
+            booking_status: status,
+          });
+        if (error) throw error;
+        toast({ title: 'Booking created' });
+      }
+      if (refreshBookings) refreshBookings();
       onClose();
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to create booking',
+        description: 'Failed to save booking',
         variant: 'destructive',
       });
     } finally {
@@ -115,7 +173,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
             className="text-[hsl(var(--text-accent))]"
             style={{ fontFamily: 'Caveat, cursive' }}
           >
-            Create New Booking
+            {booking ? 'Edit Booking' : 'Create New Booking'}
           </DialogTitle>
         </DialogHeader>
         
@@ -195,7 +253,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
 
           <div className="flex gap-2 pt-4">
             <Button type="submit" disabled={loading} className="flex-1">
-              {loading ? 'Creating...' : 'Create Booking'}
+              {loading ? (booking ? 'Saving...' : 'Creating...') : (booking ? 'Save Changes' : 'Create Booking')}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
