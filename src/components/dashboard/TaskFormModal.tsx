@@ -148,7 +148,10 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
             <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
               Related Room (optional)
             </label>
-            <Select value={roomId} onValueChange={val => setRoomId(val === 'none' ? '' : val)} disabled={loading}>
+            <Select value={roomId} onValueChange={val => {
+              setRoomId(val === 'none' ? '' : val);
+              if (val !== 'none') setTreeId('none'); // Reset tree if room is selected
+            }} disabled={loading}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a room" />
               </SelectTrigger>
@@ -164,7 +167,10 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
             <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
               Related Tree (optional)
             </label>
-            <Select value={treeId} onValueChange={val => setTreeId(val === 'none' ? '' : val)} disabled={loading}>
+            <Select value={treeId} onValueChange={val => {
+              setTreeId(val === 'none' ? '' : val);
+              if (val !== 'none') setRoomId('none'); // Reset room if tree is selected
+            }} disabled={loading}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a tree" />
               </SelectTrigger>
@@ -175,6 +181,9 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="text-xs text-[hsl(var(--text-secondary))] mb-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            A task can only be assigned to a room or a tree, not both.
           </div>
           <Input
             placeholder="Title"
