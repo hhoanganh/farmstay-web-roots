@@ -1,72 +1,100 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/providers/AuthProvider';
+import { Tables } from '@/integrations/supabase/types';
 
 interface TasksViewProps {
   userRole: string;
 }
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  status: 'todo' | 'in_progress' | 'done';
-  priority: 'low' | 'medium' | 'high';
-  assigned_to: string;
-  created_at: string;
-  due_date: string;
-}
+// Use the actual database types
+type Task = Tables<'tasks'> & {
+  assigned_to_profile?: {
+    full_name: string;
+  };
+  created_by_profile?: {
+    full_name: string;
+  };
+  room?: {
+    name: string;
+  };
+  tree?: {
+    name: string;
+  };
+};
 
 export function TasksView({ userRole }: TasksViewProps) {
+  const { userProfile } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [updatingTask, setUpdatingTask] = useState<string | null>(null);
 
   useEffect(() => {
-    // Mock data for demonstration
-    const mockTasks: Task[] = [
-      {
-        id: '1',
-        title: 'Clean Coffee Loft',
-        description: 'Deep cleaning of the coffee loft room before next guest',
-        status: 'todo',
-        priority: 'high',
-        assigned_to: 'staff',
-        created_at: '2024-01-15T09:00:00Z',
-        due_date: '2024-01-16T15:00:00Z',
-      },
-      {
-        id: '2',
-        title: 'Update Mango Tree Journal',
-        description: 'Post weekly update with photos for the community mango tree',
-        status: 'in_progress',
-        priority: 'medium',
-        assigned_to: 'staff',
-        created_at: '2024-01-14T10:00:00Z',
-        due_date: '2024-01-17T12:00:00Z',
-      },
-      {
-        id: '3',
-        title: 'Inventory Check',
-        description: 'Monthly inventory check for farm supplies',
-        status: 'done',
-        priority: 'low',
-        assigned_to: 'staff',
-        created_at: '2024-01-10T08:00:00Z',
-        due_date: '2024-01-15T17:00:00Z',
-      },
-    ];
-    setTasks(mockTasks);
-  }, []);
+    fetchTasks();
+  }, [userRole, userProfile?.id]);
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    
+    let query = supabase
+      .from('tasks')
+      .select(`
+        *,
+        assigned_to_profile:profiles!tasks_assigned_to_fkey(full_name),
+        created_by_profile:profiles!tasks_created_by_fkey(full_name),
+        room:rooms!tasks_room_id_fkey(name),
+        tree:trees!tasks_tree_id_fkey(name)
+      `)
+      .order('created_at', { ascending: false });
+
+    // Staff only sees their assigned tasks
+    if (userRole === 'staff' && userProfile?.id) {
+      query = query.eq('assigned_to', userProfile.id);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching tasks:', error);
+    } else {
+      setTasks(data || []);
+    }
+    
+    setLoading(false);
+  };
+
+  const updateTaskStatus = async (taskId: string, newStatus: string) => {
+    setUpdatingTask(taskId);
+    
+    const { error } = await supabase
+      .from('tasks')
+      .update({ status: newStatus })
+      .eq('id', taskId);
+
+    if (error) {
+      console.error('Error updating task status:', error);
+    } else {
+      // Refresh tasks after update
+      await fetchTasks();
+    }
+    
+    setUpdatingTask(null);
+  };
 
   const getStatusIcon = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case 'to do':
       case 'todo':
         return <Clock className="h-4 w-4" />;
+      case 'in progress':
       case 'in_progress':
         return <AlertCircle className="h-4 w-4" />;
       case 'done':
+      case 'completed':
         return <CheckCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
@@ -74,12 +102,15 @@ export function TasksView({ userRole }: TasksViewProps) {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
+      case 'to do':
       case 'todo':
         return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'in progress':
       case 'in_progress':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'done':
+      case 'completed':
         return 'bg-green-100 text-green-800 border-green-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
@@ -87,7 +118,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   };
 
   const getPriorityColor = (priority: string) => {
-    switch (priority) {
+    switch (priority?.toLowerCase()) {
       case 'high':
         return 'bg-red-100 text-red-800 border-red-200';
       case 'medium':
@@ -99,75 +130,140 @@ export function TasksView({ userRole }: TasksViewProps) {
     }
   };
 
+  const getNextStatus = (currentStatus: string) => {
+    switch (currentStatus.toLowerCase()) {
+      case 'to do':
+      case 'todo':
+        return 'In Progress';
+      case 'in progress':
+      case 'in_progress':
+        return 'Done';
+      default:
+        return currentStatus;
+    }
+  };
+
   const renderStaffView = () => (
     <div className="space-y-4">
-      {tasks.map((task) => (
-        <Card key={task.id} className="border-[hsl(var(--border-primary))]">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle 
-                className="text-[hsl(var(--text-primary))] flex items-center gap-2"
-                style={{ fontFamily: 'Caveat, cursive' }}
-              >
-                {getStatusIcon(task.status)}
-                {task.title}
-              </CardTitle>
-              <div className="flex gap-2">
-                <Badge className={getPriorityColor(task.priority)} variant="outline">
-                  {task.priority}
-                </Badge>
-                <Badge className={getStatusColor(task.status)} variant="outline">
-                  {task.status.replace('_', ' ')}
-                </Badge>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <p 
-              className="text-[hsl(var(--text-secondary))] mb-4"
-              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-            >
-              {task.description}
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
+          <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            Loading your tasks...
+          </p>
+        </div>
+      ) : tasks.length === 0 ? (
+        <Card className="border-[hsl(var(--border-primary))]">
+          <CardContent className="p-8 text-center">
+            <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
+            <h3 className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
+              No tasks assigned
+            </h3>
+            <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+              You don't have any tasks assigned to you at the moment.
             </p>
-            <div className="flex justify-between items-center">
-              <span 
-                className="text-sm text-[hsl(var(--text-secondary))]"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                Due: {new Date(task.due_date).toLocaleDateString()}
-              </span>
-              <div className="flex gap-2">
-                {task.status === 'todo' && (
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    className="border-[hsl(var(--border-primary))]"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    Start Task
-                  </Button>
-                )}
-                {task.status === 'in_progress' && (
-                  <Button 
-                    size="sm"
-                    className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    Mark Complete
-                  </Button>
-                )}
-              </div>
-            </div>
           </CardContent>
         </Card>
-      ))}
+      ) : (
+        tasks.map((task) => (
+          <Card key={task.id} className="border-[hsl(var(--border-primary))]">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle 
+                  className="text-[hsl(var(--text-primary))] flex items-center gap-2"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
+                  {getStatusIcon(task.status)}
+                  {task.title}
+                </CardTitle>
+                <div className="flex gap-2">
+                  {task.priority && (
+                    <Badge className={getPriorityColor(task.priority)} variant="outline">
+                      {task.priority}
+                    </Badge>
+                  )}
+                  <Badge className={getStatusColor(task.status)} variant="outline">
+                    {task.status}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p 
+                className="text-[hsl(var(--text-secondary))] mb-4"
+                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+              >
+                {task.description}
+              </p>
+              
+              {/* Show related room or tree if available */}
+              {(task.room || task.tree) && (
+                <div className="mb-4 p-3 bg-[hsl(var(--background-secondary))] rounded-md">
+                  <p className="text-sm text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                    <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                  </p>
+                </div>
+              )}
+              
+              <div className="flex justify-between items-center">
+                <div className="flex flex-col gap-1">
+                  {task.due_date && (
+                    <span 
+                      className="text-sm text-[hsl(var(--text-secondary))]"
+                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                    >
+                      Due: {new Date(task.due_date).toLocaleDateString()}
+                    </span>
+                  )}
+                  {task.created_by_profile && (
+                    <span 
+                      className="text-xs text-[hsl(var(--text-secondary))]"
+                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                    >
+                      Created by: {task.created_by_profile.full_name}
+                    </span>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
+                    <Button 
+                      size="sm"
+                      className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                      onClick={() => updateTaskStatus(task.id, getNextStatus(task.status))}
+                      disabled={updatingTask === task.id}
+                    >
+                      {updatingTask === task.id ? 'Updating...' : 
+                       task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo' 
+                         ? 'Start Task' 
+                         : 'Mark Complete'
+                      }
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))
+      )}
     </div>
   );
 
   const renderAdminView = () => {
-    const todoTasks = tasks.filter(t => t.status === 'todo');
-    const inProgressTasks = tasks.filter(t => t.status === 'in_progress');
-    const doneTasks = tasks.filter(t => t.status === 'done');
+    const todoTasks = tasks.filter(t => t.status.toLowerCase() === 'to do' || t.status.toLowerCase() === 'todo');
+    const inProgressTasks = tasks.filter(t => t.status.toLowerCase() === 'in progress' || t.status.toLowerCase() === 'in_progress');
+    const doneTasks = tasks.filter(t => t.status.toLowerCase() === 'done' || t.status.toLowerCase() === 'completed');
+
+    if (loading) {
+      return (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
+          <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            Loading tasks...
+          </p>
+        </div>
+      );
+    }
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -196,16 +292,35 @@ export function TasksView({ userRole }: TasksViewProps) {
                   >
                     {task.description}
                   </p>
+                  
+                  {/* Show assignee and related item */}
+                  <div className="mb-3 space-y-1">
+                    {task.assigned_to_profile && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                      </p>
+                    )}
+                    {(task.room || task.tree) && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                      </p>
+                    )}
+                  </div>
+                  
                   <div className="flex justify-between items-center">
-                    <Badge className={getPriorityColor(task.priority)} variant="outline">
-                      {task.priority}
-                    </Badge>
-                    <span 
-                      className="text-xs text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Due: {new Date(task.due_date).toLocaleDateString()}
-                    </span>
+                    {task.priority && (
+                      <Badge className={getPriorityColor(task.priority)} variant="outline">
+                        {task.priority}
+                      </Badge>
+                    )}
+                    {task.due_date && (
+                      <span 
+                        className="text-xs text-[hsl(var(--text-secondary))]"
+                        style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                      >
+                        Due: {new Date(task.due_date).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -238,16 +353,35 @@ export function TasksView({ userRole }: TasksViewProps) {
                   >
                     {task.description}
                   </p>
+                  
+                  {/* Show assignee and related item */}
+                  <div className="mb-3 space-y-1">
+                    {task.assigned_to_profile && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                      </p>
+                    )}
+                    {(task.room || task.tree) && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                      </p>
+                    )}
+                  </div>
+                  
                   <div className="flex justify-between items-center">
-                    <Badge className={getPriorityColor(task.priority)} variant="outline">
-                      {task.priority}
-                    </Badge>
-                    <span 
-                      className="text-xs text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Due: {new Date(task.due_date).toLocaleDateString()}
-                    </span>
+                    {task.priority && (
+                      <Badge className={getPriorityColor(task.priority)} variant="outline">
+                        {task.priority}
+                      </Badge>
+                    )}
+                    {task.due_date && (
+                      <span 
+                        className="text-xs text-[hsl(var(--text-secondary))]"
+                        style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                      >
+                        Due: {new Date(task.due_date).toLocaleDateString()}
+                      </span>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -280,10 +414,27 @@ export function TasksView({ userRole }: TasksViewProps) {
                   >
                     {task.description}
                   </p>
+                  
+                  {/* Show assignee and related item */}
+                  <div className="mb-3 space-y-1">
+                    {task.assigned_to_profile && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                      </p>
+                    )}
+                    {(task.room || task.tree) && (
+                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                      </p>
+                    )}
+                  </div>
+                  
                   <div className="flex justify-between items-center">
-                    <Badge className={getPriorityColor(task.priority)} variant="outline">
-                      {task.priority}
-                    </Badge>
+                    {task.priority && (
+                      <Badge className={getPriorityColor(task.priority)} variant="outline">
+                        {task.priority}
+                      </Badge>
+                    )}
                     <span 
                       className="text-xs text-[hsl(var(--text-secondary))]"
                       style={{ fontFamily: 'IBM Plex Mono, monospace' }}
