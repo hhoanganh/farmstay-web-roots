@@ -8,8 +8,6 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
 import { TaskFormModal } from './TaskFormModal';
 import { TaskUpdateModal } from './TaskUpdateModal';
-import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
-import type { DragEndEvent } from '@dnd-kit/core';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
@@ -49,32 +47,6 @@ type Task = Tables<'tasks'> & {
   completion_notes?: string;
   completion_image_urls?: string[];
   priority?: 'low' | 'medium' | 'high';
-};
-
-const DraggableTaskCard = ({ task, children }: { task: Task; children: React.ReactNode }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: task.id,
-    data: { task },
-  });
-
-  const style = transform ? {
-    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-  } : undefined;
-
-  return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {children}
-    </div>
-  );
-};
-
-const DroppableTaskColumn = ({ id, children }: { id: string; children: React.ReactNode }) => {
-  const { setNodeRef } = useDroppable({ id });
-  return (
-    <div ref={setNodeRef} className="h-full">
-      {children}
-    </div>
-  );
 };
 
 export function TasksView({ userRole }: TasksViewProps) {
@@ -180,17 +152,6 @@ export function TasksView({ userRole }: TasksViewProps) {
     refreshTasks();
   };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      const task = tasks.find(t => t.id === active.id);
-      const newStatus = over.id as string;
-      if (task && task.status.toLowerCase().replace(/ /g, '_') !== newStatus.toLowerCase().replace(/ /g, '_')) {
-        await updateTaskStatus(task.id, newStatus);
-      }
-    }
-  };
-
   const renderTaskUpdates = (task: Task) => {
     if (!task.updates?.length) return null;
 
@@ -224,6 +185,21 @@ export function TasksView({ userRole }: TasksViewProps) {
 
   const renderTaskDetailSheet = () => {
     if (!detailTask) return null;
+    const statusOptions = [
+      { value: 'To Do', label: 'To Do' },
+      { value: 'In Progress', label: 'In Progress' },
+      { value: 'Done', label: 'Done' },
+    ];
+    const [status, setStatus] = React.useState(detailTask.status);
+    const [saving, setSaving] = React.useState(false);
+    const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const newStatus = e.target.value;
+      setStatus(newStatus);
+      setSaving(true);
+      await updateTaskStatus(detailTask.id, newStatus);
+      setSaving(false);
+      refreshTasks();
+    };
     return (
       <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
         <SheetHeader>
@@ -242,10 +218,25 @@ export function TasksView({ userRole }: TasksViewProps) {
               Edit Task
             </Button>
           </div>
-          <Badge className={getStatusColor(detailTask.status)}>
-            {getStatusIcon(detailTask.status)}
-            <span className="ml-2">{detailTask.status}</span>
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className={getStatusColor(status)}>
+              {getStatusIcon(status)}
+              <span className="ml-2">{status}</span>
+            </Badge>
+            {userRole === 'admin' && (
+              <select
+                className="ml-2 border rounded px-2 py-1 text-sm"
+                value={status}
+                onChange={handleStatusChange}
+                disabled={saving}
+              >
+                {statusOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            )}
+            {saving && <span className="ml-2 text-xs text-gray-400">Saving...</span>}
+          </div>
           <p className="text-sm text-gray-500">{detailTask.description}</p>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
@@ -414,10 +405,11 @@ export function TasksView({ userRole }: TasksViewProps) {
   );
 
   const renderAdminView = () => {
-    const todoTasks = tasks.filter(t => t.status.toLowerCase() === 'to do' || t.status.toLowerCase() === 'todo');
-    const inProgressTasks = tasks.filter(t => t.status.toLowerCase() === 'in progress' || t.status.toLowerCase() === 'in_progress');
-    const doneTasks = tasks.filter(t => t.status.toLowerCase() === 'done' || t.status.toLowerCase() === 'completed');
-
+    const statusGroups = [
+      { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
+      { label: 'In Progress', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
+    ];
     if (loading) {
       return (
         <div className="text-center py-8">
@@ -428,86 +420,33 @@ export function TasksView({ userRole }: TasksViewProps) {
         </div>
       );
     }
-
     return (
-      <DndContext onDragEnd={handleDragEnd}>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* To Do Column */}
-          <DroppableTaskColumn id="To Do">
-            <div>
-              <h3 
+      <div className="space-y-8">
+        {statusGroups.map(group => {
+          const groupTasks = tasks.filter(t => group.match(t.status.toLowerCase()));
+          return (
+            <div key={group.label}>
+              <h3
                 className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
                 style={{ fontFamily: 'Caveat, cursive' }}
               >
-                <Clock className="h-5 w-5" />
-                To Do ({todoTasks.length})
+                {group.icon}
+                {group.label} ({groupTasks.length})
               </h3>
               <div className="space-y-3">
-                {todoTasks.map((task) => (
-                  <React.Fragment key={task.id}>
-                    <DraggableTaskCard task={task}>
-                      <TaskCard task={task} />
-                    </DraggableTaskCard>
-                    <div className="flex w-full justify-end mt-1">
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
-                    </div>
-                  </React.Fragment>
+                {groupTasks.map((task) => (
+                  <div key={task.id} onClick={() => handleCardClick(task)} className="cursor-pointer">
+                    <TaskCard task={task} />
+                  </div>
                 ))}
+                {groupTasks.length === 0 && (
+                  <div className="text-sm text-gray-500">No tasks in this category.</div>
+                )}
               </div>
             </div>
-          </DroppableTaskColumn>
-
-          {/* In Progress Column */}
-          <DroppableTaskColumn id="In Progress">
-            <div>
-              <h3 
-                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
-                style={{ fontFamily: 'Caveat, cursive' }}
-              >
-                <AlertCircle className="h-5 w-5" />
-                In Progress ({inProgressTasks.length})
-              </h3>
-              <div className="space-y-3">
-                {inProgressTasks.map((task) => (
-                  <React.Fragment key={task.id}>
-                    <DraggableTaskCard task={task}>
-                      <TaskCard task={task} />
-                    </DraggableTaskCard>
-                    <div className="flex w-full justify-end mt-1">
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </DroppableTaskColumn>
-
-          {/* Done Column */}
-          <DroppableTaskColumn id="Done">
-            <div>
-              <h3 
-                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
-                style={{ fontFamily: 'Caveat, cursive' }}
-              >
-                <CheckCircle className="h-5 w-5" />
-                Done ({doneTasks.length})
-              </h3>
-              <div className="space-y-3">
-                {doneTasks.map((task) => (
-                  <React.Fragment key={task.id}>
-                    <DraggableTaskCard task={task}>
-                      <TaskCard task={task} />
-                    </DraggableTaskCard>
-                    <div className="flex w-full justify-end mt-1">
-                      <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
-                    </div>
-                  </React.Fragment>
-                ))}
-              </div>
-            </div>
-          </DroppableTaskColumn>
-        </div>
-      </DndContext>
+          );
+        })}
+      </div>
     );
   };
 
