@@ -45,6 +45,7 @@ export type Database = {
           check_in_date: string
           check_out_date: string
           created_at: string | null
+          customer_id: string | null
           guest_id: string
           id: string
           room_id: string
@@ -54,6 +55,7 @@ export type Database = {
           check_in_date: string
           check_out_date: string
           created_at?: string | null
+          customer_id?: string | null
           guest_id: string
           id?: string
           room_id: string
@@ -63,16 +65,31 @@ export type Database = {
           check_in_date?: string
           check_out_date?: string
           created_at?: string | null
+          customer_id?: string | null
           guest_id?: string
           id?: string
           room_id?: string
         }
         Relationships: [
           {
+            foreignKeyName: "bookings_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "bookings_room_id_fkey"
             columns: ["room_id"]
             isOneToOne: false
             referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_guest"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
             referencedColumns: ["id"]
           },
         ]
@@ -160,8 +177,10 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          room_id: string | null
           status: string
           title: string
+          tree_id: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -170,8 +189,10 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          room_id?: string | null
           status?: string
           title: string
+          tree_id?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -180,8 +201,10 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          room_id?: string | null
           status?: string
           title?: string
+          tree_id?: string | null
         }
         Relationships: [
           {
@@ -196,6 +219,20 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "rooms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_tree_id_fkey"
+            columns: ["tree_id"]
+            isOneToOne: false
+            referencedRelation: "trees"
             referencedColumns: ["id"]
           },
         ]

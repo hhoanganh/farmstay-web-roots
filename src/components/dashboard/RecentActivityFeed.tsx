@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
@@ -22,7 +21,7 @@ export function RecentActivityFeed() {
         .select(`
           *,
           rooms(name),
-          customers(full_name)
+          customers!bookings_customer_id_fkey(full_name)
         `)
         .order('created_at', { ascending: false })
         .limit(5);

@@ -28,6 +28,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
   const [rooms, setRooms] = useState<any[]>([]);
   const [selectedRoom, setSelectedRoom] = useState('');
   const [guestName, setGuestName] = useState('');
+  const [guestEmail, setGuestEmail] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [status, setStatus] = useState('confirmed');
@@ -56,18 +57,31 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
     setLoading(true);
 
     try {
-      const { error } = await supabase
+      // First create the customer
+      const { data: customerData, error: customerError } = await supabase
+        .from('customers')
+        .insert({
+          full_name: guestName,
+          email: guestEmail,
+        })
+        .select()
+        .single();
+
+      if (customerError) throw customerError;
+
+      // Then create the booking with the customer_id
+      const { error: bookingError } = await supabase
         .from('bookings')
         .insert({
           room_id: selectedRoom,
-          guest_name: guestName,
+          customer_id: customerData.id,
+          guest_id: customerData.id, // Keep guest_id for compatibility
           check_in_date: checkInDate,
           check_out_date: checkOutDate,
           booking_status: status,
-          guest_id: '00000000-0000-0000-0000-000000000000', // placeholder
         });
 
-      if (error) throw error;
+      if (bookingError) throw bookingError;
 
       toast({
         title: 'Success',
@@ -77,6 +91,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
       // Reset form
       setSelectedRoom('');
       setGuestName('');
+      setGuestEmail('');
       setCheckInDate('');
       setCheckOutDate('');
       setStatus('confirmed');
@@ -100,7 +115,7 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
             className="text-[hsl(var(--text-accent))]"
             style={{ fontFamily: 'Caveat, cursive' }}
           >
-            Manage Booking
+            Create New Booking
           </DialogTitle>
         </DialogHeader>
         
@@ -128,6 +143,16 @@ export function BookingModal({ open, onClose }: BookingModalProps) {
               value={guestName}
               onChange={(e) => setGuestName(e.target.value)}
               required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="email">Guest Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={guestEmail}
+              onChange={(e) => setGuestEmail(e.target.value)}
             />
           </div>
 

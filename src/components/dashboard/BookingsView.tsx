@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +27,7 @@ interface Booking {
   check_out_date: string;
   booking_status: string;
   created_at: string;
+  customer_id: string;
   customers?: {
     full_name: string;
   };
@@ -60,7 +60,7 @@ export function BookingsView({ userRole }: BookingsViewProps) {
       .from('bookings')
       .select(`
         *,
-        customers(full_name)
+        customers!bookings_customer_id_fkey(full_name)
       `)
       .order('check_in_date', { ascending: false });
 
