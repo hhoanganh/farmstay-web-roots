@@ -6,6 +6,7 @@ import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle } from 'lucide-react
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
+import { TaskFormModal } from './TaskFormModal';
 
 interface TasksViewProps {
   userRole: string;
@@ -32,6 +33,10 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
+  // Modal state
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   useEffect(() => {
     fetchTasks();
@@ -143,6 +148,26 @@ export function TasksView({ userRole }: TasksViewProps) {
     }
   };
 
+  // Modal handlers
+  const handleCreateClick = () => {
+    setModalMode('create');
+    setSelectedTask(null);
+    setModalOpen(true);
+  };
+  const handleCardClick = (task: Task) => {
+    if (userRole === 'admin') {
+      setModalMode('edit');
+      setSelectedTask(task);
+      setModalOpen(true);
+    }
+  };
+  const handleModalSuccess = () => {
+    fetchTasks();
+  };
+  const handleModalDelete = () => {
+    fetchTasks();
+  };
+
   const renderStaffView = () => (
     <div className="space-y-4">
       {loading ? (
@@ -167,7 +192,7 @@ export function TasksView({ userRole }: TasksViewProps) {
       ) : (
         tasks.map((task) => (
           <Card key={task.id} className="border-[hsl(var(--border-primary))]">
-            <CardHeader>
+            <CardHeader onClick={() => handleCardClick(task)} className={userRole === 'admin' ? 'cursor-pointer' : ''}>
               <div className="flex items-center justify-between">
                 <CardTitle 
                   className="text-[hsl(var(--text-primary))] flex items-center gap-2"
@@ -230,7 +255,10 @@ export function TasksView({ userRole }: TasksViewProps) {
                       size="sm"
                       className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
                       style={{ fontFamily: 'Inter, sans-serif' }}
-                      onClick={() => updateTaskStatus(task.id, getNextStatus(task.status))}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        updateTaskStatus(task.id, getNextStatus(task.status));
+                      }}
                       disabled={updatingTask === task.id}
                     >
                       {updatingTask === task.id ? 'Updating...' : 
@@ -278,7 +306,7 @@ export function TasksView({ userRole }: TasksViewProps) {
           </h3>
           <div className="space-y-3">
             {todoTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))]">
+              <Card key={task.id} className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
                 <CardContent className="p-4">
                   <h4 
                     className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -339,7 +367,7 @@ export function TasksView({ userRole }: TasksViewProps) {
           </h3>
           <div className="space-y-3">
             {inProgressTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))]">
+              <Card key={task.id} className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
                 <CardContent className="p-4">
                   <h4 
                     className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -400,7 +428,7 @@ export function TasksView({ userRole }: TasksViewProps) {
           </h3>
           <div className="space-y-3">
             {doneTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))] opacity-75">
+              <Card key={task.id} className="border-[hsl(var(--border-primary))] opacity-75 cursor-pointer" onClick={() => handleCardClick(task)}>
                 <CardContent className="p-4">
                   <h4 
                     className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -476,6 +504,7 @@ export function TasksView({ userRole }: TasksViewProps) {
           <Button 
             className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
             style={{ fontFamily: 'Inter, sans-serif' }}
+            onClick={handleCreateClick}
           >
             <Plus className="h-4 w-4 mr-2" />
             Create Task
@@ -485,6 +514,18 @@ export function TasksView({ userRole }: TasksViewProps) {
 
       {/* Content */}
       {userRole === 'admin' ? renderAdminView() : renderStaffView()}
+
+      {/* Task Modal (admin only) */}
+      {userRole === 'admin' && (
+        <TaskFormModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          mode={modalMode}
+          task={selectedTask}
+          onSuccess={handleModalSuccess}
+          onDelete={handleModalDelete}
+        />
+      )}
     </div>
   );
 }
