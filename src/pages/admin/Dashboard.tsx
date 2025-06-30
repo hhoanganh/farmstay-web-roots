@@ -11,7 +11,6 @@ import { TreesView } from '@/components/dashboard/TreesView';
 import { TasksView } from '@/components/dashboard/TasksView';
 import { JournalView } from '@/components/dashboard/JournalView';
 import { StaffView } from '@/components/dashboard/StaffView';
-import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 
 const AdminDashboard = () => {
   const { userProfile } = useAuth();
@@ -74,7 +73,6 @@ const AdminDashboard = () => {
           isLoggingOut={isLoggingOut}
         />
         <div className="flex-1 flex flex-col">
-          <DashboardHeader />
           <main className="flex-1 bg-[hsl(var(--background-primary))]">
             {renderContent()}
           </main>
