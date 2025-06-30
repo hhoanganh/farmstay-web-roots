@@ -11,6 +11,7 @@ import { TaskUpdateModal } from './TaskUpdateModal';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
+import { TaskDetailSheet } from './TaskDetailSheet';
 
 interface TasksViewProps {
   userRole: string;
@@ -150,6 +151,13 @@ export function TasksView({ userRole }: TasksViewProps) {
   };
   const handleModalDelete = () => {
     refreshTasks();
+  };
+
+  const handleEditClick = (task: Task) => {
+    setDetailOpen(false);
+    setSelectedTask(task);
+    setModalMode('edit');
+    setModalOpen(true);
   };
 
   const renderTaskUpdates = (task: Task) => {
@@ -506,9 +514,17 @@ export function TasksView({ userRole }: TasksViewProps) {
       />
 
       {/* Task Detail Sheet for Admin */}
-      <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
-        {renderTaskDetailSheet()}
-      </Sheet>
+      <TaskDetailSheet 
+        task={detailTask}
+        open={detailOpen}
+        userRole={userRole}
+        onOpenChange={setDetailOpen}
+        onEdit={handleEditClick}
+        onStatusChange={async (taskId, newStatus) => {
+          await updateTaskStatus(taskId, newStatus);
+          refreshTasks();
+        }}
+      />
     </div>
   );
 }
