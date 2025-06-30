@@ -443,7 +443,6 @@ export function TasksView({ userRole }: TasksViewProps) {
                           setUpdateModalMode('completion');
                           setUpdateModalOpen(true);
                         }}
-                        disabled={task.evidence_required && (!task.completion_image_urls?.length || !task.completion_notes)}
                       >
                         Complete Task
                       </Button>
