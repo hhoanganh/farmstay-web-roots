@@ -181,6 +181,10 @@ export type Database = {
           status: string
           title: string
           tree_id: string | null
+          evidence_required: boolean
+          completion_notes: string | null
+          completion_image_urls: string[] | null
+          priority: 'low' | 'medium' | 'high' | null
         }
         Insert: {
           assigned_to?: string | null
@@ -193,6 +197,10 @@ export type Database = {
           status?: string
           title: string
           tree_id?: string | null
+          evidence_required?: boolean
+          completion_notes?: string | null
+          completion_image_urls?: string[] | null
+          priority?: 'low' | 'medium' | 'high' | null
         }
         Update: {
           assigned_to?: string | null
@@ -205,6 +213,10 @@ export type Database = {
           status?: string
           title?: string
           tree_id?: string | null
+          evidence_required?: boolean
+          completion_notes?: string | null
+          completion_image_urls?: string[] | null
+          priority?: 'low' | 'medium' | 'high' | null
         }
         Relationships: [
           {
@@ -234,7 +246,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "trees"
             referencedColumns: ["id"]
-          },
+          }
         ]
       }
       tree_updates: {
@@ -314,6 +326,51 @@ export type Database = {
             referencedRelation: "customers"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      task_updates: {
+        Row: {
+          id: string
+          task_id: string
+          created_by: string | null
+          created_at: string
+          notes: string
+          image_urls: string[]
+          update_type: 'progress' | 'completion'
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          created_by?: string | null
+          created_at?: string
+          notes: string
+          image_urls?: string[]
+          update_type: 'progress' | 'completion'
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          created_by?: string | null
+          created_at?: string
+          notes?: string
+          image_urls?: string[]
+          update_type?: 'progress' | 'completion'
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_updates_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_updates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
         ]
       }
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,12 +7,27 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
 import { TaskFormModal } from './TaskFormModal';
+import { TaskUpdateModal } from './TaskUpdateModal';
+import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
+import type { DragEndEvent } from '@dnd-kit/core';
 
 interface TasksViewProps {
   userRole: string;
 }
 
-// Use the actual database types
+type TaskUpdate = {
+  id: string;
+  task_id: string;
+  created_by: string | null;
+  created_at: string;
+  notes: string;
+  image_urls: string[];
+  update_type: 'progress' | 'completion';
+  created_by_profile?: {
+    full_name: string;
+  };
+};
+
 type Task = Tables<'tasks'> & {
   assigned_to_profile?: {
     full_name: string;
@@ -26,6 +41,37 @@ type Task = Tables<'tasks'> & {
   tree?: {
     name: string;
   };
+  updates?: TaskUpdate[];
+  evidence_required?: boolean;
+  completion_notes?: string;
+  completion_image_urls?: string[];
+  priority?: 'low' | 'medium' | 'high';
+};
+
+const DraggableTaskCard = ({ task, children }: { task: Task; children: React.ReactNode }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+    data: { task },
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+  } : undefined;
+
+  return (
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+      {children}
+    </div>
+  );
+};
+
+const DroppableTaskColumn = ({ id, children }: { id: string; children: React.ReactNode }) => {
+  const { setNodeRef } = useDroppable({ id });
+  return (
+    <div ref={setNodeRef} className="h-full">
+      {children}
+    </div>
+  );
 };
 
 export function TasksView({ userRole }: TasksViewProps) {
@@ -35,8 +81,10 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'progress' | 'completion'>('create');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [updateModalMode, setUpdateModalMode] = useState<'progress' | 'completion'>('progress');
 
   useEffect(() => {
     fetchTasks();
@@ -66,7 +114,39 @@ export function TasksView({ userRole }: TasksViewProps) {
     if (error) {
       console.error('Error fetching tasks:', error);
     } else {
-      setTasks(data || []);
+      // Add empty updates array to each task
+      setTasks((data || []).map(task => ({
+        ...task,
+        updates: [],
+        evidence_required: true // Default value
+      })) as Task[]);
+
+      // Fetch updates for each task
+      const updatePromises = (data || []).map(async (task) => {
+        const { data: updates } = await supabase
+          .from('task_updates')
+          .select(`
+            *,
+            created_by_profile:profiles(full_name)
+          `)
+          .eq('task_id', task.id)
+          .order('created_at', { ascending: true });
+
+        return { taskId: task.id, updates: updates || [] };
+      });
+
+      const updateResults = await Promise.all(updatePromises);
+
+      // Update tasks with their updates
+      setTasks(currentTasks => 
+        currentTasks.map(task => {
+          const taskUpdates = updateResults.find(r => r.taskId === task.id);
+          return {
+            ...task,
+            updates: taskUpdates?.updates || []
+          };
+        })
+      );
     }
     
     setLoading(false);
@@ -168,6 +248,93 @@ export function TasksView({ userRole }: TasksViewProps) {
     fetchTasks();
   };
 
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const task = (active.data as any).current.task as Task;
+      const newStatus = over.id as string;
+
+      if (task.status.toLowerCase().replace(/ /g, '_') !== newStatus.toLowerCase().replace(/ /g, '_')) {
+        // Optimistic UI Update
+        const originalTasks = tasks;
+        const updatedTasks = tasks.map(t =>
+          t.id === task.id ? { ...t, status: newStatus } : t
+        );
+        setTasks(updatedTasks);
+        
+        await updateTaskStatus(task.id, newStatus);
+      }
+    }
+  };
+
+  const handleTaskUpdate = async (taskId: string, updateType: 'progress' | 'completion', notes: string, imageUrls: string[]) => {
+    const { error: updateError } = await supabase
+      .from('task_updates')
+      .insert({
+        task_id: taskId,
+        created_by: userProfile?.id,
+        notes,
+        image_urls: imageUrls,
+        update_type: updateType
+      } as any); // Temporary type assertion until Supabase types are updated
+
+    if (updateError) {
+      console.error('Error adding task update:', updateError);
+      return;
+    }
+
+    // If this is a completion update, update the task status
+    if (updateType === 'completion') {
+      const { error: taskError } = await supabase
+        .from('tasks')
+        .update({
+          status: 'Done',
+          completion_notes: notes,
+          completion_image_urls: imageUrls
+        } as any) // Temporary type assertion until Supabase types are updated
+        .eq('id', taskId);
+
+      if (taskError) {
+        console.error('Error updating task completion:', taskError);
+        return;
+      }
+    }
+
+    // Refresh tasks
+    await fetchTasks();
+  };
+
+  const renderTaskUpdates = (task: Task) => {
+    if (!task.updates?.length) return null;
+
+    return (
+      <div className="mt-4 space-y-3">
+        <h4 className="text-sm font-medium">Updates</h4>
+        {task.updates.map((update) => (
+          <div key={update.id} className="bg-[hsl(var(--background-secondary))] p-3 rounded-md">
+            <div className="flex justify-between items-start mb-2">
+              <span className="text-xs text-[hsl(var(--text-secondary))]">
+                {new Date(update.created_at).toLocaleString()}
+                {update.created_by_profile?.full_name && ` by ${update.created_by_profile.full_name}`}
+              </span>
+              <Badge variant={update.update_type === 'completion' ? 'default' : 'secondary'}>
+                {update.update_type === 'completion' ? 'Completion' : 'Progress'}
+              </Badge>
+            </div>
+            <p className="text-sm">{update.notes}</p>
+            {update.image_urls && update.image_urls.length > 0 && (
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                {update.image_urls.map((url, index) => (
+                  <img key={index} src={url} alt={`Update ${index + 1}`} className="rounded-md w-full h-32 object-cover" />
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const renderStaffView = () => (
     <div className="space-y-4">
       {loading ? (
@@ -203,11 +370,11 @@ export function TasksView({ userRole }: TasksViewProps) {
                 </CardTitle>
                 <div className="flex gap-2">
                   {task.priority && (
-                    <Badge className={getPriorityColor(task.priority)} variant="outline">
+                    <Badge variant="outline">
                       {task.priority}
                     </Badge>
                   )}
-                  <Badge className={getStatusColor(task.status)} variant="outline">
+                  <Badge variant="outline">
                     {task.status}
                   </Badge>
                 </div>
@@ -229,8 +396,11 @@ export function TasksView({ userRole }: TasksViewProps) {
                   </p>
                 </div>
               )}
+
+              {/* Render task updates */}
+              {renderTaskUpdates(task)}
               
-              <div className="flex justify-between items-center">
+              <div className="flex justify-between items-center mt-4">
                 <div className="flex flex-col gap-1">
                   {task.due_date && (
                     <span 
@@ -251,22 +421,33 @@ export function TasksView({ userRole }: TasksViewProps) {
                 </div>
                 <div className="flex gap-2">
                   {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
-                    <Button 
-                      size="sm"
-                      className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateTaskStatus(task.id, getNextStatus(task.status));
-                      }}
-                      disabled={updatingTask === task.id}
-                    >
-                      {updatingTask === task.id ? 'Updating...' : 
-                       task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo' 
-                         ? 'Start Task' 
-                         : 'Mark Complete'
-                      }
-                    </Button>
+                    <>
+                      <Button 
+                        size="sm"
+                        className="bg-blue-500 hover:bg-blue-600 text-white"
+                        onClick={() => {
+                          // Open progress update modal
+                          setSelectedTask(task);
+                          setUpdateModalMode('progress');
+                          setUpdateModalOpen(true);
+                        }}
+                      >
+                        Add Update
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="bg-green-500 hover:bg-green-600 text-white"
+                        onClick={() => {
+                          // Open completion modal
+                          setSelectedTask(task);
+                          setUpdateModalMode('completion');
+                          setUpdateModalOpen(true);
+                        }}
+                        disabled={task.evidence_required && (!task.completion_image_urls?.length || !task.completion_notes)}
+                      >
+                        Complete Task
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
@@ -294,188 +475,202 @@ export function TasksView({ userRole }: TasksViewProps) {
     }
 
     return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* To Do Column */}
-        <div>
-          <h3 
-            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            <Clock className="h-5 w-5" />
-            To Do ({todoTasks.length})
-          </h3>
-          <div className="space-y-3">
-            {todoTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
-                <CardContent className="p-4">
-                  <h4 
-                    className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    {task.title}
-                  </h4>
-                  <p 
-                    className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                  >
-                    {task.description}
-                  </p>
-                  
-                  {/* Show assignee and related item */}
-                  <div className="mb-3 space-y-1">
-                    {task.assigned_to_profile && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                      </p>
-                    )}
-                    {(task.room || task.tree) && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    {task.priority && (
-                      <Badge className={getPriorityColor(task.priority)} variant="outline">
-                        {task.priority}
-                      </Badge>
-                    )}
-                    {task.due_date && (
-                      <span 
-                        className="text-xs text-[hsl(var(--text-secondary))]"
-                        style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                      >
-                        Due: {new Date(task.due_date).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+      <DndContext onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* To Do Column */}
+          <DroppableTaskColumn id="To Do">
+            <div>
+              <h3 
+                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
+                <Clock className="h-5 w-5" />
+                To Do ({todoTasks.length})
+              </h3>
+              <div className="space-y-3">
+                {todoTasks.map((task) => (
+                  <DraggableTaskCard key={task.id} task={task}>
+                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
+                      <CardContent className="p-4">
+                        <h4 
+                          className="font-medium text-[hsl(var(--text-primary))] mb-2"
+                          style={{ fontFamily: 'Inter, sans-serif' }}
+                        >
+                          {task.title}
+                        </h4>
+                        <p 
+                          className="text-sm text-[hsl(var(--text-secondary))] mb-3"
+                          style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                        >
+                          {task.description}
+                        </p>
+                        
+                        {/* Show assignee and related item */}
+                        <div className="mb-3 space-y-1">
+                          {task.assigned_to_profile && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                            </p>
+                          )}
+                          {(task.room || task.tree) && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          {task.priority && (
+                            <Badge variant="outline">
+                              {task.priority}
+                            </Badge>
+                          )}
+                          {task.due_date && (
+                            <span 
+                              className="text-xs text-[hsl(var(--text-secondary))]"
+                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                            >
+                              Due: {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DraggableTaskCard>
+                ))}
+              </div>
+            </div>
+          </DroppableTaskColumn>
 
-        {/* In Progress Column */}
-        <div>
-          <h3 
-            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            <AlertCircle className="h-5 w-5" />
-            In Progress ({inProgressTasks.length})
-          </h3>
-          <div className="space-y-3">
-            {inProgressTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
-                <CardContent className="p-4">
-                  <h4 
-                    className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    {task.title}
-                  </h4>
-                  <p 
-                    className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                  >
-                    {task.description}
-                  </p>
-                  
-                  {/* Show assignee and related item */}
-                  <div className="mb-3 space-y-1">
-                    {task.assigned_to_profile && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                      </p>
-                    )}
-                    {(task.room || task.tree) && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    {task.priority && (
-                      <Badge className={getPriorityColor(task.priority)} variant="outline">
-                        {task.priority}
-                      </Badge>
-                    )}
-                    {task.due_date && (
-                      <span 
-                        className="text-xs text-[hsl(var(--text-secondary))]"
-                        style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                      >
-                        Due: {new Date(task.due_date).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
+          {/* In Progress Column */}
+          <DroppableTaskColumn id="In Progress">
+            <div>
+              <h3 
+                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
+                <AlertCircle className="h-5 w-5" />
+                In Progress ({inProgressTasks.length})
+              </h3>
+              <div className="space-y-3">
+                {inProgressTasks.map((task) => (
+                  <DraggableTaskCard key={task.id} task={task}>
+                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
+                      <CardContent className="p-4">
+                        <h4 
+                          className="font-medium text-[hsl(var(--text-primary))] mb-2"
+                          style={{ fontFamily: 'Inter, sans-serif' }}
+                        >
+                          {task.title}
+                        </h4>
+                        <p 
+                          className="text-sm text-[hsl(var(--text-secondary))] mb-3"
+                          style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                        >
+                          {task.description}
+                        </p>
+                        
+                        {/* Show assignee and related item */}
+                        <div className="mb-3 space-y-1">
+                          {task.assigned_to_profile && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                            </p>
+                          )}
+                          {(task.room || task.tree) && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          {task.priority && (
+                            <Badge variant="outline">
+                              {task.priority}
+                            </Badge>
+                          )}
+                          {task.due_date && (
+                            <span 
+                              className="text-xs text-[hsl(var(--text-secondary))]"
+                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                            >
+                              Due: {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DraggableTaskCard>
+                ))}
+              </div>
+            </div>
+          </DroppableTaskColumn>
 
-        {/* Done Column */}
-        <div>
-          <h3 
-            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            <CheckCircle className="h-5 w-5" />
-            Done ({doneTasks.length})
-          </h3>
-          <div className="space-y-3">
-            {doneTasks.map((task) => (
-              <Card key={task.id} className="border-[hsl(var(--border-primary))] opacity-75 cursor-pointer" onClick={() => handleCardClick(task)}>
-                <CardContent className="p-4">
-                  <h4 
-                    className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                    style={{ fontFamily: 'Inter, sans-serif' }}
-                  >
-                    {task.title}
-                  </h4>
-                  <p 
-                    className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                  >
-                    {task.description}
-                  </p>
-                  
-                  {/* Show assignee and related item */}
-                  <div className="mb-3 space-y-1">
-                    {task.assigned_to_profile && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                      </p>
-                    )}
-                    {(task.room || task.tree) && (
-                      <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    {task.priority && (
-                      <Badge className={getPriorityColor(task.priority)} variant="outline">
-                        {task.priority}
-                      </Badge>
-                    )}
-                    <span 
-                      className="text-xs text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Completed
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          {/* Done Column */}
+          <DroppableTaskColumn id="Done">
+            <div>
+              <h3 
+                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
+                <CheckCircle className="h-5 w-5" />
+                Done ({doneTasks.length})
+              </h3>
+              <div className="space-y-3">
+                {doneTasks.map((task) => (
+                  <DraggableTaskCard key={task.id} task={task}>
+                    <Card className="border-[hsl(var(--border-primary))] opacity-75 cursor-pointer" onClick={() => handleCardClick(task)}>
+                      <CardContent className="p-4">
+                        <h4 
+                          className="font-medium text-[hsl(var(--text-primary))] mb-2"
+                          style={{ fontFamily: 'Inter, sans-serif' }}
+                        >
+                          {task.title}
+                        </h4>
+                        <p 
+                          className="text-sm text-[hsl(var(--text-secondary))] mb-3"
+                          style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                        >
+                          {task.description}
+                        </p>
+                        
+                        {/* Show assignee and related item */}
+                        <div className="mb-3 space-y-1">
+                          {task.assigned_to_profile && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
+                            </p>
+                          )}
+                          {(task.room || task.tree) && (
+                            <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                              <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          {task.priority && (
+                            <Badge variant="outline">
+                              {task.priority}
+                            </Badge>
+                          )}
+                          <span 
+                            className="text-xs text-[hsl(var(--text-secondary))]"
+                            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                          >
+                            Completed
+                          </span>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </DraggableTaskCard>
+                ))}
+              </div>
+            </div>
+          </DroppableTaskColumn>
         </div>
-      </div>
+      </DndContext>
     );
   };
 
@@ -515,17 +710,24 @@ export function TasksView({ userRole }: TasksViewProps) {
       {/* Content */}
       {userRole === 'admin' ? renderAdminView() : renderStaffView()}
 
-      {/* Task Modal (admin only) */}
-      {userRole === 'admin' && (
-        <TaskFormModal
-          open={modalOpen}
-          onOpenChange={setModalOpen}
-          mode={modalMode}
-          task={selectedTask}
-          onSuccess={handleModalSuccess}
-          onDelete={handleModalDelete}
-        />
-      )}
+      {/* Task Form Modal */}
+      <TaskFormModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSuccess={handleModalSuccess}
+        onDelete={handleModalDelete}
+        task={selectedTask}
+        mode={modalMode}
+      />
+
+      {/* Task Update Modal */}
+      <TaskUpdateModal
+        isOpen={updateModalOpen}
+        onClose={() => setUpdateModalOpen(false)}
+        onSuccess={handleModalSuccess}
+        task={selectedTask!}
+        mode={updateModalMode}
+      />
     </div>
   );
 }
