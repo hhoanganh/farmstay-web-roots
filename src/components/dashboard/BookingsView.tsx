@@ -22,12 +22,15 @@ interface Room {
 
 interface Booking {
   id: string;
-  guest_name: string;
+  guest_id: string;
+  room_id: string;
   check_in_date: string;
   check_out_date: string;
   booking_status: string;
   created_at: string;
-  room_id: string;
+  customers?: {
+    full_name: string;
+  };
 }
 
 export function BookingsView({ userRole }: BookingsViewProps) {
@@ -55,7 +58,10 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const fetchBookings = async () => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('*')
+      .select(`
+        *,
+        customers(full_name)
+      `)
       .order('check_in_date', { ascending: false });
 
     if (!error && data) {

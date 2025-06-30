@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -83,10 +82,14 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
   };
 
   const fetchRecentActivity = async () => {
-    // Fetch recent bookings and tree updates
+    // Fetch recent bookings with customer names
     const { data: recentBookings } = await supabase
       .from('bookings')
-      .select('*, rooms(name)')
+      .select(`
+        *,
+        rooms(name),
+        customers(full_name)
+      `)
       .order('created_at', { ascending: false })
       .limit(3);
 
@@ -104,7 +107,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
         type: 'booking',
         title: `New booking for ${booking.rooms?.name || 'room'}`,
         time: format(new Date(booking.created_at), 'HH:mm'),
-        description: `Guest: ${booking.guest_name || 'N/A'}`,
+        description: `Guest: ${booking.customers?.full_name || 'N/A'}`,
       });
     });
 

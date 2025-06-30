@@ -16,10 +16,14 @@ export function RecentActivityFeed() {
 
   useEffect(() => {
     const fetchRecentActivity = async () => {
-      // Fetch recent bookings
+      // Fetch recent bookings with customer names
       const { data: bookingsData } = await supabase
         .from('bookings')
-        .select('*, rooms(name)')
+        .select(`
+          *,
+          rooms(name),
+          customers(full_name)
+        `)
         .order('created_at', { ascending: false })
         .limit(5);
 
@@ -38,7 +42,7 @@ export function RecentActivityFeed() {
           id: booking.id,
           type: 'booking',
           title: `New booking for ${booking.rooms?.name || 'room'}`,
-          description: `Guest: ${booking.guest_name || 'N/A'} • ${format(new Date(booking.check_in_date), 'MMM dd')} - ${format(new Date(booking.check_out_date), 'MMM dd')}`,
+          description: `Guest: ${booking.customers?.full_name || 'N/A'} • ${format(new Date(booking.check_in_date), 'MMM dd')} - ${format(new Date(booking.check_out_date), 'MMM dd')}`,
           created_at: booking.created_at,
         });
       });
