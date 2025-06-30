@@ -1,4 +1,3 @@
-
 import { Home, Calendar, TreePine, CheckSquare, BookOpen, Users } from 'lucide-react';
 import {
   Sidebar,
@@ -10,6 +9,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 
@@ -46,7 +46,13 @@ export function DashboardSidebar({
   onLogout, 
   isLoggingOut 
 }: DashboardSidebarProps) {
+  const { setOpenMobile } = useSidebar();
   const menuItems = userRole === 'admin' ? adminMenuItems : staffMenuItems;
+
+  const handleMenuItemClick = (view: string) => {
+    setActiveView(view);
+    setOpenMobile(false);
+  };
 
   return (
     <Sidebar className="w-60 border-r border-[hsl(var(--border-primary))] bg-[hsl(var(--background-secondary))]">
@@ -64,7 +70,7 @@ export function DashboardSidebar({
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <SidebarMenuButton
-                    onClick={() => setActiveView(item.id)}
+                    onClick={() => handleMenuItemClick(item.id)}
                     isActive={activeView === item.id}
                     className={`w-full justify-start h-12 ${
                       activeView === item.id 
