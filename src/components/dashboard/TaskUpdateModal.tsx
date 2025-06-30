@@ -56,22 +56,7 @@ export function TaskUpdateModal({ isOpen, onClose, onSuccess, task, mode }: Task
     
     setSubmitting(true);
     
-    const { error: updateError } = await supabase
-      .from('task_updates')
-      .insert({
-        task_id: task.id,
-        notes,
-        image_urls: imageUrls,
-        update_type: mode
-      });
-
-    if (updateError) {
-      console.error('Error adding task update:', updateError);
-      setSubmitting(false);
-      return;
-    }
-
-    // If this is a completion update, update the task status
+    // First, update the task status and evidence
     if (mode === 'completion') {
       const { error: taskError } = await supabase
         .from('tasks')
@@ -87,6 +72,34 @@ export function TaskUpdateModal({ isOpen, onClose, onSuccess, task, mode }: Task
         setSubmitting(false);
         return;
       }
+    }
+
+    // Then create the task update
+    const { error: updateError } = await supabase
+      .from('task_updates')
+      .insert({
+        task_id: task.id,
+        created_by: (await supabase.auth.getUser()).data.user?.id,
+        notes,
+        image_urls: imageUrls,
+        update_type: mode
+      });
+
+    if (updateError) {
+      console.error('Error adding task update:', updateError);
+      // If this was a completion update, revert the task status
+      if (mode === 'completion') {
+        await supabase
+          .from('tasks')
+          .update({ 
+            status: 'In Progress',
+            completion_notes: null,
+            completion_image_urls: null 
+          })
+          .eq('id', task.id);
+      }
+      setSubmitting(false);
+      return;
     }
 
     setSubmitting(false);
