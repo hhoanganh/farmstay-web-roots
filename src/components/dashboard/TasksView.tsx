@@ -290,16 +290,26 @@ export function TasksView({ userRole }: TasksViewProps) {
     );
   };
 
-  const renderStaffView = () => (
-    <div className="space-y-4">
-      {loading ? (
+  const renderStaffView = () => {
+    const statusGroups = [
+      { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
+      { label: 'In Progress', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
+    ];
+
+    if (loading) {
+      return (
         <div className="text-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
           <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
             Loading your tasks...
           </p>
         </div>
-      ) : tasks.length === 0 ? (
+      );
+    }
+    
+    if (tasks.length === 0) {
+      return (
         <Card className="border-[hsl(var(--border-primary))]">
           <CardContent className="p-8 text-center">
             <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
@@ -311,106 +321,121 @@ export function TasksView({ userRole }: TasksViewProps) {
             </p>
           </CardContent>
         </Card>
-      ) : (
-        tasks.map((task) => (
-          <Card key={task.id} className="border-[hsl(var(--border-primary))]">
-            <CardHeader onClick={() => handleCardClick(task)} className={userRole === 'admin' ? 'cursor-pointer' : ''}>
-              <div className="flex items-center justify-between">
-                <CardTitle 
-                  className="text-[hsl(var(--text-primary))] flex items-center gap-2"
-                  style={{ fontFamily: 'Caveat, cursive' }}
-                >
-                  {getStatusIcon(task.status)}
-                  {task.title}
-                </CardTitle>
-                <div className="flex gap-2">
-                  {task.priority && (
-                    <Badge variant="outline">
-                      {task.priority}
-                    </Badge>
-                  )}
-                  <Badge variant="outline">
-                    {task.status}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p 
-                className="text-[hsl(var(--text-secondary))] mb-4"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                {task.description}
-              </p>
-              
-              {/* Show related room or tree if available */}
-              {(task.room || task.tree) && (
-                <div className="mb-4 p-3 bg-[hsl(var(--background-secondary))] rounded-md">
-                  <p className="text-sm text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                    <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                  </p>
-                </div>
-              )}
+      );
+    }
 
-              {/* Render task updates */}
-              {renderTaskUpdates(task)}
-              
-              <div className="flex justify-between items-center mt-4">
-                <div className="flex flex-col gap-1">
-                  {task.due_date && (
-                    <span 
-                      className="text-sm text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Due: {new Date(task.due_date).toLocaleDateString()}
-                    </span>
-                  )}
-                  {task.created_by_profile && (
-                    <span 
-                      className="text-xs text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Created by: {task.created_by_profile.full_name}
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
-                    <>
-                      <Button 
-                        size="sm"
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                        onClick={() => {
-                          // Open progress update modal
-                          setSelectedTask(task);
-                          setUpdateModalMode('progress');
-                          setUpdateModalOpen(true);
-                        }}
+    return (
+      <div className="space-y-8">
+        {statusGroups.map(group => {
+          const groupTasks = tasks.filter(t => group.match(t.status.toLowerCase()));
+          return (
+            <div key={group.label}>
+              <h3
+                className="text-lg font-medium text-[hsl(var(--text-primary))] mb-4 flex items-center gap-2"
+                style={{ fontFamily: 'Caveat, cursive' }}
+              >
+                {group.icon}
+                {group.label} ({groupTasks.length})
+              </h3>
+              <div className="space-y-3">
+                {groupTasks.map((task) => (
+                  <Card key={task.id} className="border-[hsl(var(--border-primary))]">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle 
+                          className="text-[hsl(var(--text-primary))] flex items-center gap-2"
+                          style={{ fontFamily: 'Caveat, cursive' }}
+                        >
+                          {task.title}
+                        </CardTitle>
+                        <div className="flex gap-2">
+                          {task.priority && (
+                            <Badge variant="outline">
+                              {task.priority}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    </CardHeader>
+                    <CardContent>
+                      <p 
+                        className="text-[hsl(var(--text-secondary))] mb-4"
+                        style={{ fontFamily: 'IBM Plex Mono, monospace' }}
                       >
-                        Add Update
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                        onClick={() => {
-                          // Open completion modal
-                          setSelectedTask(task);
-                          setUpdateModalMode('completion');
-                          setUpdateModalOpen(true);
-                        }}
-                      >
-                        Complete Task
-                      </Button>
-                    </>
-                  )}
-                </div>
+                        {task.description}
+                      </p>
+                      
+                      {(task.room || task.tree) && (
+                        <div className="mb-4 p-3 bg-[hsl(var(--background-secondary))] rounded-md">
+                          <p className="text-sm text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                            <strong>Related:</strong> {task.room?.name || task.tree?.name}
+                          </p>
+                        </div>
+                      )}
+
+                      {renderTaskUpdates(task)}
+                      
+                      <div className="flex justify-between items-center mt-4">
+                        <div className="flex flex-col gap-1">
+                          {task.due_date && (
+                            <span 
+                              className="text-sm text-[hsl(var(--text-secondary))]"
+                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                            >
+                              Due: {new Date(task.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          {task.created_by_profile && (
+                            <span 
+                              className="text-xs text-[hsl(var(--text-secondary))]"
+                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                            >
+                              Created by: {task.created_by_profile.full_name}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
+                            <>
+                              <Button 
+                                size="sm"
+                                className="bg-blue-500 hover:bg-blue-600 text-white"
+                                onClick={() => {
+                                  setSelectedTask(task);
+                                  setUpdateModalMode('progress');
+                                  setUpdateModalOpen(true);
+                                }}
+                              >
+                                Add Update
+                              </Button>
+                              <Button 
+                                size="sm"
+                                className="bg-green-500 hover:bg-green-600 text-white"
+                                onClick={() => {
+                                  setSelectedTask(task);
+                                  setUpdateModalMode('completion');
+                                  setUpdateModalOpen(true);
+                                }}
+                              >
+                                Complete Task
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+                {groupTasks.length === 0 && (
+                  <div className="text-sm text-gray-500">No tasks in this category.</div>
+                )}
               </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
-    </div>
-  );
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
   const renderAdminView = () => {
     const statusGroups = [
