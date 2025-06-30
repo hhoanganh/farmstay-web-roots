@@ -202,13 +202,24 @@ const Sidebar = React.forwardRef<
               "w-[--sidebar-width] p-0 text-foreground [&>button]:hidden",
               className
             )}
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
+            style={{
+              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+            }}
           >
-            <div className="flex h-full flex-col bg-[hsl(var(--background-secondary))] bg-opacity-100 opacity-100 z-50 text-[hsl(var(--text-primary))]">
+            <div
+              style={{
+                background: "#f5ede3", // Light brown, match desktop sidebar
+                color: "#3d2c1e",     // Dark text for readability
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                left: 0,
+                top: 0,
+                zIndex: 50,
+                opacity: 1,
+              }}
+              className="flex h-full flex-col"
+            >
               {children}
             </div>
           </SheetContent>
