@@ -560,7 +560,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {todoTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
+                    <Card className="border-[hsl(var(--border-primary))]">
                       <CardContent className="p-4">
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -589,20 +589,23 @@ export function TasksView({ userRole }: TasksViewProps) {
                           )}
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          {task.priority && (
-                            <Badge variant="outline">
-                              {task.priority}
-                            </Badge>
-                          )}
-                          {task.due_date && (
-                            <span 
-                              className="text-xs text-[hsl(var(--text-secondary))]"
-                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                            >
-                              Due: {new Date(task.due_date).toLocaleDateString()}
-                            </span>
-                          )}
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="flex items-center gap-2">
+                            {task.priority && (
+                              <Badge variant="outline">
+                                {task.priority}
+                              </Badge>
+                            )}
+                            {task.due_date && (
+                              <span 
+                                className="text-xs text-[hsl(var(--text-secondary))]"
+                                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                              >
+                                Due: {new Date(task.due_date).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                          <Button variant="outline" size="sm" onClick={() => handleCardClick(task)}>View</Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -625,7 +628,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {inProgressTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
+                    <Card className="border-[hsl(var(--border-primary))]">
                       <CardContent className="p-4">
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -654,20 +657,23 @@ export function TasksView({ userRole }: TasksViewProps) {
                           )}
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          {task.priority && (
-                            <Badge variant="outline">
-                              {task.priority}
-                            </Badge>
-                          )}
-                          {task.due_date && (
-                            <span 
-                              className="text-xs text-[hsl(var(--text-secondary))]"
-                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                            >
-                              Due: {new Date(task.due_date).toLocaleDateString()}
-                            </span>
-                          )}
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="flex items-center gap-2">
+                            {task.priority && (
+                              <Badge variant="outline">
+                                {task.priority}
+                              </Badge>
+                            )}
+                            {task.due_date && (
+                              <span 
+                                className="text-xs text-[hsl(var(--text-secondary))]"
+                                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                              >
+                                Due: {new Date(task.due_date).toLocaleDateString()}
+                              </span>
+                            )}
+                          </div>
+                          <Button variant="outline" size="sm" onClick={() => handleCardClick(task)}>View</Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -690,7 +696,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {doneTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] opacity-75 cursor-pointer" onClick={() => handleCardClick(task)}>
+                    <Card className="border-[hsl(var(--border-primary))] opacity-75">
                       <CardContent className="p-4">
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
@@ -719,18 +725,14 @@ export function TasksView({ userRole }: TasksViewProps) {
                           )}
                         </div>
                         
-                        <div className="flex justify-between items-center">
-                          {task.priority && (
-                            <Badge variant="outline">
-                              {task.priority}
-                            </Badge>
-                          )}
+                        <div className="flex justify-between items-center mt-2">
                           <span 
                             className="text-xs text-[hsl(var(--text-secondary))]"
                             style={{ fontFamily: 'IBM Plex Mono, monospace' }}
                           >
                             Completed
                           </span>
+                          <Button variant="outline" size="sm" onClick={() => handleCardClick(task)}>View</Button>
                         </div>
                       </CardContent>
                     </Card>
