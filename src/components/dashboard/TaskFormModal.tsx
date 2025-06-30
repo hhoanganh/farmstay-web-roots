@@ -144,6 +144,38 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
           <DialogTitle>{mode === 'create' ? 'Create Task' : 'Edit Task'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Related Room (optional)
+            </label>
+            <Select value={roomId} onValueChange={val => setRoomId(val === 'none' ? '' : val)} disabled={loading}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a room" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                {rooms.map(r => (
+                  <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
+              Related Tree (optional)
+            </label>
+            <Select value={treeId} onValueChange={val => setTreeId(val === 'none' ? '' : val)} disabled={loading}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a tree" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                {trees.map(t => (
+                  <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Input
             placeholder="Title"
             value={title}
@@ -181,28 +213,6 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
               <SelectItem value="low">Low</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="high">High</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={roomId} onValueChange={val => setRoomId(val === 'none' ? '' : val)} disabled={loading}>
-            <SelectTrigger>
-              <SelectValue placeholder="Related Room (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">None</SelectItem>
-              {rooms.map(r => (
-                <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={treeId} onValueChange={val => setTreeId(val === 'none' ? '' : val)} disabled={loading}>
-            <SelectTrigger>
-              <SelectValue placeholder="Related Tree (optional)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">None</SelectItem>
-              {trees.map(t => (
-                <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
-              ))}
             </SelectContent>
           </Select>
           <DialogFooter className="flex flex-row gap-2 justify-end">
