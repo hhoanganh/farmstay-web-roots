@@ -501,8 +501,8 @@ export function TasksView({ userRole }: TasksViewProps) {
           </p>
         </div>
         {userRole === 'admin' && (
-          <Button 
-            className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
+          <Button
+            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring-focus))] h-12"
             style={{ fontFamily: 'Inter, sans-serif' }}
             onClick={handleCreateClick}
           >
