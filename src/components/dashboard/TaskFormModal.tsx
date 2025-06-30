@@ -183,23 +183,23 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
               <SelectItem value="high">High</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={roomId} onValueChange={setRoomId} disabled={loading}>
+          <Select value={roomId} onValueChange={val => setRoomId(val === 'none' ? '' : val)} disabled={loading}>
             <SelectTrigger>
               <SelectValue placeholder="Related Room (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None</SelectItem>
+              <SelectItem value="none">None</SelectItem>
               {rooms.map(r => (
                 <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={treeId} onValueChange={setTreeId} disabled={loading}>
+          <Select value={treeId} onValueChange={val => setTreeId(val === 'none' ? '' : val)} disabled={loading}>
             <SelectTrigger>
               <SelectValue placeholder="Related Tree (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">None</SelectItem>
+              <SelectItem value="none">None</SelectItem>
               {trees.map(t => (
                 <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
               ))}
