@@ -31,12 +31,12 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
   const [staff, setStaff] = useState<{ id: string; full_name: string }[]>([]);
   const [rooms, setRooms] = useState<{ id: string; name: string }[]>([]);
   const [trees, setTrees] = useState<{ id: string; name: string }[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
 
   useEffect(() => {
     if (open) {
-      fetchStaff();
-      fetchRooms();
-      fetchTrees();
+      setDataLoading(true);
+      Promise.all([fetchStaff(), fetchRooms(), fetchTrees()]).then(() => setDataLoading(false));
       if (mode === 'edit' && task) {
         setTitle(task.title || '');
         setDescription(task.description || '');
@@ -123,6 +123,19 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
       onOpenChange(false);
     }
   };
+
+  if (dataLoading) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
+            <div className="text-[hsl(var(--text-secondary))]">Loading...</div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
