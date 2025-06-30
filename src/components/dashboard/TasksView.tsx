@@ -183,16 +183,10 @@ export function TasksView({ userRole }: TasksViewProps) {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const task = (active.data as any).current.task as Task;
+      const task = tasks.find(t => t.id === active.id);
       const newStatus = over.id as string;
-
-      if (task.status.toLowerCase().replace(/ /g, '_') !== newStatus.toLowerCase().replace(/ /g, '_')) {
-        // Optimistic UI Update
-        const originalTasks = tasks;
-        const updatedTasks = tasks.map(t =>
-          t.id === task.id ? { ...t, status: newStatus } : t
-        );
-        setSelectedTask(updatedTasks.find(t => t.id === task.id) || null);
+      if (task && task.status.toLowerCase().replace(/ /g, '_') !== newStatus.toLowerCase().replace(/ /g, '_')) {
+        await updateTaskStatus(task.id, newStatus);
       }
     }
   };
