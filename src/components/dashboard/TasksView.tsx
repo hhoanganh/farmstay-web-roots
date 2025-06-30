@@ -11,6 +11,8 @@ import { TaskUpdateModal } from './TaskUpdateModal';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useTasks } from '@/hooks/useTasks';
+import { TaskCard } from './TaskCard';
 
 interface TasksViewProps {
   userRole: string;
@@ -77,8 +79,15 @@ const DroppableTaskColumn = ({ id, children }: { id: string; children: React.Rea
 
 export function TasksView({ userRole }: TasksViewProps) {
   const { userProfile } = useAuth();
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+  const {
+    tasks,
+    loading,
+    error,
+    refreshTasks,
+    updateTaskStatus,
+    addTaskUpdate,
+  } = useTasks(userRole, userProfile?.id);
+
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -90,88 +99,9 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
-    fetchTasks();
+    refreshTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole, userProfile?.id]);
-
-  const fetchTasks = async () => {
-    setLoading(true);
-    
-    let query = supabase
-      .from('tasks')
-      .select(`
-        *,
-        assigned_to_profile:profiles!tasks_assigned_to_fkey(full_name),
-        created_by_profile:profiles!tasks_created_by_fkey(full_name),
-        room:rooms!tasks_room_id_fkey(name),
-        tree:trees!tasks_tree_id_fkey(name)
-      `)
-      .order('created_at', { ascending: false });
-
-    // Staff only sees their assigned tasks
-    if (userRole === 'staff' && userProfile?.id) {
-      query = query.eq('assigned_to', userProfile.id);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching tasks:', error);
-    } else {
-      // Add empty updates array to each task
-      setTasks((data || []).map(task => ({
-        ...task,
-        updates: [],
-        evidence_required: true // Default value
-      })) as Task[]);
-
-      // Fetch updates for each task
-      const updatePromises = (data || []).map(async (task) => {
-        const { data: updates } = await supabase
-          .from('task_updates')
-          .select(`
-            *,
-            created_by_profile:profiles(full_name)
-          `)
-          .eq('task_id', task.id)
-          .order('created_at', { ascending: true });
-
-        return { taskId: task.id, updates: updates || [] };
-      });
-
-      const updateResults = await Promise.all(updatePromises);
-
-      // Update tasks with their updates
-      setTasks(currentTasks => 
-        currentTasks.map(task => {
-          const taskUpdates = updateResults.find(r => r.taskId === task.id);
-          return {
-            ...task,
-            updates: taskUpdates?.updates || []
-          };
-        })
-      );
-    }
-    
-    setLoading(false);
-  };
-
-  const updateTaskStatus = async (taskId: string, newStatus: string) => {
-    setUpdatingTask(taskId);
-    
-    const { error } = await supabase
-      .from('tasks')
-      .update({ status: newStatus })
-      .eq('id', taskId);
-
-    if (error) {
-      console.error('Error updating task status:', error);
-    } else {
-      // Refresh tasks after update
-      await fetchTasks();
-    }
-    
-    setUpdatingTask(null);
-  };
 
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
@@ -244,10 +174,10 @@ export function TasksView({ userRole }: TasksViewProps) {
     }
   };
   const handleModalSuccess = () => {
-    fetchTasks();
+    refreshTasks();
   };
   const handleModalDelete = () => {
-    fetchTasks();
+    refreshTasks();
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -262,48 +192,9 @@ export function TasksView({ userRole }: TasksViewProps) {
         const updatedTasks = tasks.map(t =>
           t.id === task.id ? { ...t, status: newStatus } : t
         );
-        setTasks(updatedTasks);
-        
-        await updateTaskStatus(task.id, newStatus);
+        setSelectedTask(updatedTasks.find(t => t.id === task.id) || null);
       }
     }
-  };
-
-  const handleTaskUpdate = async (taskId: string, updateType: 'progress' | 'completion', notes: string, imageUrls: string[]) => {
-    const { error: updateError } = await supabase
-      .from('task_updates')
-      .insert({
-        task_id: taskId,
-        created_by: userProfile?.id,
-        notes,
-        image_urls: imageUrls,
-        update_type: updateType
-      } as any); // Temporary type assertion until Supabase types are updated
-
-    if (updateError) {
-      console.error('Error adding task update:', updateError);
-      return;
-    }
-
-    // If this is a completion update, update the task status
-    if (updateType === 'completion') {
-      const { error: taskError } = await supabase
-        .from('tasks')
-        .update({
-          status: 'Done',
-          completion_notes: notes,
-          completion_image_urls: imageUrls
-        } as any) // Temporary type assertion until Supabase types are updated
-        .eq('id', taskId);
-
-      if (taskError) {
-        console.error('Error updating task completion:', taskError);
-        return;
-      }
-    }
-
-    // Refresh tasks
-    await fetchTasks();
   };
 
   const renderTaskUpdates = (task: Task) => {
@@ -561,50 +452,7 @@ export function TasksView({ userRole }: TasksViewProps) {
                 {todoTasks.map((task) => (
                   <React.Fragment key={task.id}>
                     <DraggableTaskCard task={task}>
-                      <Card className="border-[hsl(var(--border-primary))]">
-                        <CardContent className="p-4">
-                          <h4 
-                            className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            {task.title}
-                          </h4>
-                          <p 
-                            className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                          >
-                            {task.description}
-                          </p>
-                          {/* Show assignee and related item */}
-                          <div className="mb-3 space-y-1">
-                            {task.assigned_to_profile && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                              </p>
-                            )}
-                            {(task.room || task.tree) && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex justify-between items-center">
-                            {task.priority && (
-                              <Badge variant="outline">
-                                {task.priority}
-                              </Badge>
-                            )}
-                            {task.due_date && (
-                              <span 
-                                className="text-xs text-[hsl(var(--text-secondary))]"
-                                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                              >
-                                Due: {new Date(task.due_date).toLocaleDateString()}
-                              </span>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <TaskCard task={task} />
                     </DraggableTaskCard>
                     <div className="flex w-full justify-end mt-1">
                       <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
@@ -629,50 +477,7 @@ export function TasksView({ userRole }: TasksViewProps) {
                 {inProgressTasks.map((task) => (
                   <React.Fragment key={task.id}>
                     <DraggableTaskCard task={task}>
-                      <Card className="border-[hsl(var(--border-primary))]">
-                        <CardContent className="p-4">
-                          <h4 
-                            className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            {task.title}
-                          </h4>
-                          <p 
-                            className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                          >
-                            {task.description}
-                          </p>
-                          {/* Show assignee and related item */}
-                          <div className="mb-3 space-y-1">
-                            {task.assigned_to_profile && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                              </p>
-                            )}
-                            {(task.room || task.tree) && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex justify-between items-center">
-                            {task.priority && (
-                              <Badge variant="outline">
-                                {task.priority}
-                              </Badge>
-                            )}
-                            {task.due_date && (
-                              <span 
-                                className="text-xs text-[hsl(var(--text-secondary))]"
-                                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                              >
-                                Due: {new Date(task.due_date).toLocaleDateString()}
-                              </span>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <TaskCard task={task} />
                     </DraggableTaskCard>
                     <div className="flex w-full justify-end mt-1">
                       <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
@@ -697,48 +502,7 @@ export function TasksView({ userRole }: TasksViewProps) {
                 {doneTasks.map((task) => (
                   <React.Fragment key={task.id}>
                     <DraggableTaskCard task={task}>
-                      <Card className="border-[hsl(var(--border-primary))] opacity-75">
-                        <CardContent className="p-4">
-                          <h4 
-                            className="font-medium text-[hsl(var(--text-primary))] mb-2"
-                            style={{ fontFamily: 'Inter, sans-serif' }}
-                          >
-                            {task.title}
-                          </h4>
-                          <p 
-                            className="text-sm text-[hsl(var(--text-secondary))] mb-3"
-                            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                          >
-                            {task.description}
-                          </p>
-                          {/* Show assignee and related item */}
-                          <div className="mb-3 space-y-1">
-                            {task.assigned_to_profile && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Assigned to:</strong> {task.assigned_to_profile.full_name}
-                              </p>
-                            )}
-                            {(task.room || task.tree) && (
-                              <p className="text-xs text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                                <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex justify-between items-center">
-                            {task.priority && (
-                              <Badge variant="outline">
-                                {task.priority}
-                              </Badge>
-                            )}
-                            <span 
-                              className="text-xs text-[hsl(var(--text-secondary))]"
-                              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                            >
-                              Completed
-                            </span>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <TaskCard task={task} />
                     </DraggableTaskCard>
                     <div className="flex w-full justify-end mt-1">
                       <Button variant="outline" size="sm" className="w-full" onClick={() => handleCardClick(task)}>View</Button>
