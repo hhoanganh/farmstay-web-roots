@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Button } from '@/components/ui/button';
-import { WelcomeSection } from '@/components/dashboard/WelcomeSection';
-import { MetricsSection } from '@/components/dashboard/MetricsSection';
-import { QuickTasksSection } from '@/components/dashboard/QuickTasksSection';
-import { RecentActivityFeed } from '@/components/dashboard/RecentActivityFeed';
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import { MorningReportView } from '@/components/dashboard/MorningReportView';
+import { BookingsView } from '@/components/dashboard/BookingsView';
+import { TreesView } from '@/components/dashboard/TreesView';
+import { TasksView } from '@/components/dashboard/TasksView';
+import { JournalView } from '@/components/dashboard/JournalView';
+import { StaffView } from '@/components/dashboard/StaffView';
 
 const AdminDashboard = () => {
   const { userProfile } = useAuth();
@@ -18,25 +20,46 @@ const AdminDashboard = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    // Prevent multiple logout attempts
     if (isLoggingOut) return;
     setIsLoggingOut(true);
 
     const { error } = await supabase.auth.signOut();
-
     if (error) {
       console.error("Error logging out:", error.message);
-      // A toast notification could be added here for the user
     }
-
-    // The AuthProvider will automatically update the session to null.
-    // The ProtectedRoute component will then redirect the user to the login page.
-    // A direct navigation call ensures faster UI feedback.
     navigate('/login', { replace: true });
   };
 
+  const renderContent = () => {
+    switch (activeView) {
+      case 'dashboard':
+        return <MorningReportView userRole={userProfile?.role} />;
+      case 'bookings':
+        return <BookingsView userRole={userProfile?.role} />;
+      case 'trees':
+        return <TreesView userRole={userProfile?.role} />;
+      case 'tasks':
+        return <TasksView userRole={userProfile?.role} />;
+      case 'journal':
+        return userProfile?.role === 'admin' ? <JournalView /> : null;
+      case 'staff':
+        return userProfile?.role === 'admin' ? <StaffView /> : null;
+      default:
+        return <MorningReportView userRole={userProfile?.role} />;
+    }
+  };
+
   if (!userProfile) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[hsl(var(--background-primary))]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
+          <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            Loading your dashboard...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -46,58 +69,13 @@ const AdminDashboard = () => {
           activeView={activeView} 
           setActiveView={setActiveView}
           userRole={userProfile.role}
+          userProfile={userProfile}
+          onLogout={handleLogout}
+          isLoggingOut={isLoggingOut}
         />
         
-        <main className="flex-1 p-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
-              <h1 
-                className="text-4xl text-[hsl(var(--text-accent))]"
-                style={{ fontFamily: 'Caveat, cursive' }}
-              >
-                Today's Report
-              </h1>
-              <Button 
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                variant="outline"
-                className="border-[hsl(var(--border-primary))]"
-              >
-                {isLoggingOut ? 'Logging out...' : 'Logout'}
-              </Button>
-            </div>
-
-            {activeView === 'dashboard' && (
-              <div className="space-y-8">
-                <WelcomeSection userProfile={userProfile} />
-                <MetricsSection />
-                <QuickTasksSection userRole={userProfile.role} />
-                <RecentActivityFeed />
-              </div>
-            )}
-
-            {activeView === 'bookings' && (
-              <div className="text-center py-20">
-                <h2 className="text-2xl mb-4" style={{ fontFamily: 'Caveat, cursive' }}>
-                  Bookings Management
-                </h2>
-                <p className="text-[hsl(var(--text-secondary))]">
-                  Coming soon - manage all bookings here
-                </p>
-              </div>
-            )}
-
-            {activeView === 'trees' && (
-              <div className="text-center py-20">
-                <h2 className="text-2xl mb-4" style={{ fontFamily: 'Caveat, cursive' }}>
-                  Trees Management
-                </h2>
-                <p className="text-[hsl(var(--text-secondary))]">
-                  Coming soon - manage all trees here
-                </p>
-              </div>
-            )}
-          </div>
+        <main className="flex-1 bg-[hsl(var(--background-primary))]">
+          {renderContent()}
         </main>
       </div>
     </SidebarProvider>
