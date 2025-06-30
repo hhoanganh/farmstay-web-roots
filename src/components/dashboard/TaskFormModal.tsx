@@ -80,8 +80,29 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    if (!title || !assignedTo) {
-      toast({ title: 'Title and Assignee are required', variant: 'destructive' });
+    // Validation
+    if ((!roomId || roomId === 'none') && (!treeId || treeId === 'none')) {
+      toast({ title: 'A task must be assigned to a room or a tree.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    if (!title.trim()) {
+      toast({ title: 'Title is required.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    if (!assignedTo) {
+      toast({ title: 'Assignee is required.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    if (!dueDate) {
+      toast({ title: 'Due date is required.', variant: 'destructive' });
+      setLoading(false);
+      return;
+    }
+    if (!priority) {
+      toast({ title: 'Priority is required.', variant: 'destructive' });
       setLoading(false);
       return;
     }
@@ -91,8 +112,8 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
       assigned_to: assignedTo,
       due_date: dueDate || null,
       priority,
-      room_id: roomId || null,
-      tree_id: treeId || null,
+      room_id: (!roomId || roomId === 'none') ? null : roomId,
+      tree_id: (!treeId || treeId === 'none') ? null : treeId,
     };
     let result;
     if (mode === 'create') {
@@ -145,12 +166,13 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
               Related Room (optional)
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <Select value={roomId} onValueChange={val => {
               setRoomId(val === 'none' ? '' : val);
-              if (val !== 'none') setTreeId('none'); // Reset tree if room is selected
+              if (val !== 'none') setTreeId('none');
             }} disabled={loading}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a room" />
@@ -164,12 +186,13 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
             </Select>
           </div>
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Inter, sans-serif' }}>
+            <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
               Related Tree (optional)
+              <span className="text-red-500 ml-1">*</span>
             </label>
             <Select value={treeId} onValueChange={val => {
               setTreeId(val === 'none' ? '' : val);
-              if (val !== 'none') setRoomId('none'); // Reset room if tree is selected
+              if (val !== 'none') setRoomId('none');
             }} disabled={loading}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a tree" />
@@ -183,8 +206,11 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
             </Select>
           </div>
           <div className="text-xs text-[hsl(var(--text-secondary))] mb-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-            A task can only be assigned to a room or a tree, not both.
+            <span className="text-red-500">*</span> Required. A task must be assigned to a room or a tree, not both.
           </div>
+          <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Title <span className="text-red-500 ml-1">*</span>
+          </label>
           <Input
             placeholder="Title"
             value={title}
@@ -198,6 +224,9 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
             onChange={e => setDescription(e.target.value)}
             disabled={loading}
           />
+          <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Assign to staff <span className="text-red-500 ml-1">*</span>
+          </label>
           <Select value={assignedTo} onValueChange={setAssignedTo} disabled={loading} required>
             <SelectTrigger>
               <SelectValue placeholder="Assign to staff" />
@@ -208,13 +237,20 @@ export function TaskFormModal({ open, onOpenChange, mode, task, onSuccess, onDel
               ))}
             </SelectContent>
           </Select>
+          <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Due Date <span className="text-red-500 ml-1">*</span>
+          </label>
           <Input
-            type="date"
+            type="datetime-local"
             value={dueDate}
             onChange={e => setDueDate(e.target.value)}
+            required
             disabled={loading}
           />
-          <Select value={priority} onValueChange={setPriority} disabled={loading}>
+          <label className="text-sm font-medium text-[hsl(var(--text-primary))] flex items-center" style={{ fontFamily: 'Inter, sans-serif' }}>
+            Priority <span className="text-red-500 ml-1">*</span>
+          </label>
+          <Select value={priority} onValueChange={setPriority} disabled={loading} required>
             <SelectTrigger>
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
