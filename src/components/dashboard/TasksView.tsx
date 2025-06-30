@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit } from 'lucide-react';
+import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit, MoreVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
@@ -13,6 +13,19 @@ import type { DragEndEvent } from '@dnd-kit/core';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
+import { useIsMobile } from '@/hooks/use-mobile';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface TasksViewProps {
   userRole: string;
@@ -78,6 +91,7 @@ const DroppableTaskColumn = ({ id, children }: { id: string; children: React.Rea
 };
 
 export function TasksView({ userRole }: TasksViewProps) {
+  const isMobile = useIsMobile();
   const { userProfile } = useAuth();
   const {
     tasks,
@@ -218,6 +232,97 @@ export function TasksView({ userRole }: TasksViewProps) {
             )}
           </div>
         ))}
+      </div>
+    );
+  };
+
+  const renderMobileView = () => {
+    const taskStatuses = ['To Do', 'In Progress', 'Done'];
+    const tasksByStatus = taskStatuses.reduce((acc, status) => {
+      acc[status] = tasks.filter(task => task.status.toLowerCase().replace('_', ' ') === status.toLowerCase());
+      return acc;
+    }, {} as Record<string, Task[]>);
+
+    return (
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold">Tasks</h2>
+          {userRole === 'admin' && (
+            <Button onClick={handleCreateClick}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Task
+            </Button>
+          )}
+        </div>
+        <Accordion type="multiple" defaultValue={taskStatuses} className="w-full">
+          {taskStatuses.map((status) => (
+            <AccordionItem value={status} key={status}>
+              <AccordionTrigger className="text-lg font-medium">{status} ({tasksByStatus[status].length})</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-4">
+                  {tasksByStatus[status].map((task) => (
+                    <div key={task.id} className="relative group">
+                      <div onClick={() => handleCardClick(task)} className="cursor-pointer">
+                        <TaskCard task={task}>
+                          {userRole === 'staff' && task.status.toLowerCase() !== 'done' && (
+                            <div className="mt-4 flex gap-2">
+                              {task.status.toLowerCase() !== 'done' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="w-full"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedTask(task);
+                                    setUpdateModalMode('progress');
+                                    setUpdateModalOpen(true);
+                                  }}
+                                >
+                                  Update Progress
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                className="w-full"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedTask(task);
+                                  setUpdateModalMode('completion');
+                                  setUpdateModalOpen(true);
+                                }}
+                              >
+                                Complete Task
+                              </Button>
+                            </div>
+                          )}
+                        </TaskCard>
+                      </div>
+                      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            {taskStatuses.map(s => s !== status && (
+                              <DropdownMenuItem key={s} onClick={() => updateTaskStatus(task.id, s)}>
+                                Move to {s}
+                              </DropdownMenuItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                    </div>
+                  ))}
+                  {tasksByStatus[status].length === 0 && (
+                    <p className="text-sm text-gray-500">No tasks in this category.</p>
+                  )}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     );
   };
@@ -511,65 +616,39 @@ export function TasksView({ userRole }: TasksViewProps) {
     );
   };
 
+  if (loading) return <div>Loading tasks...</div>;
+  if (error) return <div>Error loading tasks: {error.message}</div>;
+
   return (
-    <div className="p-8">
-      {/* Page Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 
-            className="text-4xl text-[hsl(var(--text-accent))] mb-2"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            {userRole === 'admin' ? 'Task Management' : 'My Assigned Tasks'}
-          </h1>
-          <p 
-            className="text-[hsl(var(--text-secondary))]"
-            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-          >
-            {userRole === 'admin' 
-              ? 'Manage tasks for all staff members'
-              : 'View and update your assigned tasks'
-            }
-          </p>
-        </div>
-        {userRole === 'admin' && (
-          <Button
-            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring-focus))] h-12"
-            style={{ fontFamily: 'Inter, sans-serif' }}
-            onClick={handleCreateClick}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Task
-          </Button>
-        )}
-      </div>
+    <div className="h-full flex flex-col">
+      {isMobile ? (
+        renderMobileView()
+      ) : userRole === 'admin' ? (
+        renderAdminView()
+      ) : (
+        renderStaffView()
+      )}
 
-      {/* Content */}
-      {userRole === 'admin' ? renderAdminView() : renderStaffView()}
-
-      {/* Task Form Modal */}
-      <TaskFormModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        onSuccess={handleModalSuccess}
-        onDelete={handleModalDelete}
-        task={selectedTask}
-        mode={modalMode}
-      />
-
-      {/* Task Update Modal */}
-      <TaskUpdateModal
-        isOpen={updateModalOpen}
-        onClose={() => setUpdateModalOpen(false)}
-        onSuccess={handleModalSuccess}
-        task={selectedTask!}
-        mode={updateModalMode}
-      />
-
-      {/* Task Detail Sheet for Admin */}
-      <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
-        {renderTaskDetailSheet()}
-      </Sheet>
+      {modalOpen && (
+        <TaskFormModal
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onSuccess={handleModalSuccess}
+          onDelete={handleModalDelete}
+          task={selectedTask}
+          mode={modalMode}
+        />
+      )}
+      {updateModalOpen && (
+        <TaskUpdateModal
+          isOpen={updateModalOpen}
+          onClose={() => setUpdateModalOpen(false)}
+          onSuccess={handleModalSuccess}
+          task={selectedTask!}
+          mode={updateModalMode}
+        />
+      )}
+      {detailOpen && renderTaskDetailSheet()}
     </div>
   );
 }
