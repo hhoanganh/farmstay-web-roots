@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
@@ -10,6 +10,8 @@ import { TaskFormModal } from './TaskFormModal';
 import { TaskUpdateModal } from './TaskUpdateModal';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface TasksViewProps {
   userRole: string;
@@ -81,10 +83,11 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'progress' | 'completion'>('create');
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateModalMode, setUpdateModalMode] = useState<'progress' | 'completion'>('progress');
+  const [sheetTask, setSheetTask] = useState<Task | null>(null);
 
   useEffect(() => {
     fetchTasks();
@@ -236,9 +239,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   };
   const handleCardClick = (task: Task) => {
     if (userRole === 'admin') {
-      setModalMode('edit');
-      setSelectedTask(task);
-      setModalOpen(true);
+      setSheetTask(task);
     }
   };
   const handleModalSuccess = () => {
@@ -335,127 +336,193 @@ export function TasksView({ userRole }: TasksViewProps) {
     );
   };
 
-  const renderStaffView = () => (
-    <div className="space-y-4">
-      {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[hsl(var(--text-accent))] mx-auto mb-4"></div>
-          <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-            Loading your tasks...
-          </p>
-        </div>
-      ) : tasks.length === 0 ? (
-        <Card className="border-[hsl(var(--border-primary))]">
-          <CardContent className="p-8 text-center">
-            <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
-            <h3 className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
-              No tasks assigned
-            </h3>
-            <p className="text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-              You don't have any tasks assigned to you at the moment.
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        tasks.map((task) => (
-          <Card key={task.id} className="border-[hsl(var(--border-primary))]">
-            <CardHeader onClick={() => handleCardClick(task)} className={userRole === 'admin' ? 'cursor-pointer' : ''}>
-              <div className="flex items-center justify-between">
-                <CardTitle 
-                  className="text-[hsl(var(--text-primary))] flex items-center gap-2"
-                  style={{ fontFamily: 'Caveat, cursive' }}
-                >
-                  {getStatusIcon(task.status)}
-                  {task.title}
-                </CardTitle>
-                <div className="flex gap-2">
-                  {task.priority && (
-                    <Badge variant="outline">
-                      {task.priority}
-                    </Badge>
-                  )}
-                  <Badge variant="outline">
-                    {task.status}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p 
-                className="text-[hsl(var(--text-secondary))] mb-4"
-                style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-              >
-                {task.description}
-              </p>
-              
-              {/* Show related room or tree if available */}
-              {(task.room || task.tree) && (
-                <div className="mb-4 p-3 bg-[hsl(var(--background-secondary))] rounded-md">
-                  <p className="text-sm text-[hsl(var(--text-secondary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                    <strong>Related:</strong> {task.room?.name || task.tree?.name}
-                  </p>
-                </div>
-              )}
+  const renderStaffView = () => {
+    const activeTasks = tasks.filter(task => task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed');
+    const completedTasks = tasks.filter(task => task.status.toLowerCase() === 'done' || task.status.toLowerCase() === 'completed');
 
-              {/* Render task updates */}
-              {renderTaskUpdates(task)}
-              
-              <div className="flex justify-between items-center mt-4">
-                <div className="flex flex-col gap-1">
-                  {task.due_date && (
-                    <span 
-                      className="text-sm text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Due: {new Date(task.due_date).toLocaleDateString()}
-                    </span>
-                  )}
-                  {task.created_by_profile && (
-                    <span 
-                      className="text-xs text-[hsl(var(--text-secondary))]"
-                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                    >
-                      Created by: {task.created_by_profile.full_name}
-                    </span>
-                  )}
+    return (
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="active">Active ({activeTasks.length})</TabsTrigger>
+          <TabsTrigger value="completed">Completed ({completedTasks.length})</TabsTrigger>
+        </TabsList>
+        <TabsContent value="active">
+          <div className="space-y-4 pt-4">
+            {loading ? (
+              <p>Loading tasks...</p>
+            ) : (
+              activeTasks.length > 0 ? (
+                activeTasks.map((task) => (
+                  <Card key={task.id} className="border-[hsl(var(--border-primary))]">
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-start">
+                        <span className="font-semibold text-lg">{task.title}</span>
+                        <Badge className={getStatusColor(task.status)}>
+                          {getStatusIcon(task.status)}
+                          <span className="ml-2">{task.status}</span>
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-[hsl(var(--text-secondary))] mb-4">{task.description}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex gap-2">
+                          {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
+                            <>
+                              <Button
+                                size="sm"
+                                className="bg-blue-500 hover:bg-blue-600 text-white"
+                                onClick={() => {
+                                  setSelectedTask(task);
+                                  setUpdateModalMode('progress');
+                                  setUpdateModalOpen(true);
+                                }}
+                              >
+                                Add Update
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-green-500 hover:bg-green-600 text-white"
+                                onClick={() => {
+                                  setSelectedTask(task);
+                                  setUpdateModalMode('completion');
+                                  setUpdateModalOpen(true);
+                                }}
+                              >
+                                Complete Task
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {renderTaskUpdates(task)}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">No active tasks assigned.</p>
                 </div>
-                <div className="flex gap-2">
-                  {task.status.toLowerCase() !== 'done' && task.status.toLowerCase() !== 'completed' && (
-                    <>
-                      <Button 
-                        size="sm"
-                        className="bg-blue-500 hover:bg-blue-600 text-white"
-                        onClick={() => {
-                          // Open progress update modal
-                          setSelectedTask(task);
-                          setUpdateModalMode('progress');
-                          setUpdateModalOpen(true);
-                        }}
-                      >
-                        Add Update
-                      </Button>
-                      <Button 
-                        size="sm"
-                        className="bg-green-500 hover:bg-green-600 text-white"
-                        onClick={() => {
-                          // Open completion modal
-                          setSelectedTask(task);
-                          setUpdateModalMode('completion');
-                          setUpdateModalOpen(true);
-                        }}
-                      >
-                        Complete Task
-                      </Button>
-                    </>
-                  )}
+              )
+            )}
+          </div>
+        </TabsContent>
+        <TabsContent value="completed">
+          <div className="space-y-4 pt-4">
+            {loading ? (
+              <p>Loading tasks...</p>
+            ) : (
+              completedTasks.length > 0 ? (
+                completedTasks.map((task) => (
+                  <Card key={task.id} className="border-[hsl(var(--border-primary))] opacity-80">
+                    <CardHeader>
+                      <CardTitle className="flex justify-between items-start">
+                        <span className="font-semibold text-lg">{task.title}</span>
+                         <Badge className={getStatusColor(task.status)}>
+                          {getStatusIcon(task.status)}
+                          <span className="ml-2">{task.status}</span>
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-[hsl(var(--text-secondary))] mb-4">{task.description}</p>
+                      {renderTaskUpdates(task)}
+                      {task.completion_notes && (
+                        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                           <h5 className="font-semibold mb-2">Completion Notes</h5>
+                           <p className="text-sm">{task.completion_notes}</p>
+                           {task.completion_image_urls && task.completion_image_urls.length > 0 && (
+                            <div className="mt-2 grid grid-cols-3 gap-2">
+                              {task.completion_image_urls.map((url, index) => (
+                                <img key={index} src={url} alt={`Completion Evidence ${index + 1}`} className="rounded-md w-full h-24 object-cover"/>
+                              ))}
+                            </div>
+                           )}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-500">No completed tasks yet.</p>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
-    </div>
-  );
+              )
+            )}
+          </div>
+        </TabsContent>
+      </Tabs>
+    );
+  };
+
+  const renderTaskSheetContent = () => {
+    if (!sheetTask) return null;
+    return (
+      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Task Details</SheetTitle>
+        </SheetHeader>
+        <div className="py-4 space-y-4">
+            <div className="flex justify-between items-start">
+              <h3 className="text-xl font-semibold">{sheetTask.title}</h3>
+              <Button size="sm" onClick={() => {
+                  setSheetTask(null); // Close sheet
+                  setSelectedTask(sheetTask);
+                  setModalMode('edit');
+                  setModalOpen(true);
+              }}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Task
+              </Button>
+            </div>
+            <Badge className={getStatusColor(sheetTask.status)}>
+              {getStatusIcon(sheetTask.status)}
+              <span className="ml-2">{sheetTask.status}</span>
+            </Badge>
+            <p className="text-sm text-gray-500">{sheetTask.description}</p>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                    <p className="font-medium">Assignee</p>
+                    <p>{sheetTask.assigned_to_profile?.full_name || 'N/A'}</p>
+                </div>
+                <div>
+                    <p className="font-medium">Priority</p>
+                    <p>{sheetTask.priority || 'N/A'}</p>
+                </div>
+                <div>
+                    <p className="font-medium">Due Date</p>
+                    <p>{sheetTask.due_date ? new Date(sheetTask.due_date).toLocaleDateString() : 'N/A'}</p>
+                </div>
+                <div>
+                    <p className="font-medium">Created By</p>
+                    <p>{sheetTask.created_by_profile?.full_name || 'N/A'}</p>
+                </div>
+                {(sheetTask.room || sheetTask.tree) && (
+                    <div className="col-span-2">
+                        <p className="font-medium">Related To</p>
+                        <p>{sheetTask.room?.name || sheetTask.tree?.name}</p>
+                    </div>
+                )}
+            </div>
+            <hr />
+            {renderTaskUpdates(sheetTask)}
+            {sheetTask.completion_notes && (
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                    <h5 className="font-semibold mb-2">Completion Notes</h5>
+                    <p className="text-sm">{sheetTask.completion_notes}</p>
+                    {sheetTask.completion_image_urls && sheetTask.completion_image_urls.length > 0 && (
+                        <div className="mt-2 grid grid-cols-3 gap-2">
+                            {sheetTask.completion_image_urls.map((url, index) => (
+                                <img key={index} src={url} alt={`Completion Evidence ${index + 1}`} className="rounded-md w-full h-24 object-cover"/>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+      </SheetContent>
+    );
+  };
 
   const renderAdminView = () => {
     const todoTasks = tasks.filter(t => t.status.toLowerCase() === 'to do' || t.status.toLowerCase() === 'todo');
@@ -711,8 +778,8 @@ export function TasksView({ userRole }: TasksViewProps) {
 
       {/* Task Form Modal */}
       <TaskFormModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
         onSuccess={handleModalSuccess}
         onDelete={handleModalDelete}
         task={selectedTask}
@@ -727,6 +794,11 @@ export function TasksView({ userRole }: TasksViewProps) {
         task={selectedTask!}
         mode={updateModalMode}
       />
+
+      {/* Task Detail Sheet */}
+      <Sheet open={!!sheetTask} onOpenChange={(isOpen) => !isOpen && setSheetTask(null)}>
+        {renderTaskSheetContent()}
+      </Sheet>
     </div>
   );
 }
