@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
@@ -10,6 +10,7 @@ import { TaskFormModal } from './TaskFormModal';
 import { TaskUpdateModal } from './TaskUpdateModal';
 import { DndContext, useDraggable, useDroppable } from '@dnd-kit/core';
 import type { DragEndEvent } from '@dnd-kit/core';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 
 interface TasksViewProps {
   userRole: string;
@@ -81,10 +82,12 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'progress' | 'completion'>('create');
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateModalMode, setUpdateModalMode] = useState<'progress' | 'completion'>('progress');
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -236,9 +239,8 @@ export function TasksView({ userRole }: TasksViewProps) {
   };
   const handleCardClick = (task: Task) => {
     if (userRole === 'admin') {
-      setModalMode('edit');
-      setSelectedTask(task);
-      setModalOpen(true);
+      setDetailTask(task);
+      setDetailOpen(true);
     }
   };
   const handleModalSuccess = () => {
@@ -332,6 +334,75 @@ export function TasksView({ userRole }: TasksViewProps) {
           </div>
         ))}
       </div>
+    );
+  };
+
+  const renderTaskDetailSheet = () => {
+    if (!detailTask) return null;
+    return (
+      <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Task Details</SheetTitle>
+        </SheetHeader>
+        <div className="py-4 space-y-4">
+          <div className="flex justify-between items-start">
+            <h3 className="text-xl font-semibold">{detailTask.title}</h3>
+            <Button size="sm" onClick={() => {
+              setDetailOpen(false);
+              setSelectedTask(detailTask);
+              setModalMode('edit');
+              setModalOpen(true);
+            }}>
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Task
+            </Button>
+          </div>
+          <Badge className={getStatusColor(detailTask.status)}>
+            {getStatusIcon(detailTask.status)}
+            <span className="ml-2">{detailTask.status}</span>
+          </Badge>
+          <p className="text-sm text-gray-500">{detailTask.description}</p>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="font-medium">Assignee</p>
+              <p>{detailTask.assigned_to_profile?.full_name || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="font-medium">Priority</p>
+              <p>{detailTask.priority || 'N/A'}</p>
+            </div>
+            <div>
+              <p className="font-medium">Due Date</p>
+              <p>{detailTask.due_date ? new Date(detailTask.due_date).toLocaleDateString() : 'N/A'}</p>
+            </div>
+            <div>
+              <p className="font-medium">Created By</p>
+              <p>{detailTask.created_by_profile?.full_name || 'N/A'}</p>
+            </div>
+            {(detailTask.room || detailTask.tree) && (
+              <div className="col-span-2">
+                <p className="font-medium">Related To</p>
+                <p>{detailTask.room?.name || detailTask.tree?.name}</p>
+              </div>
+            )}
+          </div>
+          <hr />
+          {renderTaskUpdates(detailTask)}
+          {detailTask.completion_notes && (
+            <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+              <h5 className="font-semibold mb-2">Completion Notes</h5>
+              <p className="text-sm">{detailTask.completion_notes}</p>
+              {detailTask.completion_image_urls && detailTask.completion_image_urls.length > 0 && (
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  {detailTask.completion_image_urls.map((url, index) => (
+                    <img key={index} src={url} alt={`Completion Evidence ${index + 1}`} className="rounded-md w-full h-24 object-cover"/>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </SheetContent>
     );
   };
 
@@ -711,8 +782,8 @@ export function TasksView({ userRole }: TasksViewProps) {
 
       {/* Task Form Modal */}
       <TaskFormModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        open={modalOpen}
+        onOpenChange={setModalOpen}
         onSuccess={handleModalSuccess}
         onDelete={handleModalDelete}
         task={selectedTask}
@@ -727,6 +798,11 @@ export function TasksView({ userRole }: TasksViewProps) {
         task={selectedTask!}
         mode={updateModalMode}
       />
+
+      {/* Task Detail Sheet for Admin */}
+      <Sheet open={detailOpen} onOpenChange={setDetailOpen}>
+        {renderTaskDetailSheet()}
+      </Sheet>
     </div>
   );
 }
