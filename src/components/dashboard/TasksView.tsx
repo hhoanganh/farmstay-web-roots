@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit } from 'lucide-react';
+import { CheckSquare, Plus, Clock, CheckCircle, AlertCircle, Edit, GripVertical } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { Tables } from '@/integrations/supabase/types';
@@ -58,13 +58,15 @@ const DraggableTaskCard = ({ task, children }: { task: Task; children: React.Rea
 
   const style = transform ? {
     transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    zIndex: 10, // Ensure dragged card is on top
   } : undefined;
 
-  return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {children}
-    </div>
-  );
+  // Clone children to add props
+  return React.cloneElement(children as React.ReactElement, {
+    ref: setNodeRef,
+    style: style,
+    ...attributes, // Spread attributes here, but listeners will be attached to the handle
+  });
 };
 
 const DroppableTaskColumn = ({ id, children }: { id: string; children: React.ReactNode }) => {
@@ -556,8 +558,11 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {todoTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
-                      <CardContent className="p-4">
+                    <Card className="border-[hsl(var(--border-primary))]">
+                      <CardContent className="p-4 relative" onClick={() => handleCardClick(task)}>
+                        <div {...useDraggable({ id: task.id, data: { task } }).listeners} className="absolute top-2 right-2 p-1 cursor-grab">
+                            <GripVertical className="h-5 w-5 text-gray-400" />
+                        </div>
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
                           style={{ fontFamily: 'Inter, sans-serif' }}
@@ -621,8 +626,11 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {inProgressTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] cursor-pointer" onClick={() => handleCardClick(task)}>
-                      <CardContent className="p-4">
+                    <Card className="border-[hsl(var(--border-primary))]">
+                      <CardContent className="p-4 relative" onClick={() => handleCardClick(task)}>
+                        <div {...useDraggable({ id: task.id, data: { task } }).listeners} className="absolute top-2 right-2 p-1 cursor-grab">
+                            <GripVertical className="h-5 w-5 text-gray-400" />
+                        </div>
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
                           style={{ fontFamily: 'Inter, sans-serif' }}
@@ -686,8 +694,11 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {doneTasks.map((task) => (
                   <DraggableTaskCard key={task.id} task={task}>
-                    <Card className="border-[hsl(var(--border-primary))] opacity-75 cursor-pointer" onClick={() => handleCardClick(task)}>
-                      <CardContent className="p-4">
+                    <Card className="border-[hsl(var(--border-primary))] opacity-75">
+                      <CardContent className="p-4 relative" onClick={() => handleCardClick(task)}>
+                        <div {...useDraggable({ id: task.id, data: { task } }).listeners} className="absolute top-2 right-2 p-1 cursor-grab">
+                            <GripVertical className="h-5 w-5 text-gray-400" />
+                        </div>
                         <h4 
                           className="font-medium text-[hsl(var(--text-primary))] mb-2"
                           style={{ fontFamily: 'Inter, sans-serif' }}
