@@ -122,6 +122,17 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
         setLoading(false);
         return;
       }
+      // Double-check customer exists in DB
+      const { data: checkCustomer, error: checkError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('id', customerId)
+        .single();
+      if (checkError || !checkCustomer) {
+        setError('Customer not found in database after creation. Please try again.');
+        setLoading(false);
+        return;
+      }
       // Use the selected tree
       const tree = trees.find((t) => t.id === selectedTreeId);
       if (!tree) {
@@ -165,7 +176,7 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
       onClose();
       refreshTrees();
     } catch (err: any) {
-      setError(err.message || 'An error occurred.');
+      setError((err && err.message) || 'An error occurred.');
     } finally {
       setLoading(false);
     }
