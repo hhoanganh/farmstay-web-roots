@@ -158,7 +158,7 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
         if (error) throw error;
         toast({ title: 'Booking created' });
       }
-      if (refreshBookings) refreshBookings();
+      if (refreshBookings) await refreshBookings();
       onClose();
     } catch (error) {
       toast({
