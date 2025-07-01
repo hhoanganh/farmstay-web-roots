@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { TreePine, Plus, Search, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { TreeManagementModal } from './TreeManagementModal';
 
 interface TreesViewProps {
   userRole: string;
@@ -99,7 +100,7 @@ export function TreesView({ userRole }: TreesViewProps) {
           )}
           {userRole === 'admin' && (
             <Button 
-              className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
+              className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold h-12"
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -215,6 +216,12 @@ export function TreesView({ userRole }: TreesViewProps) {
           </p>
         </div>
       )}
+
+      {/* Tree Management Modal */}
+      <TreeManagementModal
+        open={treeModalOpen}
+        onClose={() => setTreeModalOpen(false)}
+      />
     </div>
   );
 }
