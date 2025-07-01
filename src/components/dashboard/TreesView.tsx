@@ -154,20 +154,24 @@ export function TreesView({ userRole }: TreesViewProps) {
       </div>
 
       {/* Trees Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredTrees.map((tree) => (
           <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader>
               <div className="flex flex-col items-start">
-                {tree.image_url && (
-                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2">
+                <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2 w-full">
+                  {tree.image_url ? (
                     <img
                       src={tree.image_url}
                       alt={tree.name}
-                      className="w-full h-full object-cover rounded-md"
+                      className="w-full h-full object-cover rounded-md max-h-40"
                     />
-                  </div>
-                )}
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <span className="text-xs">No Image</span>
+                    </div>
+                  )}
+                </div>
                 <div className="flex justify-between items-start w-full">
                   <CardTitle 
                     className="text-[hsl(var(--text-primary))]"
