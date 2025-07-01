@@ -132,8 +132,26 @@ export function BookingsView({ userRole }: BookingsViewProps) {
           >
             Manage room bookings and reservations
           </p>
+          {/* Mobile-only buttons below title */}
+          <div className="flex gap-2 mt-4 sm:hidden">
+            <Button
+              variant="outline"
+              onClick={() => setRoomModalOpen(true)}
+              className="flex-1"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Manage Rooms
+            </Button>
+            <Button
+              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+              onClick={handleAddBooking}
+            >
+              Add New Booking
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 sm:flex">
           {userRole === 'admin' && (
             <Button
               variant="outline"

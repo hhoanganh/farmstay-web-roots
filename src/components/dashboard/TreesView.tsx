@@ -104,8 +104,26 @@ export function TreesView({ userRole }: TreesViewProps) {
           >
             Manage tree rentals and life cycle updates
           </p>
+          {/* Mobile-only buttons below title */}
+          <div className="flex gap-2 mt-4 sm:hidden">
+            <Button
+              variant="outline"
+              onClick={() => setTreeModalOpen(true)}
+              className="flex-1"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Manage Trees
+            </Button>
+            <Button
+              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+              onClick={() => { setSelectedTree(null); setRentModalOpen(true); }}
+            >
+              Add New Renter
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 sm:flex">
           {userRole === 'admin' && (
             <Button
               variant="outline"
