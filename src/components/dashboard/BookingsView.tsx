@@ -54,13 +54,6 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const [guestPhone, setGuestPhone] = useState('');
   const [guestNotes, setGuestNotes] = useState('');
 
-  // Debug authentication
-  useEffect(() => {
-    console.log('BookingsView - Session:', session);
-    console.log('BookingsView - User Profile:', userProfile);
-    console.log('BookingsView - User Role:', userRole);
-  }, [session, userProfile, userRole]);
-
   useEffect(() => {
     fetchRooms();
     fetchBookings();
