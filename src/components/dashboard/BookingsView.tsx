@@ -210,14 +210,35 @@ export function BookingsView({ userRole }: BookingsViewProps) {
                           {activeBookings.length} bookings
                         </div>
                       </div>
-                      <Button 
-                        variant="outline" 
-                        className="w-full border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
-                        style={{ fontFamily: 'Inter, sans-serif' }}
-                        onClick={() => setBookingModalOpen(true)}
-                      >
-                        Manage Booking
-                      </Button>
+                      {/* Bookings List */}
+                      <div className="mt-4">
+                        <h4 className="font-semibold mb-2">Bookings</h4>
+                        {roomBookings.length === 0 ? (
+                          <div className="text-sm text-gray-500">No bookings for this room.</div>
+                        ) : (
+                          <ul className="space-y-2">
+                            {roomBookings.map(booking => (
+                              <li key={booking.id} className="flex items-center justify-between border rounded p-2">
+                                <div>
+                                  <div className="font-medium">{booking.customers?.full_name || 'Unknown Guest'}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {format(new Date(booking.check_in_date), 'yyyy-MM-dd')} → {format(new Date(booking.check_out_date), 'yyyy-MM-dd')}
+                                  </div>
+                                  <div className="text-xs">Status: {booking.booking_status}</div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button size="sm" variant="outline" onClick={() => handleEditBooking(booking)}>
+                                    Edit
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleDeleteBooking(booking)}>
+                                    Delete
+                                  </Button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

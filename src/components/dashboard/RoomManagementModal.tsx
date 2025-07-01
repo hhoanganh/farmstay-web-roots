@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface RoomManagementModalProps {
   open: boolean;
@@ -37,10 +38,13 @@ export function RoomManagementModal({ open, onClose, refreshRooms }: RoomManagem
   const [imageUrls, setImageUrls] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [roomToDelete, setRoomToDelete] = useState<Room | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) fetchRooms();
+    setSelectedRoomId('');
+    closeForm();
   }, [open]);
 
   const fetchRooms = async () => {
@@ -114,45 +118,63 @@ export function RoomManagementModal({ open, onClose, refreshRooms }: RoomManagem
     }
   };
 
+  const selectedRoom = rooms.find(r => r.id === selectedRoomId) || null;
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>Manage Rooms</DialogTitle>
         </DialogHeader>
-        <div className="mb-4">
-          <Button onClick={() => openForm()} className="mb-2">+ Add Room</Button>
-          {loading ? <div>Loading...</div> : (
-            <ul className="space-y-2">
-              {rooms.map(room => (
-                <li key={room.id} className="flex items-center justify-between border rounded p-2">
-                  <div>
-                    <div className="font-medium">{room.name}</div>
-                    <div className="text-xs text-gray-500">${room.price}/night</div>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => openForm(room)}>Edit</Button>
-                    <Button size="sm" variant="destructive" onClick={() => { setRoomToDelete(room); setDeleteDialogOpen(true); }}>Delete</Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="mb-4 space-y-4">
+          <Button onClick={() => openForm()} className="w-full">+ Add Room</Button>
+          <div>
+            <Label>Select Room to Edit</Label>
+            <Select value={selectedRoomId} onValueChange={setSelectedRoomId}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a room" />
+              </SelectTrigger>
+              <SelectContent>
+                {rooms.map(room => (
+                  <SelectItem key={room.id} value={room.id}>{room.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+        {/* Edit Room Form */}
+        {selectedRoom && !formOpen && (
+          <form onSubmit={e => { e.preventDefault(); openForm(selectedRoom); }} className="space-y-3 border-t pt-4 mt-4">
+            <div className="flex flex-col gap-2">
+              <Label>Name</Label>
+              <Input value={selectedRoom.name} disabled className="w-full" />
+              <Label>Description</Label>
+              <Input value={selectedRoom.description} disabled className="w-full" />
+              <Label>Price (per night)</Label>
+              <Input value={selectedRoom.price} disabled className="w-full" />
+              <Label>Image URLs</Label>
+              <Input value={selectedRoom.image_urls?.join(', ')} disabled className="w-full" />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <Button type="submit" className="w-full">Edit</Button>
+              <Button type="button" variant="destructive" className="w-full" onClick={() => { setRoomToDelete(selectedRoom); setDeleteDialogOpen(true); }}>Delete</Button>
+            </div>
+          </form>
+        )}
         {/* Add/Edit Room Form */}
         {formOpen && (
           <form onSubmit={handleSave} className="space-y-3 border-t pt-4 mt-4">
             <Label>Name *</Label>
-            <Input value={name} onChange={e => setName(e.target.value)} required disabled={loading} />
+            <Input value={name} onChange={e => setName(e.target.value)} required disabled={loading} className="w-full" />
             <Label>Description</Label>
-            <Input value={description} onChange={e => setDescription(e.target.value)} disabled={loading} />
+            <Input value={description} onChange={e => setDescription(e.target.value)} disabled={loading} className="w-full" />
             <Label>Price (per night) *</Label>
-            <Input value={price} onChange={e => setPrice(e.target.value)} required type="number" min="0" disabled={loading} />
+            <Input value={price} onChange={e => setPrice(e.target.value)} required type="number" min="0" disabled={loading} className="w-full" />
             <Label>Image URLs (comma separated)</Label>
-            <Input value={imageUrls} onChange={e => setImageUrls(e.target.value)} disabled={loading} />
+            <Input value={imageUrls} onChange={e => setImageUrls(e.target.value)} disabled={loading} className="w-full" />
             <div className="flex gap-2 pt-2">
-              <Button type="submit" disabled={loading}>{editingRoom ? 'Save Changes' : 'Add Room'}</Button>
-              <Button type="button" variant="outline" onClick={closeForm}>Cancel</Button>
+              <Button type="submit" disabled={loading} className="w-full">{editingRoom ? 'Save Changes' : 'Add Room'}</Button>
+              <Button type="button" variant="outline" onClick={closeForm} className="w-full">Cancel</Button>
             </div>
           </form>
         )}
@@ -164,8 +186,8 @@ export function RoomManagementModal({ open, onClose, refreshRooms }: RoomManagem
             </DialogHeader>
             <div>Are you sure you want to delete this room? This action cannot be undone.</div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-              <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+              <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="w-full">Cancel</Button>
+              <Button variant="destructive" onClick={handleDelete} className="w-full">Delete</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
