@@ -29,6 +29,8 @@ export function TreesView({ userRole }: TreesViewProps) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [treeModalOpen, setTreeModalOpen] = useState(false);
+  const [rentModalOpen, setRentModalOpen] = useState(false);
+  const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
 
   useEffect(() => {
     fetchTrees();
@@ -96,15 +98,6 @@ export function TreesView({ userRole }: TreesViewProps) {
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Manage Trees
-            </Button>
-          )}
-          {userRole === 'admin' && (
-            <Button 
-              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold h-12"
-              style={{ fontFamily: 'Inter, sans-serif' }}
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add New Tree
             </Button>
           )}
         </div>
@@ -193,6 +186,14 @@ export function TreesView({ userRole }: TreesViewProps) {
                 >
                   {tree.description || 'No description available'}
                 </p>
+                {tree.status === 'available' && (
+                  <Button
+                    className="w-full bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold"
+                    onClick={() => { setSelectedTree(tree); setRentModalOpen(true); }}
+                  >
+                    Rent this Tree
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
