@@ -6,7 +6,7 @@ const navLinks = [
   { href: '/admin/trees', label: 'Trees', icon: <TreePine className="w-5 h-5" /> },
   { href: '/admin/content/pages', label: 'Pages', icon: <FileText className="w-5 h-5" /> },
   { href: '/admin/content/journal', label: 'Journal', icon: <BookOpen className="w-5 h-5" /> },
-  // Staff link is admin-only
+  // Staff link is admin-only - some features only for admin.
 ];
 
 export function DashboardHeader() {
