@@ -9,6 +9,8 @@ import { format } from 'date-fns';
 import { BookingModal } from './BookingModal';
 import { RoomManagementModal } from './RoomManagementModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface BookingsViewProps {
   userRole: string;
@@ -47,6 +49,8 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
+  const [guestPhone, setGuestPhone] = useState('');
+  const [guestNotes, setGuestNotes] = useState('');
 
   useEffect(() => {
     fetchRooms();

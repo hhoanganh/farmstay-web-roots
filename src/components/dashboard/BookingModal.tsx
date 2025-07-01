@@ -17,6 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 interface BookingModalProps {
   open: boolean;
@@ -30,6 +31,8 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
   const [selectedRoom, setSelectedRoom] = useState('');
   const [guestName, setGuestName] = useState('');
   const [guestEmail, setGuestEmail] = useState('');
+  const [guestPhone, setGuestPhone] = useState('');
+  const [guestNotes, setGuestNotes] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
   const [status, setStatus] = useState('confirmed');
@@ -43,6 +46,8 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
         setSelectedRoom(booking.room_id || '');
         setGuestName(booking.customers?.full_name || '');
         setGuestEmail(booking.customers?.email || '');
+        setGuestPhone(booking.customers?.phone || '');
+        setGuestNotes(booking.customers?.notes || '');
         setCheckInDate(booking.check_in_date ? booking.check_in_date.slice(0, 10) : '');
         setCheckOutDate(booking.check_out_date ? booking.check_out_date.slice(0, 10) : '');
         setStatus(booking.booking_status || 'confirmed');
@@ -50,6 +55,8 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
         setSelectedRoom('');
         setGuestName('');
         setGuestEmail('');
+        setGuestPhone('');
+        setGuestNotes('');
         setCheckInDate('');
         setCheckOutDate('');
         setStatus('confirmed');
@@ -108,23 +115,31 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
     try {
       let customerId = booking?.customer_id;
       // If creating or guest info changed, create/update customer
-      if (!customerId || guestName !== booking?.customers?.full_name || guestEmail !== booking?.customers?.email) {
+      if (!customerId || guestName !== booking?.customers?.full_name || guestEmail !== booking?.customers?.email || guestPhone !== booking?.customers?.phone || guestNotes !== booking?.customers?.notes) {
         // Try to find existing customer by email
         let customerData = null;
         if (guestEmail) {
           const { data } = await supabase.from('customers').select('*').eq('email', guestEmail).single();
           customerData = data;
         }
+        const customerPayload = {
+          full_name: guestName,
+          email: guestEmail,
+          phone: guestPhone,
+          notes: guestNotes,
+        };
         if (!customerData) {
           // Create new customer
           const { data: newCustomer, error: customerError } = await supabase
             .from('customers')
-            .insert({ full_name: guestName, email: guestEmail })
+            .insert(customerPayload)
             .select()
             .single();
           if (customerError) throw customerError;
           customerId = newCustomer.id;
         } else {
+          // Update customer info if changed
+          await supabase.from('customers').update(customerPayload).eq('id', customerData.id);
           customerId = customerData.id;
         }
       }
@@ -217,6 +232,25 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
               type="email"
               value={guestEmail}
               onChange={(e) => setGuestEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="phone">Guest Phone</Label>
+            <Input
+              id="phone"
+              value={guestPhone}
+              onChange={(e) => setGuestPhone(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={guestNotes}
+              onChange={(e) => setGuestNotes(e.target.value)}
+              rows={2}
             />
           </div>
 
