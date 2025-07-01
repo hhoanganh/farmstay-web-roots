@@ -145,11 +145,10 @@ export function BookingsView({ userRole }: BookingsViewProps) {
             </Button>
           )}
           <Button 
-            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold h-12"
+            className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold h-12"
             style={{ fontFamily: 'Inter, sans-serif' }}
             onClick={handleAddBooking}
           >
-            <Plus className="h-4 w-4 mr-2" />
             Add New Booking
           </Button>
         </div>
