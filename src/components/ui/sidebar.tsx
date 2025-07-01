@@ -192,35 +192,16 @@ const Sidebar = React.forwardRef<
 
     if (isMobile) {
       return (
-        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetOverlay className="hidden" />
-          <SheetContent
-            data-sidebar="sidebar"
-            data-mobile="true"
-            side={side}
-            className={cn(
-              "w-[--sidebar-width] p-0 text-foreground [&>button]:hidden",
-              className
-            )}
-          >
-            <div
-              style={{
-                background: "#f5ede3", // Light brown, match desktop sidebar
-                color: "#3d2c1e",     // Dark text for readability
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                left: 0,
-                top: 0,
-                zIndex: 50,
-                opacity: 1,
-              }}
-              className="flex h-full flex-col"
-            >
-              {children}
-            </div>
-          </SheetContent>
-        </Sheet>
+        <div
+          className={cn(
+            "flex flex-row w-full h-auto bg-sidebar text-sidebar-foreground border-b border-[hsl(var(--border-primary))]",
+            className
+          )}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </div>
       )
     }
 
