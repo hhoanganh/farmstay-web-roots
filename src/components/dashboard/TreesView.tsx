@@ -123,7 +123,7 @@ export function TreesView({ userRole }: TreesViewProps) {
             </Button>
           </div>
         </div>
-        <div className="flex gap-2 sm:flex">
+        <div className="hidden sm:flex gap-2">
           {userRole === 'admin' && (
             <Button
               variant="outline"
