@@ -72,15 +72,13 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
     let query = supabase
       .from('bookings')
       .select('*')
-      .eq('room_id', selectedRoom);
+      .eq('room_id', selectedRoom)
+      .lte('check_in_date', checkOutDate)
+      .gte('check_out_date', checkInDate);
 
     if (booking?.id) {
       query = query.neq('id', booking.id);
     }
-
-    query = query.or(
-      `and(check_in_date,lte.${checkOutDate}),and(check_out_date,gte.${checkInDate})`
-    );
 
     const { data } = await query;
     return data && data.length > 0;
