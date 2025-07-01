@@ -69,12 +69,20 @@ export function BookingModal({ open, onClose, booking, refreshBookings }: Bookin
 
   const checkOverlap = async () => {
     if (!selectedRoom || !checkInDate || !checkOutDate) return false;
-    const { data } = await supabase
+    let query = supabase
       .from('bookings')
       .select('*')
-      .eq('room_id', selectedRoom)
-      .neq('id', booking?.id || '')
-      .or(`and(check_in_date,lte.${checkOutDate}),and(check_out_date,gte.${checkInDate})`);
+      .eq('room_id', selectedRoom);
+
+    if (booking?.id) {
+      query = query.neq('id', booking.id);
+    }
+
+    query = query.or(
+      `and(check_in_date,lte.${checkOutDate}),and(check_out_date,gte.${checkInDate})`
+    );
+
+    const { data } = await query;
     return data && data.length > 0;
   };
 
