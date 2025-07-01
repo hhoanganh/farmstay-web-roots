@@ -278,7 +278,8 @@ export function BookingsView({ userRole }: BookingsViewProps) {
       <BookingModal
         open={bookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
-        // Pass booking and refresh logic as needed
+        booking={editingBooking}
+        refreshBookings={fetchBookings}
       />
       {/* RoomManagementModal would go here for admin */}
       {userRole === 'admin' && (
