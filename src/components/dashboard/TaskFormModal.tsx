@@ -1,12 +1,12 @@
+
 import React, { useState } from 'react';
-import { useToast } from "@/components/ui/use-toast"
+import { useToast } from "@/hooks/use-toast"
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,13 +20,15 @@ import { useRooms } from '@/hooks/useRooms';
 import { useTrees } from '@/hooks/useTrees';
 
 type TaskFormModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  onSubmit: (data: any) => Promise<void>;
-  userRole: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+  onDelete?: () => void;
+  task?: any;
+  mode: 'create' | 'edit';
 };
 
-export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormModalProps) {
+export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: TaskFormModalProps) {
   const { toast } = useToast();
   const { profiles, loading: profilesLoading, error: profilesError } = useProfiles();
   const { rooms, loading: roomsLoading, error: roomsError } = useRooms();
@@ -34,14 +36,14 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
   const { userProfile } = useAuth();
 
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    priority: 'medium',
-    due_date: '',
-    assigned_to: '',
-    room_id: '',
-    tree_id: '',
-    evidence_required: false
+    title: task?.title || '',
+    description: task?.description || '',
+    priority: task?.priority || 'medium',
+    due_date: task?.due_date || '',
+    assigned_to: task?.assigned_to || '',
+    room_id: task?.room_id || '',
+    tree_id: task?.tree_id || '',
+    evidence_required: task?.evidence_required || false
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,19 +64,22 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
     if (!formData.title.trim()) return;
     
     try {
-      await onSubmit(formData);
+      // Mock submission - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       toast({
         title: "Success",
-        description: "Task created successfully",
-        variant: "default", // Changed from "success"
+        description: `Task ${mode === 'create' ? 'created' : 'updated'} successfully`,
+        variant: "default",
       });
       resetForm();
-      onClose();
+      onSuccess();
+      onOpenChange(false);
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error submitting task:', error);
       toast({
         title: "Error",
-        description: "Failed to create task",
+        description: `Failed to ${mode} task`,
         variant: "destructive",
       });
     }
@@ -98,19 +103,19 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
     toast({
       title: "Assigned",
       description: "Task assigned successfully",
-      variant: "default", // Changed from "success"
+      variant: "default",
     });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
-          <DialogTitle>Create New Task</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Create New Task' : 'Edit Task'}</DialogTitle>
           <DialogDescription>
-            {userRole === 'admin'
-              ? 'Create a new task for your staff.'
-              : 'Create a new task for yourself.'
+            {userProfile?.role === 'admin'
+              ? `${mode === 'create' ? 'Create a new task' : 'Edit the task'} for your staff.`
+              : `${mode === 'create' ? 'Create a new task' : 'Edit the task'} for yourself.`
             }
           </DialogDescription>
         </DialogHeader>
@@ -148,13 +153,13 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
             </Label>
             <Input type="date" id="due_date" name="due_date" value={formData.due_date} onChange={handleChange} className="col-span-3" />
           </div>
-          {userRole === 'admin' && (
+          {userProfile?.role === 'admin' && (
             <>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="assigned_to" className="text-right">
                   Assign to
                 </Label>
-                <Select onValueChange={(value) => handleSelectChange('assigned_to', value)}>
+                <Select onValueChange={(value) => handleSelectChange('assigned_to', value)} value={formData.assigned_to}>
                   <SelectTrigger className="col-span-3">
                     <SelectValue placeholder="Select staff" />
                   </SelectTrigger>
@@ -185,7 +190,7 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
             <Label htmlFor="room_id" className="text-right">
               Room
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('room_id', value)}>
+            <Select onValueChange={(value) => handleSelectChange('room_id', value)} value={formData.room_id}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select room" />
               </SelectTrigger>
@@ -206,7 +211,7 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
             <Label htmlFor="tree_id" className="text-right">
               Tree
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('tree_id', value)}>
+            <Select onValueChange={(value) => handleSelectChange('tree_id', value)} value={formData.tree_id}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select tree" />
               </SelectTrigger>
@@ -232,7 +237,7 @@ export function TaskFormModal({ isOpen, onClose, onSubmit, userRole }: TaskFormM
             </div>
           </div>
           <div className="flex justify-end">
-            <Button type="submit">Create Task</Button>
+            <Button type="submit">{mode === 'create' ? 'Create Task' : 'Update Task'}</Button>
           </div>
         </form>
       </DialogContent>
