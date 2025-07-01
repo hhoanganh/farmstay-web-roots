@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -57,24 +58,20 @@ const App = () => (
           {/* Auth routes without layout */}
           <Route path="login" element={<Login />} />
 
-          {/* Admin routes (protected) */}
+          {/* Admin routes (protected) - NO Layout wrapper */}
           {/* Routes accessible to both admin and staff */}
           <Route element={<ProtectedRoute allowedRoles={['admin', 'staff']} />}>
             {/* Admin dashboard uses its own layout */}
             <Route path="admin/dashboard" element={<AdminDashboard />} />
-            <Route path="admin" element={<Layout />}>
-              <Route path="bookings" element={<AdminBookings />} />
-              <Route path="trees" element={<AdminTrees />} />
-            </Route>
+            <Route path="admin/bookings" element={<AdminBookings />} />
+            <Route path="admin/trees" element={<AdminTrees />} />
           </Route>
 
           {/* Routes accessible only to admin */}
           <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-            <Route path="admin" element={<Layout />}>
-              <Route path="content/pages" element={<AdminPages />} />
-              <Route path="content/journal" element={<AdminJournal />} />
-              <Route path="settings/staff" element={<AdminStaff />} />
-            </Route>
+            <Route path="admin/content/pages" element={<AdminPages />} />
+            <Route path="admin/content/journal" element={<AdminJournal />} />
+            <Route path="admin/settings/staff" element={<AdminStaff />} />
           </Route>
 
           {/* Catch-all route */}
