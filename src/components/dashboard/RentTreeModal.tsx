@@ -116,6 +116,12 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
         await supabase.from('customers').update({ full_name: name, email, phone }).eq('id', existingCustomer.id);
         customerId = existingCustomer.id;
       }
+      // Ensure customerId is valid before proceeding
+      if (!customerId) {
+        setError('Customer creation failed. Please try again.');
+        setLoading(false);
+        return;
+      }
       // Use the selected tree
       const tree = trees.find((t) => t.id === selectedTreeId);
       if (!tree) {
