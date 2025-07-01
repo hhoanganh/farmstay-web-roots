@@ -1,6 +1,7 @@
 import { useAuth } from '@/providers/AuthProvider';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, TreePine, FileText, BookOpen, Users } from 'lucide-react';
+import { Book, TreePine, FileText, BookOpen, Users, Home } from 'lucide-react';
+import { useAuthSession } from '@/hooks/useAuthSession';
 
 const navLinks = [
   { href: '/admin/bookings', label: 'Bookings', icon: <Book className="w-5 h-5" /> },
@@ -11,10 +12,14 @@ const navLinks = [
 
 export function DashboardHeader() {
   const { userProfile } = useAuth();
+  const { handleLogout } = useAuthSession();
   const location = useLocation();
 
   return (
     <header className="flex items-center gap-2 px-4 py-3 border-b bg-background overflow-x-auto">
+      <Link to="/" className="flex items-center justify-center mr-2 p-2 rounded hover:bg-[hsl(var(--background-secondary))]">
+        <Home className="w-6 h-6 text-[hsl(var(--text-accent))]" />
+      </Link>
       {navLinks.map(link => (
         <Link
           key={link.href}
@@ -42,6 +47,14 @@ export function DashboardHeader() {
           <span>Staff</span>
         </Link>
       )}
+      <div className="flex-1" />
+      <button
+        onClick={handleLogout}
+        className="ml-auto px-3 py-2 rounded text-[hsl(var(--text-accent))] hover:bg-[hsl(var(--background-secondary))] font-semibold whitespace-nowrap"
+        type="button"
+      >
+        Log out
+      </button>
     </header>
   );
 }
