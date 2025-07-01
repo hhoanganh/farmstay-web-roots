@@ -11,6 +11,7 @@ import { RoomManagementModal } from './RoomManagementModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/providers/AuthProvider';
 
 interface BookingsViewProps {
   userRole: string;
@@ -39,6 +40,7 @@ interface Booking {
 }
 
 export function BookingsView({ userRole }: BookingsViewProps) {
+  const { session, userProfile } = useAuth();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,6 +53,13 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
   const [guestPhone, setGuestPhone] = useState('');
   const [guestNotes, setGuestNotes] = useState('');
+
+  // Debug authentication
+  useEffect(() => {
+    console.log('BookingsView - Session:', session);
+    console.log('BookingsView - User Profile:', userProfile);
+    console.log('BookingsView - User Role:', userRole);
+  }, [session, userProfile, userRole]);
 
   useEffect(() => {
     fetchRooms();
