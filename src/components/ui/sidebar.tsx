@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Book, TreePine, FileText, BookOpen, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -9,11 +10,11 @@ const sidebarLinks = [
   { href: '/admin/trees', label: 'Trees', icon: <TreePine className="w-5 h-5" /> },
   { href: '/admin/content/pages', label: 'Pages', icon: <FileText className="w-5 h-5" /> },
   { href: '/admin/content/journal', label: 'Journal', icon: <BookOpen className="w-5 h-5" /> },
-  // Staff link is admin-only, handled in Sidebar component
 ];
 
 export function Sidebar() {
   const { userProfile } = useAuth();
+  
   return (
     <nav
       className={cn(
@@ -21,26 +22,28 @@ export function Sidebar() {
       )}
       aria-label="Sidebar navigation"
     >
-      {sidebarLinks.map(link => (
-        <a
-          key={link.href}
-          href={link.href}
-          className="px-4 py-2 flex items-center gap-2 hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors"
-        >
-          {link.icon}
-          <span>{link.label}</span>
-        </a>
-      ))}
-      {/* Admin-only link */}
-      {userProfile?.role === 'admin' && (
-        <a
-          href="/admin/settings/staff"
-          className="px-4 py-2 flex items-center gap-2 hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors"
-        >
-          <Users className="w-5 h-5" />
-          <span>Staff</span>
-        </a>
-      )}
+      <div className="flex flex-row md:flex-col gap-2 px-2 py-2 w-full">
+        {sidebarLinks.map(link => (
+          <a
+            key={link.href}
+            href={link.href}
+            className="px-4 py-2 flex items-center gap-2 hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors rounded"
+          >
+            {link.icon}
+            <span>{link.label}</span>
+          </a>
+        ))}
+        {/* Admin-only link */}
+        {userProfile?.role === 'admin' && (
+          <a
+            href="/admin/settings/staff"
+            className="px-4 py-2 flex items-center gap-2 hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors rounded"
+          >
+            <Users className="w-5 h-5" />
+            <span>Staff</span>
+          </a>
+        )}
+      </div>
     </nav>
   );
 }
