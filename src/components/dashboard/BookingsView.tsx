@@ -139,7 +139,7 @@ export function BookingsView({ userRole }: BookingsViewProps) {
             </Button>
           )}
           <Button 
-            className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
+            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold h-12"
             style={{ fontFamily: 'Inter, sans-serif' }}
             onClick={handleAddBooking}
           >
@@ -214,8 +214,9 @@ export function BookingsView({ userRole }: BookingsViewProps) {
                         variant="outline" 
                         className="w-full border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
                         style={{ fontFamily: 'Inter, sans-serif' }}
+                        onClick={() => setBookingModalOpen(true)}
                       >
-                        Manage Bookings
+                        Manage Booking
                       </Button>
                     </div>
                   </CardContent>
