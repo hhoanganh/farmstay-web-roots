@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -28,6 +27,7 @@ export function TreesView({ userRole }: TreesViewProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [treeModalOpen, setTreeModalOpen] = useState(false);
 
   useEffect(() => {
     fetchTrees();
@@ -86,15 +86,27 @@ export function TreesView({ userRole }: TreesViewProps) {
             Manage tree rentals and life cycle updates
           </p>
         </div>
-        {userRole === 'admin' && (
-          <Button 
-            className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
-            style={{ fontFamily: 'Inter, sans-serif' }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add New Tree
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {userRole === 'admin' && (
+            <Button
+              variant="outline"
+              onClick={() => setTreeModalOpen(true)}
+              className="h-12"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              Manage Trees
+            </Button>
+          )}
+          {userRole === 'admin' && (
+            <Button 
+              className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90 h-12"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add New Tree
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Search and Filters */}
@@ -180,14 +192,6 @@ export function TreesView({ userRole }: TreesViewProps) {
                 >
                   {tree.description || 'No description available'}
                 </p>
-                
-                <Button 
-                  variant="outline" 
-                  className="w-full border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
-                  style={{ fontFamily: 'Inter, sans-serif' }}
-                >
-                  Manage Tree
-                </Button>
               </div>
             </CardContent>
           </Card>
