@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -13,6 +14,8 @@ interface RentTreeModalProps {
 }
 
 export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProps) {
+  const [trees, setTrees] = useState<any[]>([]);
+  const [selectedTreeId, setSelectedTreeId] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -25,6 +28,22 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
   const [overwriteTarget, setOverwriteTarget] = useState<'email' | 'phone' | null>(null);
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (open) {
+      fetchTrees();
+      setSelectedTreeId('');
+    }
+  }, [open]);
+
+  const fetchTrees = async () => {
+    const { data } = await supabase
+      .from('trees')
+      .select('*')
+      .eq('status', 'available')
+      .order('name');
+    setTrees(data || []);
+  };
+
   const resetForm = () => {
     setName('');
     setEmail('');
@@ -35,13 +54,14 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
     setConfirmOverwrite(false);
     setExistingCustomer(null);
     setOverwriteTarget(null);
+    setSelectedTreeId('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!name.trim() || !email.trim() || !phone.trim() || !startDate || !endDate) {
-      setError('Name, email, phone, start date, and end date are required.');
+    if (!selectedTreeId || !name.trim() || !email.trim() || !phone.trim() || !startDate || !endDate) {
+      setError('Tree, name, email, phone, start date, and end date are required.');
       return;
     }
     if (startDate > endDate) {
@@ -96,18 +116,13 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
         await supabase.from('customers').update({ full_name: name, email, phone }).eq('id', existingCustomer.id);
         customerId = existingCustomer.id;
       }
-      // Find an available tree (status = 'available')
-      const { data: availableTrees, error: treeError } = await supabase
-        .from('trees')
-        .select('*')
-        .eq('status', 'available');
-      if (treeError) throw treeError;
-      if (!availableTrees || availableTrees.length === 0) {
-        setError('No available trees to rent.');
+      // Use the selected tree
+      const tree = trees.find((t) => t.id === selectedTreeId);
+      if (!tree) {
+        setError('Selected tree not found.');
         setLoading(false);
         return;
       }
-      const tree = availableTrees[0];
       // Check for overlapping rentals for this tree
       const { data: overlappingRentals, error: overlapError } = await supabase
         .from('tree_rentals')
@@ -194,6 +209,21 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
           </div>
         ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <Label htmlFor="tree">Tree</Label>
+            <Select value={selectedTreeId} onValueChange={setSelectedTreeId} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a tree" />
+              </SelectTrigger>
+              <SelectContent>
+                {trees.map((tree) => (
+                  <SelectItem key={tree.id} value={tree.id}>
+                    {tree.name}{tree.type ? ` (${tree.type})` : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <Label htmlFor="name">Renter Name *</Label>
             <Input id="name" value={name} onChange={e => setName(e.target.value)} required disabled={loading} />
