@@ -377,7 +377,52 @@ export type Database = {
           type?: string | null
         }
         Relationships: []
-      }
+      },
+      tree_rentals: {
+        Row: {
+          id: string;
+          tree_id: string;
+          customer_id: string;
+          start_date: string;
+          end_date: string;
+          status: string;
+          created_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          tree_id: string;
+          customer_id: string;
+          start_date: string;
+          end_date: string;
+          status?: string;
+          created_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          tree_id?: string;
+          customer_id?: string;
+          start_date?: string;
+          end_date?: string;
+          status?: string;
+          created_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "tree_rentals_tree_id_fkey";
+            columns: ["tree_id"];
+            isOneToOne: false;
+            referencedRelation: "trees";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "tree_rentals_customer_id_fkey";
+            columns: ["customer_id"];
+            isOneToOne: false;
+            referencedRelation: "customers";
+            referencedColumns: ["id"];
+          }
+        ];
+      },
     }
     Views: {
       [_ in never]: never

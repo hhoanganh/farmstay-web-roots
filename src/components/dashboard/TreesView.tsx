@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { TreePine, Plus, Search, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { TreeManagementModal } from './TreeManagementModal';
+import { RentTreeModal } from './RentTreeModal';
 
 interface TreesViewProps {
   userRole: string;
@@ -223,6 +224,12 @@ export function TreesView({ userRole }: TreesViewProps) {
       <TreeManagementModal
         open={treeModalOpen}
         onClose={() => setTreeModalOpen(false)}
+        refreshTrees={fetchTrees}
+      />
+      {/* Rent Tree Modal */}
+      <RentTreeModal
+        open={rentModalOpen}
+        onClose={() => setRentModalOpen(false)}
         refreshTrees={fetchTrees}
       />
     </div>
