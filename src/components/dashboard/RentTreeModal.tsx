@@ -11,9 +11,10 @@ interface RentTreeModalProps {
   open: boolean;
   onClose: () => void;
   refreshTrees: () => void;
+  tree?: any; // Pass the selected tree object
 }
 
-export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProps) {
+export function RentTreeModal({ open, onClose, refreshTrees, tree }: RentTreeModalProps) {
   const [trees, setTrees] = useState<any[]>([]);
   const [selectedTreeId, setSelectedTreeId] = useState('');
   const [name, setName] = useState('');
@@ -28,14 +29,24 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
   const [overwriteTarget, setOverwriteTarget] = useState<'email' | 'phone' | null>(null);
   const [case4Conflict, setCase4Conflict] = useState<null | { emailCustomer: any; phoneCustomer: any }>(null);
   const [case4Choice, setCase4Choice] = useState<'email' | 'phone' | 'new' | null>(null);
+  const [currentRental, setCurrentRental] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
-      fetchTrees();
-      setSelectedTreeId('');
+      if (tree) {
+        if (tree.status === 'rented') {
+          fetchCurrentRental(tree.id);
+        } else {
+          fetchTrees();
+        }
+        setSelectedTreeId(tree.id || '');
+      } else {
+        fetchTrees();
+        setSelectedTreeId('');
+      }
     }
-  }, [open]);
+  }, [open, tree]);
 
   const fetchTrees = async () => {
     const { data } = await supabase
@@ -44,6 +55,18 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
       .eq('status', 'available')
       .order('name');
     setTrees(data || []);
+  };
+
+  const fetchCurrentRental = async (treeId: string) => {
+    const { data } = await supabase
+      .from('tree_rentals')
+      .select('*, customers:customer_id(full_name, email, phone)')
+      .eq('tree_id', treeId)
+      .eq('status', 'active')
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .single();
+    setCurrentRental(data);
   };
 
   const resetForm = () => {
@@ -242,38 +265,56 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
     }
   };
 
+  const handleEndRental = async () => {
+    if (!tree || !currentRental) return;
+    setLoading(true);
+    setError(null);
+    try {
+      // Set rental to cancelled
+      const { error: rentalError } = await supabase
+        .from('tree_rentals')
+        .update({ status: 'cancelled' })
+        .eq('id', currentRental.id);
+      if (rentalError) throw rentalError;
+      // Set tree to available
+      const { error: treeError } = await supabase
+        .from('trees')
+        .update({ status: 'available' })
+        .eq('id', tree.id);
+      if (treeError) throw treeError;
+      toast({ title: 'Rental ended. Tree is now available.' });
+      setCurrentRental(null);
+      onClose();
+      refreshTrees();
+    } catch (err: any) {
+      setError(err.message || 'An error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Add New Renter</DialogTitle>
+          <DialogTitle>{tree && tree.status === 'rented' ? 'Current Rental' : 'Add New Renter'}</DialogTitle>
         </DialogHeader>
-        {case4Conflict ? (
+        {/* If tree is rented, show rental info and End Rental button */}
+        {tree && tree.status === 'rented' && currentRental ? (
           <div className="space-y-4">
-            <div className="text-yellow-700 bg-yellow-100 p-3 rounded">
-              <div className="font-semibold mb-2">Conflict: Email and phone match different customers.</div>
-              <div><b>Email match:</b> Name: {case4Conflict.emailCustomer.full_name}, Email: {case4Conflict.emailCustomer.email}, Phone: {case4Conflict.emailCustomer.phone}</div>
-              <div><b>Phone match:</b> Name: {case4Conflict.phoneCustomer.full_name}, Email: {case4Conflict.phoneCustomer.email}, Phone: {case4Conflict.phoneCustomer.phone}</div>
-              <div><b>New Info:</b> Name: {name}, Email: {email}, Phone: {phone}</div>
-              <div className="mt-2">Which customer do you want to use for this rental?</div>
+            <div className="bg-gray-50 p-4 rounded">
+              <div className="font-semibold mb-2">Renter Info</div>
+              <div>Name: {currentRental.customers?.full_name || 'Unknown'}</div>
+              <div>Email: {currentRental.customers?.email || 'Unknown'}</div>
+              <div>Phone: {currentRental.customers?.phone || 'Unknown'}</div>
+              <div className="mt-2">Rental Period: {currentRental.start_date} → {currentRental.end_date}</div>
             </div>
+            {error && <div className="text-red-600 text-sm">{error}</div>}
             <DialogFooter>
-              <Button onClick={() => handleCase4Choice('email')} className="w-full">Use Email Match</Button>
-              <Button onClick={() => handleCase4Choice('phone')} className="w-full">Use Phone Match</Button>
-              <Button variant="outline" onClick={() => handleCase4Choice('new')} className="w-full">Create New Customer</Button>
-            </DialogFooter>
-          </div>
-        ) : confirmOverwrite && existingCustomer ? (
-          <div className="space-y-4">
-            <div className="text-yellow-700 bg-yellow-100 p-3 rounded">
-              <div className="font-semibold mb-2">A customer with this {overwriteTarget} already exists:</div>
-              <div><b>Existing:</b> Name: {existingCustomer.full_name}, Email: {existingCustomer.email}, Phone: {existingCustomer.phone}</div>
-              <div><b>New Info:</b> Name: {name}, Email: {email}, Phone: {phone}</div>
-              <div className="mt-2">Do you want to update the existing customer with the new info?</div>
-            </div>
-            <DialogFooter>
-              <Button onClick={() => handleConfirmOverwrite(true)} className="w-full">Yes, update existing customer</Button>
-              <Button variant="outline" onClick={() => handleConfirmOverwrite(false)} className="w-full">No, create a new customer</Button>
+              <Button onClick={handleEndRental} disabled={loading} className="w-full" variant="destructive">
+                {loading ? 'Ending...' : 'End Rental'}
+              </Button>
+              <Button type="button" variant="outline" onClick={onClose} className="w-full">Close</Button>
             </DialogFooter>
           </div>
         ) : (

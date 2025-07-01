@@ -30,10 +30,12 @@ export function TreesView({ userRole }: TreesViewProps) {
   const [typeFilter, setTypeFilter] = useState('all');
   const [treeModalOpen, setTreeModalOpen] = useState(false);
   const [rentModalOpen, setRentModalOpen] = useState(false);
-  const [selectedTree, setSelectedTree] = useState<Tree | null>(null);
+  const [selectedTree, setSelectedTree] = useState<any | null>(null);
+  const [rentals, setRentals] = useState<any[]>([]);
 
   useEffect(() => {
     fetchTrees();
+    fetchRentals();
   }, []);
 
   const fetchTrees = async () => {
@@ -45,6 +47,20 @@ export function TreesView({ userRole }: TreesViewProps) {
     if (!error && data) {
       setTrees(data);
     }
+  };
+
+  const fetchRentals = async () => {
+    // Fetch all active rentals and join with customers
+    const { data } = await supabase
+      .from('tree_rentals')
+      .select('*, customers:customer_id(full_name), tree_id')
+      .eq('status', 'active');
+    setRentals(data || []);
+  };
+
+  // Helper to get current rental for a tree
+  const getCurrentRental = (treeId: string) => {
+    return rentals.find(r => r.tree_id === treeId);
   };
 
   const filteredTrees = trees.filter(tree => {
@@ -155,48 +171,65 @@ export function TreesView({ userRole }: TreesViewProps) {
 
       {/* Trees Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredTrees.map((tree) => (
-          <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer">
-            <CardHeader>
-              <div className="flex flex-col items-start">
-                <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2 w-full">
-                  {tree.image_url ? (
-                    <img
-                      src={tree.image_url}
-                      alt={tree.name}
-                      className="w-full h-full object-cover rounded-md max-h-40"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <span className="text-xs">No Image</span>
+        {filteredTrees.map((tree) => {
+          const currentRental = tree.status === 'rented' ? getCurrentRental(tree.id) : null;
+          return (
+            <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => {
+                setSelectedTree(tree);
+                setRentModalOpen(true);
+              }}
+            >
+              <CardHeader>
+                <div className="flex flex-col items-start">
+                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2 w-full">
+                    {tree.image_url ? (
+                      <img
+                        src={tree.image_url}
+                        alt={tree.name}
+                        className="w-full h-full object-cover rounded-md max-h-40"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <span className="text-xs">No Image</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-start w-full">
+                    <CardTitle 
+                      className="text-[hsl(var(--text-primary))]"
+                      style={{ fontFamily: 'Caveat, cursive' }}
+                    >
+                      {tree.name}
+                    </CardTitle>
+                    <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
+                      {tree.status || 'Unknown status'}
+                    </Badge>
+                  </div>
+                  {/* Show renter info if rented */}
+                  {currentRental && (
+                    <div className="mt-2 text-xs text-[hsl(var(--text-secondary))]">
+                      <div>Renter: {currentRental.customers?.full_name || 'Unknown'}</div>
+                      <div>
+                        {currentRental.start_date} → {currentRental.end_date}
+                      </div>
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between items-start w-full">
-                  <CardTitle 
-                    className="text-[hsl(var(--text-primary))]"
-                    style={{ fontFamily: 'Caveat, cursive' }}
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <p 
+                    className="text-sm text-[hsl(var(--text-secondary))] line-clamp-2"
+                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
                   >
-                    {tree.name}
-                  </CardTitle>
-                  <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
-                    {tree.status || 'Unknown status'}
-                  </Badge>
+                    {tree.description || 'No description available'}
+                  </p>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <p 
-                  className="text-sm text-[hsl(var(--text-secondary))] line-clamp-2"
-                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                >
-                  {tree.description || 'No description available'}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       {filteredTrees.length === 0 && (
@@ -223,11 +256,15 @@ export function TreesView({ userRole }: TreesViewProps) {
         onClose={() => setTreeModalOpen(false)}
         refreshTrees={fetchTrees}
       />
-      {/* Rent Tree Modal */}
+      {/* RentTreeModal for both available and rented trees */}
       <RentTreeModal
         open={rentModalOpen}
-        onClose={() => setRentModalOpen(false)}
+        onClose={() => {
+          setRentModalOpen(false);
+          setSelectedTree(null);
+        }}
         refreshTrees={fetchTrees}
+        tree={selectedTree}
       />
     </div>
   );
