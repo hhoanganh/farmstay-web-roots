@@ -158,30 +158,31 @@ export function TreesView({ userRole }: TreesViewProps) {
         {filteredTrees.map((tree) => (
           <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader>
-              <div className="flex justify-between items-start">
-                <CardTitle 
-                  className="text-[hsl(var(--text-primary))]"
-                  style={{ fontFamily: 'Caveat, cursive' }}
-                >
-                  {tree.name}
-                </CardTitle>
-                <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
-                  {tree.status || 'Unknown status'}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+              <div className="flex flex-col items-start">
                 {tree.image_url && (
-                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center">
-                    <img 
-                      src={tree.image_url} 
+                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2">
+                    <img
+                      src={tree.image_url}
                       alt={tree.name}
                       className="w-full h-full object-cover rounded-md"
                     />
                   </div>
                 )}
-                
+                <div className="flex justify-between items-start w-full">
+                  <CardTitle 
+                    className="text-[hsl(var(--text-primary))]"
+                    style={{ fontFamily: 'Caveat, cursive' }}
+                  >
+                    {tree.name}
+                  </CardTitle>
+                  <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
+                    {tree.status || 'Unknown status'}
+                  </Badge>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center text-sm text-[hsl(var(--text-secondary))]">
                     <TreePine className="h-4 w-4 mr-1" />
