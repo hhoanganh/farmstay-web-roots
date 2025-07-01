@@ -1,9 +1,11 @@
+import AdminLayout from '../AdminLayout';
+import React from 'react';
 
 const AdminPages = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Admin Pages</h1>
-    </div>
+    <AdminLayout>
+      {/* Pages content here */}
+    </AdminLayout>
   );
 };
 

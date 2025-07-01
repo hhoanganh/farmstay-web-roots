@@ -1,24 +1,39 @@
-import { useSidebar } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
-import { PanelLeft } from 'lucide-react';
+import { useAuth } from '@/providers/AuthProvider';
+import { Book, TreePine, FileText, BookOpen, Users } from 'lucide-react';
+
+const navLinks = [
+  { href: '/admin/bookings', label: 'Bookings', icon: <Book className="w-5 h-5" /> },
+  { href: '/admin/trees', label: 'Trees', icon: <TreePine className="w-5 h-5" /> },
+  { href: '/admin/content/pages', label: 'Pages', icon: <FileText className="w-5 h-5" /> },
+  { href: '/admin/content/journal', label: 'Journal', icon: <BookOpen className="w-5 h-5" /> },
+  // Staff link is admin-only
+];
 
 export function DashboardHeader() {
-  const { toggleSidebar } = useSidebar();
-
+  const { userProfile } = useAuth();
   return (
-    <header className="flex items-center gap-4 px-4 py-3 border-b bg-background">
-      {/* Hamburger menu button: only visible on mobile */}
-      <Button
-        variant="ghost"
-        size="icon"
-        className="md:hidden"
-        onClick={toggleSidebar}
-        aria-label="Open menu"
-      >
-        <PanelLeft className="h-6 w-6" />
-      </Button>
-      <h1 className="text-xl font-caveat text-accent">Lâm Hà Farmstay</h1>
-      {/* Add any other dashboard header content here */}
+    <header className="flex items-center gap-2 px-4 py-3 border-b bg-background overflow-x-auto">
+      <h1 className="text-xl font-caveat text-accent whitespace-nowrap mr-4">Lâm Hà Farmstay</h1>
+      {navLinks.map(link => (
+        <a
+          key={link.href}
+          href={link.href}
+          className="flex items-center gap-1 px-3 py-2 rounded hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors"
+        >
+          {link.icon}
+          <span>{link.label}</span>
+        </a>
+      ))}
+      {userProfile?.role === 'admin' && (
+        <a
+          href="/admin/settings/staff"
+          className="flex items-center gap-1 px-3 py-2 rounded hover:bg-[hsl(var(--background-secondary))] whitespace-nowrap transition-colors"
+        >
+          <Users className="w-5 h-5" />
+          <span>Staff</span>
+        </a>
+      )}
+      {/* Add user menu or other header content here if needed */}
     </header>
   );
 } 

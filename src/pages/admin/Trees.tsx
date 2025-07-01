@@ -1,9 +1,12 @@
+import AdminLayout from './AdminLayout';
+import React from 'react';
+import { TreesView } from '@/components/dashboard/TreesView';
 
 const AdminTrees = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Admin Trees</h1>
-    </div>
+    <AdminLayout>
+      <TreesView userRole="admin" />
+    </AdminLayout>
   );
 };
 

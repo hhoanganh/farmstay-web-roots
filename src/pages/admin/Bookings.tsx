@@ -1,9 +1,12 @@
+import AdminLayout from './AdminLayout';
+import React from 'react';
+import { BookingsView } from '@/components/dashboard/BookingsView';
 
 const AdminBookings = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Admin Bookings</h1>
-    </div>
+    <AdminLayout>
+      <BookingsView userRole="admin" />
+    </AdminLayout>
   );
 };
 

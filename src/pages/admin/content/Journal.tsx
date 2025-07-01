@@ -1,9 +1,12 @@
+import AdminLayout from '../AdminLayout';
+import React from 'react';
+import { JournalView } from '@/components/dashboard/JournalView';
 
 const AdminJournal = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Admin Journal</h1>
-    </div>
+    <AdminLayout>
+      <JournalView />
+    </AdminLayout>
   );
 };
 
