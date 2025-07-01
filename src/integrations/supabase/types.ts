@@ -150,6 +150,7 @@ export type Database = {
           image_urls: string[] | null
           name: string
           price: number | null
+          type: string | null
         }
         Insert: {
           created_at?: string | null
@@ -158,6 +159,7 @@ export type Database = {
           image_urls?: string[] | null
           name: string
           price?: number | null
+          type?: string | null
         }
         Update: {
           created_at?: string | null
@@ -166,62 +168,121 @@ export type Database = {
           image_urls?: string[] | null
           name?: string
           price?: number | null
+          type?: string | null
         }
         Relationships: []
+      }
+      task_updates: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          image_urls: string[] | null
+          notes: string | null
+          task_id: string
+          update_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_urls?: string[] | null
+          notes?: string | null
+          task_id: string
+          update_type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          image_urls?: string[] | null
+          notes?: string | null
+          task_id?: string
+          update_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_updates_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_updates_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tasks: {
         Row: {
           assigned_to: string | null
+          completed_at: string | null
+          completed_by: string | null
+          completion_image_urls: string[] | null
+          completion_notes: string | null
           created_at: string
           created_by: string | null
           description: string | null
           due_date: string | null
+          evidence_required: boolean | null
           id: string
+          priority: string | null
           room_id: string | null
           status: string
           title: string
           tree_id: string | null
-          evidence_required: boolean
-          completion_notes: string | null
-          completion_image_urls: string[] | null
-          priority: 'low' | 'medium' | 'high' | null
         }
         Insert: {
           assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completion_image_urls?: string[] | null
+          completion_notes?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           due_date?: string | null
+          evidence_required?: boolean | null
           id?: string
+          priority?: string | null
           room_id?: string | null
           status?: string
           title: string
           tree_id?: string | null
-          evidence_required?: boolean
-          completion_notes?: string | null
-          completion_image_urls?: string[] | null
-          priority?: 'low' | 'medium' | 'high' | null
         }
         Update: {
           assigned_to?: string | null
+          completed_at?: string | null
+          completed_by?: string | null
+          completion_image_urls?: string[] | null
+          completion_notes?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
           due_date?: string | null
+          evidence_required?: boolean | null
           id?: string
+          priority?: string | null
           room_id?: string | null
           status?: string
           title?: string
           tree_id?: string | null
-          evidence_required?: boolean
-          completion_notes?: string | null
-          completion_image_urls?: string[] | null
-          priority?: 'low' | 'medium' | 'high' | null
         }
         Relationships: [
           {
             foreignKeyName: "tasks_assigned_to_fkey"
             columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_completed_by_fkey"
+            columns: ["completed_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
@@ -246,7 +307,7 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "trees"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       tree_updates: {
@@ -288,7 +349,6 @@ export type Database = {
         Row: {
           created_at: string | null
           current_renter_id: string | null
-          customer_id: string | null
           description: string | null
           id: string
           image_url: string | null
@@ -299,7 +359,6 @@ export type Database = {
         Insert: {
           created_at?: string | null
           current_renter_id?: string | null
-          customer_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -310,7 +369,6 @@ export type Database = {
         Update: {
           created_at?: string | null
           current_renter_id?: string | null
-          customer_id?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -318,66 +376,237 @@ export type Database = {
           status?: string | null
           type?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "trees_customer_id_fkey"
-            columns: ["customer_id"]
-            isOneToOne: false
-            referencedRelation: "customers"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      task_updates: {
-        Row: {
-          id: string
-          task_id: string
-          created_by: string | null
-          created_at: string
-          notes: string
-          image_urls: string[]
-          update_type: 'progress' | 'completion'
-        }
-        Insert: {
-          id?: string
-          task_id: string
-          created_by?: string | null
-          created_at?: string
-          notes: string
-          image_urls?: string[]
-          update_type: 'progress' | 'completion'
-        }
-        Update: {
-          id?: string
-          task_id?: string
-          created_by?: string | null
-          created_at?: string
-          notes?: string
-          image_urls?: string[]
-          update_type?: 'progress' | 'completion'
-        }
-        Relationships: [
-          {
-            foreignKeyName: "task_updates_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "task_updates_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      gbt_bit_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_bool_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_bool_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_bpchar_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_bytea_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_cash_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_cash_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_date_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_date_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_enum_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_enum_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_float4_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_float4_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_float8_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_float8_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_inet_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int2_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int2_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int4_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int4_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int8_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_int8_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_intv_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_intv_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_intv_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_macad_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_macad_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_macad8_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_macad8_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_numeric_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_oid_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_oid_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_text_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_time_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_time_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_timetz_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_ts_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_ts_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_tstz_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_uuid_compress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_uuid_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_var_decompress: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbt_var_fetch: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey_var_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey_var_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey16_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey16_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey2_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey2_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey32_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey32_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey4_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey4_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey8_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      gbtreekey8_out: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
