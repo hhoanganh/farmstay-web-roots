@@ -187,13 +187,6 @@ export function TreesView({ userRole }: TreesViewProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-[hsl(var(--text-secondary))]">
-                    <TreePine className="h-4 w-4 mr-1" />
-                    {tree.type || 'Unknown type'}
-                  </div>
-                </div>
-                
                 <p 
                   className="text-sm text-[hsl(var(--text-secondary))] line-clamp-2"
                   style={{ fontFamily: 'IBM Plex Mono, monospace' }}
