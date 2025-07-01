@@ -149,7 +149,7 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Manage Trees</DialogTitle>
         </DialogHeader>
