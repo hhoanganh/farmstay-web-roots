@@ -1,33 +1,20 @@
-import { useEffect, useState } from 'react';
+
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
-import { Button } from '@/components/ui/button';
-import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { MorningReportView } from '@/components/dashboard/MorningReportView';
 import { BookingsView } from '@/components/dashboard/BookingsView';
 import { TreesView } from '@/components/dashboard/TreesView';
 import { TasksView } from '@/components/dashboard/TasksView';
 import { JournalView } from '@/components/dashboard/JournalView';
 import { StaffView } from '@/components/dashboard/StaffView';
+import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 
 const AdminDashboard = () => {
   const { userProfile } = useAuth();
   const navigate = useNavigate();
   const [activeView, setActiveView] = useState('dashboard');
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
-  const handleLogout = async () => {
-    if (isLoggingOut) return;
-    setIsLoggingOut(true);
-
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error logging out:", error.message);
-    }
-    navigate('/login', { replace: true });
-  };
 
   const renderContent = () => {
     switch (activeView) {
@@ -62,23 +49,12 @@ const AdminDashboard = () => {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-[hsl(var(--background-primary))]">
-        <DashboardSidebar 
-          activeView={activeView} 
-          setActiveView={setActiveView}
-          userRole={userProfile.role}
-          userProfile={userProfile}
-          onLogout={handleLogout}
-          isLoggingOut={isLoggingOut}
-        />
-        <div className="flex-1 flex flex-col">
-          <main className="flex-1 bg-[hsl(var(--background-primary))]">
-            {renderContent()}
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <div className="min-h-screen flex flex-col bg-[hsl(var(--background-primary))]">
+      <DashboardHeader />
+      <main className="flex-1 p-4">
+        {renderContent()}
+      </main>
+    </div>
   );
 };
 

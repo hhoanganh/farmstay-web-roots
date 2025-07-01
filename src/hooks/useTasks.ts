@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
@@ -81,12 +82,16 @@ export function useTasks(userRole: string, userProfileId?: string) {
       return { taskId: task.id, updates: updates || [] };
     });
     const updateResults = await Promise.all(updatePromises);
+    
     setTasks(currentTasks =>
       currentTasks.map(task => {
         const taskUpdates = updateResults.find(r => r.taskId === task.id);
         return {
           ...task,
-          updates: taskUpdates?.updates || []
+          updates: (taskUpdates?.updates || []).map(update => ({
+            ...update,
+            update_type: update.update_type as 'progress' | 'completion'
+          })) as TaskUpdate[]
         };
       })
     );
@@ -114,7 +119,7 @@ export function useTasks(userRole: string, userProfileId?: string) {
           notes,
           image_urls: imageUrls,
           update_type: updateType
-        } as any);
+        });
       if (updateError) {
         setError(updateError);
         setLoading(false);
@@ -127,7 +132,7 @@ export function useTasks(userRole: string, userProfileId?: string) {
             status: 'Done',
             completion_notes: notes,
             completion_image_urls: imageUrls
-          } as any)
+          })
           .eq('id', taskId);
         if (taskError) setError(taskError);
       }
@@ -137,9 +142,6 @@ export function useTasks(userRole: string, userProfileId?: string) {
     [fetchTasks]
   );
 
-  // Initial fetch
-  // (Leave to the component to call fetchTasks in useEffect for full control)
-
   return {
     tasks,
     loading,
@@ -148,4 +150,4 @@ export function useTasks(userRole: string, userProfileId?: string) {
     updateTaskStatus,
     addTaskUpdate,
   };
-} 
+}
