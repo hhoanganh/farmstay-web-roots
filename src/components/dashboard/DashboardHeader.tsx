@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/providers/AuthProvider';
 import { Link, useLocation } from 'react-router-dom';
 import { Book, TreePine, FileText, BookOpen, Users } from 'lucide-react';
@@ -16,7 +15,6 @@ export function DashboardHeader() {
 
   return (
     <header className="flex items-center gap-2 px-4 py-3 border-b bg-background overflow-x-auto">
-      <h1 className="text-xl font-caveat text-accent whitespace-nowrap mr-4">Lâm Hà Farmstay</h1>
       {navLinks.map(link => (
         <Link
           key={link.href}
