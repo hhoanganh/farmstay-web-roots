@@ -16,12 +16,11 @@ interface TreesViewProps {
 interface Tree {
   id: string;
   name: string;
-  type: string;
-  description: string;
-  status: string;
-  image_url: string;
-  current_renter_id: string;
-  created_at: string;
+  type?: string;
+  description?: string;
+  status?: string;
+  image_url?: string;
+  created_at?: string;
 }
 
 export function TreesView({ userRole }: TreesViewProps) {
@@ -166,8 +165,8 @@ export function TreesView({ userRole }: TreesViewProps) {
                 >
                   {tree.name}
                 </CardTitle>
-                <Badge className={getStatusColor(tree.status)} variant="outline">
-                  {tree.status}
+                <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
+                  {tree.status || 'Unknown status'}
                 </Badge>
               </div>
             </CardHeader>

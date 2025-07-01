@@ -165,10 +165,10 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
           status: 'active',
         });
       if (rentalError) throw rentalError;
-      // Update tree status and current_renter_id
+      // Update tree status (no more current_renter_id)
       const { error: updateTreeError } = await supabase
         .from('trees')
-        .update({ status: 'rented', current_renter_id: customerId })
+        .update({ status: 'rented' })
         .eq('id', tree.id);
       if (updateTreeError) throw updateTreeError;
       toast({ title: 'Rental created successfully!' });
