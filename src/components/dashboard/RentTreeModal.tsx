@@ -26,6 +26,8 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
   const [confirmOverwrite, setConfirmOverwrite] = useState(false);
   const [existingCustomer, setExistingCustomer] = useState<any>(null);
   const [overwriteTarget, setOverwriteTarget] = useState<'email' | 'phone' | null>(null);
+  const [case4Conflict, setCase4Conflict] = useState<null | { emailCustomer: any; phoneCustomer: any }>(null);
+  const [case4Choice, setCase4Choice] = useState<'email' | 'phone' | 'new' | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -60,6 +62,8 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setCase4Conflict(null);
+    setCase4Choice(null);
     if (!selectedTreeId || !name.trim() || !email.trim() || !phone.trim() || !startDate || !endDate) {
       setError('Tree, name, email, phone, start date, and end date are required.');
       return;
@@ -76,6 +80,12 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
       // If both match and are the same customer, use that customer
       if (emailCustomer && phoneCustomer && emailCustomer.id === phoneCustomer.id) {
         await proceedWithRental(emailCustomer.id);
+        return;
+      }
+      // Case 4: email and phone match different customers
+      if (emailCustomer && phoneCustomer && emailCustomer.id !== phoneCustomer.id) {
+        setCase4Conflict({ emailCustomer, phoneCustomer });
+        setLoading(false);
         return;
       }
       // If only one matches, prompt for confirmation
@@ -206,13 +216,54 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
     }
   };
 
+  // Handler for case 4 conflict
+  const handleCase4Choice = async (choice: 'email' | 'phone' | 'new') => {
+    setCase4Choice(choice);
+    setCase4Conflict(null);
+    setLoading(true);
+    try {
+      if (choice === 'email') {
+        await proceedWithRental(case4Conflict!.emailCustomer.id);
+      } else if (choice === 'phone') {
+        await proceedWithRental(case4Conflict!.phoneCustomer.id);
+      } else if (choice === 'new') {
+        const { data: newCustomer, error: customerError } = await supabase
+          .from('customers')
+          .insert({ full_name: name, email, phone })
+          .select()
+          .single();
+        if (customerError) throw customerError;
+        await proceedWithRental(newCustomer.id);
+      }
+    } catch (err: any) {
+      setError(err.message || 'An error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Add New Renter</DialogTitle>
         </DialogHeader>
-        {confirmOverwrite && existingCustomer ? (
+        {case4Conflict ? (
+          <div className="space-y-4">
+            <div className="text-yellow-700 bg-yellow-100 p-3 rounded">
+              <div className="font-semibold mb-2">Conflict: Email and phone match different customers.</div>
+              <div><b>Email match:</b> Name: {case4Conflict.emailCustomer.full_name}, Email: {case4Conflict.emailCustomer.email}, Phone: {case4Conflict.emailCustomer.phone}</div>
+              <div><b>Phone match:</b> Name: {case4Conflict.phoneCustomer.full_name}, Email: {case4Conflict.phoneCustomer.email}, Phone: {case4Conflict.phoneCustomer.phone}</div>
+              <div><b>New Info:</b> Name: {name}, Email: {email}, Phone: {phone}</div>
+              <div className="mt-2">Which customer do you want to use for this rental?</div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => handleCase4Choice('email')} className="w-full">Use Email Match</Button>
+              <Button onClick={() => handleCase4Choice('phone')} className="w-full">Use Phone Match</Button>
+              <Button variant="outline" onClick={() => handleCase4Choice('new')} className="w-full">Create New Customer</Button>
+            </DialogFooter>
+          </div>
+        ) : confirmOverwrite && existingCustomer ? (
           <div className="space-y-4">
             <div className="text-yellow-700 bg-yellow-100 p-3 rounded">
               <div className="font-semibold mb-2">A customer with this {overwriteTarget} already exists:</div>
