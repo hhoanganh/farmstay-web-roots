@@ -42,6 +42,8 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
   const [treeToDelete, setTreeToDelete] = useState<Tree | null>(null);
   const [selectedTreeId, setSelectedTreeId] = useState<string>('');
   const { toast } = useToast();
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (open) fetchTrees();
@@ -125,6 +127,26 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
 
   const selectedTree = trees.find(t => t.id === selectedTreeId) || null;
 
+  // Image upload handler
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setUploadError(null);
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+    const filePath = `${fileName}`;
+    const { error: uploadError } = await supabase.storage.from('tree-images').upload(filePath, file, { upsert: true });
+    if (uploadError) {
+      setUploadError('Failed to upload image.');
+      setUploading(false);
+      return;
+    }
+    const { data } = supabase.storage.from('tree-images').getPublicUrl(filePath);
+    setImageUrl(data.publicUrl);
+    setUploading(false);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
@@ -188,8 +210,15 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
                 <SelectItem value="maintenance">Maintenance</SelectItem>
               </SelectContent>
             </Select>
-            <Label>Image URL</Label>
-            <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} disabled={loading} className="w-full" />
+            <Label>Image</Label>
+            <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={loading || uploading} />
+            {uploading && <div className="text-sm text-blue-600">Uploading...</div>}
+            {uploadError && <div className="text-sm text-red-600">{uploadError}</div>}
+            {imageUrl && (
+              <div className="mt-2">
+                <img src={imageUrl} alt="Tree" className="w-full max-h-40 object-contain rounded" />
+              </div>
+            )}
             <div className="flex gap-2 pt-2">
               <Button type="submit" disabled={loading} className="w-full">{editingTree ? 'Save Changes' : 'Add Tree'}</Button>
               <Button type="button" variant="outline" onClick={closeForm} className="w-full">Cancel</Button>
