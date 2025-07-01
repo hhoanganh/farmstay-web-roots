@@ -129,7 +129,8 @@ export function RentTreeModal({ open, onClose, refreshTrees }: RentTreeModalProp
         .select('*')
         .eq('tree_id', tree.id)
         .eq('status', 'active')
-        .or(`and(start_date,lt.${endDate}),and(end_date,gt.${startDate})`);
+        .lte('start_date', endDate)
+        .gte('end_date', startDate);
       if (overlapError) throw overlapError;
       if (overlappingRentals && overlappingRentals.length > 0) {
         setError('This tree is already rented for the selected period.');
