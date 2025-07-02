@@ -17,6 +17,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useProfiles } from '@/hooks/useProfiles';
 import { useRooms } from '@/hooks/useRooms';
 import { useTrees } from '@/hooks/useTrees';
+import { supabase } from '@/integrations/supabase/client';
 
 type TaskFormModalProps = {
   open: boolean;
@@ -70,12 +71,13 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Validation in visual order
     const newErrors: { [key: string]: string } = {};
+    if (!formData.room_id && !formData.tree_id) newErrors.related = 'Select a room or a tree';
     if (!formData.title.trim()) newErrors.title = 'Title is required';
     if (!formData.priority) newErrors.priority = 'Priority is required';
     if (!formData.due_date) newErrors.due_date = 'Due date is required';
     if (userProfile?.role === 'admin' && !formData.assigned_to) newErrors.assigned_to = 'Assignee is required';
-    if (!formData.room_id && !formData.tree_id) newErrors.related = 'Select a room or a tree';
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -90,11 +92,15 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
     };
     if (submitData.room_id) submitData.tree_id = null;
     if (submitData.tree_id) submitData.room_id = null;
-    
+
+    // Logging payload for debugging
+    console.log('Submitting task payload:', submitData);
+
     try {
-      // Mock submission - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Real Supabase insert
+      const { data, error } = await supabase.from('tasks').insert([submitData]).select();
+      console.log('Supabase insert response:', { data, error });
+      if (error) throw error;
       toast({
         title: "Success",
         description: `Task ${mode === 'create' ? 'created' : 'updated'} successfully`,
