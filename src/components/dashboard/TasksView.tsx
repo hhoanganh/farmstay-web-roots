@@ -13,7 +13,6 @@ import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
 import { TaskDetailSheet } from './TaskDetailSheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { StaffTaskDetailModal } from './StaffTaskDetailModal';
 
 interface TasksViewProps {
   userRole: string;
@@ -86,9 +85,6 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [updateModalMode, setUpdateModalMode] = useState<'progress' | 'completion'>('progress');
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
-  // Staff modal state
-  const [staffDetailTask, setStaffDetailTask] = useState<Task | null>(null);
-  const [staffDetailOpen, setStaffDetailOpen] = useState(false);
 
   useEffect(() => {
     refreshTasks();
@@ -355,7 +351,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               </h3>
               <div className="space-y-3">
                 {groupTasks.map((task) => (
-                  <div key={task.id} onClick={() => { setStaffDetailTask(task); setStaffDetailOpen(true); }} className="cursor-pointer">
+                  <div key={task.id} onClick={() => { setDetailTask(task); setDetailOpen(true); }} className="cursor-pointer">
                     <TaskCard task={task} onStatusChange={refreshTasks} />
                   </div>
                 ))}
@@ -503,24 +499,17 @@ export function TasksView({ userRole }: TasksViewProps) {
         mode={updateModalMode}
       />
       {/* Task Detail Sheet for Admin */}
-      <TaskDetailSheet 
-        task={detailTask}
-        open={detailOpen}
-        userRole={userRole}
-        onOpenChange={setDetailOpen}
-        onEdit={handleEditClick}
-        onStatusChange={async (taskId, newStatus) => {
-          await updateTaskStatus(taskId, newStatus);
-          refreshTasks();
-        }}
-      />
-      {/* Staff Task Detail Modal */}
-      {userRole === 'staff' && staffDetailTask && (
-        <StaffTaskDetailModal
-          open={staffDetailOpen}
-          onOpenChange={(open) => { setStaffDetailOpen(open); if (!open) setStaffDetailTask(null); }}
-          task={staffDetailTask}
-          onChange={refreshTasks}
+      {detailTask && (
+        <TaskDetailSheet
+          task={detailTask}
+          open={detailOpen}
+          userRole={userRole}
+          onOpenChange={(open) => { setDetailOpen(open); if (!open) setDetailTask(null); }}
+          onEdit={handleEditClick}
+          onStatusChange={async (taskId, newStatus) => {
+            await updateTaskStatus(taskId, newStatus);
+            refreshTasks();
+          }}
         />
       )}
     </div>

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Edit, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
+import { cn } from '@/lib/utils';
 
 // These types should ideally be in a shared file, but are here for now to match TasksView
 type TaskUpdate = {
@@ -137,7 +138,8 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
 
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
+        <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto" aria-describedby="task-detail-desc">
+          <span id="task-detail-desc" className="sr-only">Task details and actions</span>
           <SheetHeader>
             <SheetTitle>Task Details</SheetTitle>
           </SheetHeader>
