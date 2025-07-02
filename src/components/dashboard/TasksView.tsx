@@ -13,6 +13,9 @@ import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
 import { TaskDetailSheet } from './TaskDetailSheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useProfiles } from '@/hooks/useProfiles';
 
 interface TasksViewProps {
   userRole: string;
@@ -61,6 +64,7 @@ export function TasksView({ userRole }: TasksViewProps) {
     updateTaskStatus,
     addTaskUpdate,
   } = useTasks(userRole, userProfile?.id);
+  const { profiles, loading: profilesLoading, error: profilesError } = useProfiles();
 
   // Filter tasks for staff
   let visibleTasks = tasks;
@@ -71,10 +75,41 @@ export function TasksView({ userRole }: TasksViewProps) {
   // Tab state for room/tree
   const [tab, setTab] = useState<'room' | 'tree'>('room');
 
+  // Filter/search state
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [assigneeFilter, setAssigneeFilter] = useState('all');
+
+  // Unique assignees for admin filter
+  const uniqueAssignees = React.useMemo(() => {
+    const map = new Map();
+    tasks.forEach(task => {
+      if (task.assigned_to_profile) {
+        map.set(task.assigned_to, task.assigned_to_profile.full_name);
+      }
+    });
+    return Array.from(map.entries());
+  }, [tasks]);
+
   // Filtered tasks for the selected tab
-  const filteredTasks = tab === 'room'
-    ? visibleTasks.filter(task => task.room_id)
-    : visibleTasks.filter(task => task.tree_id);
+  const filteredTasks = React.useMemo(() => {
+    let list = tab === 'room'
+      ? visibleTasks.filter(task => task.room_id)
+      : visibleTasks.filter(task => task.tree_id);
+    if (search) {
+      list = list.filter(task =>
+        (task.title?.toLowerCase().includes(search.toLowerCase()) ||
+         task.description?.toLowerCase().includes(search.toLowerCase()))
+      );
+    }
+    if (statusFilter !== 'all') {
+      list = list.filter(task => task.status?.toLowerCase() === statusFilter);
+    }
+    if (userRole === 'admin' && assigneeFilter !== 'all') {
+      list = list.filter(task => task.assigned_to === assigneeFilter);
+    }
+    return list;
+  }, [tab, visibleTasks, search, statusFilter, assigneeFilter, userRole]);
 
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
@@ -455,6 +490,39 @@ export function TasksView({ userRole }: TasksViewProps) {
           <TabsTrigger value="tree">Tree Tasks</TabsTrigger>
         </TabsList>
       </Tabs>
+      {/* Filter/Search Bar */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-6 items-stretch sm:items-end">
+        <Input
+          placeholder="Search tasks..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="sm:w-64"
+        />
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-32">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="to do">To Do</SelectItem>
+            <SelectItem value="doing">Doing</SelectItem>
+            <SelectItem value="done">Done</SelectItem>
+          </SelectContent>
+        </Select>
+        {userRole === 'admin' && (
+          <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Assignee" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Assignees</SelectItem>
+              {uniqueAssignees.map(([id, name]) => (
+                <SelectItem key={id} value={id || ''}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
       {/* Tasks Grid for Selected Tab */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredTasks.map((task) => (
