@@ -93,6 +93,14 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
     };
     if (submitData.room_id) submitData.tree_id = null;
     if (submitData.tree_id) submitData.room_id = null;
+    // For staff, always assign to themselves
+    if (userProfile?.role === 'staff') {
+      submitData.assigned_to = userProfile.id;
+    }
+    // If assigned_to is empty or falsy, set to null
+    if (!submitData.assigned_to) {
+      submitData.assigned_to = null;
+    }
     // Remove evidence_required if present
     delete submitData.evidence_required;
 
