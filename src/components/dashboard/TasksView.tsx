@@ -576,6 +576,14 @@ export function TasksView({ userRole }: TasksViewProps) {
             await updateTaskStatus(taskId, newStatus);
             refreshTasks();
           }}
+          onTaskUpdated={async (comment, imageUrls) => {
+            if (!detailTask) return;
+            await addTaskUpdate(detailTask.id, 'progress', comment, imageUrls);
+            await refreshTasks();
+            // Update the detailTask with the latest version
+            const updated = tasks.find(t => t.id === detailTask.id);
+            if (updated) setDetailTask(updated);
+          }}
         />
       )}
     </div>

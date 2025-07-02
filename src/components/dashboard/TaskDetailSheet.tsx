@@ -48,6 +48,7 @@ interface TaskDetailSheetProps {
   onOpenChange: (open: boolean) => void;
   onEdit: (task: Task) => void;
   onStatusChange: (taskId: string, newStatus: string) => Promise<void>;
+  onTaskUpdated?: (comment: string, imageUrls: string[]) => Promise<void>;
 }
 
 const getStatusIcon = (status: string) => {
@@ -111,7 +112,7 @@ const renderTaskUpdates = (task: Task) => {
     );
 };
 
-export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, userRole, onOpenChange, onEdit, onStatusChange }) => {
+export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, userRole, onOpenChange, onEdit, onStatusChange, onTaskUpdated }) => {
     if (!task) return null;
 
     const statusOptions = [
@@ -177,24 +178,14 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
           }
         }
       }
-      // Insert new update into task_updates
-      const { error: insertError } = await supabase.from('task_updates').insert({
-        task_id: task.id,
-        notes: updateComment,
-        image_urls: imageUrls,
-        update_type: 'progress',
-      });
-      if (insertError) {
-        setFormError('Failed to add update.');
-        setSubmittingUpdate(false);
-        return;
+      // Use parent callback if provided
+      if (typeof onTaskUpdated === 'function') {
+        await onTaskUpdated(updateComment, imageUrls);
       }
-      // Optionally: refetch updates (or trigger parent to refetch task)
       setUpdateComment('');
       setUpdateImages([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
       setSubmittingUpdate(false);
-      window.location.reload(); // TEMP: reload to refresh updates; ideally, refetch task in parent
     };
     // ---
 
