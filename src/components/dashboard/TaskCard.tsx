@@ -68,7 +68,7 @@ export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }>
                     : 'bg-gray-100 text-gray-800 border-gray-200'
                 } variant="outline">
                   {task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo'
-                    ? 'New'
+                    ? 'To Do'
                     : task.status.toLowerCase() === 'doing'
                     ? 'Doing'
                     : task.status.toLowerCase() === 'done' || task.status.toLowerCase() === 'completed'
