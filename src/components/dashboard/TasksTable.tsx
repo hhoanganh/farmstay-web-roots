@@ -40,6 +40,7 @@ function isOverdue(task: any) {
 }
 
 const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRole: string, assignees?: any[] }) => {
+  const [tab, setTab] = useState<'room' | 'tree'>('room');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
@@ -48,9 +49,12 @@ const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRol
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
-  // Filtered tasks (no tab filter)
+  // Filtered tasks by tab/type
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
+      // Tab filter
+      if (tab === 'room' && !task.room_id) return false;
+      if (tab === 'tree' && !task.tree_id) return false;
       // Status filter
       if (statusFilter !== 'all' && task.status?.toLowerCase() !== statusFilter) return false;
       // Priority filter
@@ -61,7 +65,7 @@ const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRol
       if (search && !(`${task.title} ${task.description || ''}`.toLowerCase().includes(search.toLowerCase()))) return false;
       return true;
     });
-  }, [tasks, statusFilter, priorityFilter, assigneeFilter, search, userRole]);
+  }, [tasks, tab, statusFilter, priorityFilter, assigneeFilter, search, userRole]);
 
   // Unique assignees for filter dropdown
   const uniqueAssignees = useMemo(() => {
@@ -78,7 +82,12 @@ const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRol
     <div className="w-full">
       {/* Page Header with Create Button */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
-        <div />
+        <Tabs value={tab} onValueChange={v => setTab(v as 'room' | 'tree')} className="mb-2 sm:mb-0">
+          <TabsList className="w-full grid grid-cols-2 max-w-xs">
+            <TabsTrigger value="room">Room Tasks</TabsTrigger>
+            <TabsTrigger value="tree">Tree Tasks</TabsTrigger>
+          </TabsList>
+        </Tabs>
         <div className="flex gap-2 mt-4 sm:mt-0 sm:ml-4">
           <Button
             className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1 sm:w-auto"
