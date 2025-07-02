@@ -146,9 +146,9 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="max-w-lg w-full p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle>{mode === 'create' ? 'Create New Task' : 'Edit Task'}</DialogTitle>
+          <DialogTitle>{mode === 'create' ? 'Create New Task' : 'Update Task'}</DialogTitle>
           <DialogDescription>
             {userProfile?.role === 'admin'
               ? `${mode === 'create' ? 'Create a new task' : 'Edit the task'} for your staff.`
@@ -156,7 +156,17 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             }
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="grid gap-4 py-4">
+        {/* Error messages block - full width, stacked, mobile-friendly */}
+        {Object.values(errors).length > 0 && (
+          <div className="w-full flex flex-col gap-2 mb-4">
+            {Object.entries(errors).map(([key, msg]) => (
+              <div key={key} className="w-full bg-red-50 text-red-600 text-sm rounded px-3 py-2 border border-red-200">
+                {msg}
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="room_id" className="text-right">
               Room
@@ -199,14 +209,12 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               </SelectContent>
             </Select>
           </div>
-          {errors.related && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.related}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title
             </Label>
             <Input type="text" id="title" name="title" value={formData.title} onChange={handleChange} className="col-span-3" required />
           </div>
-          {errors.title && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.title}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
               Description
@@ -227,14 +235,12 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               </SelectContent>
             </Select>
           </div>
-          {errors.priority && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.priority}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="due_date" className="text-right">
               Due Date
             </Label>
             <Input type="date" id="due_date" name="due_date" value={formData.due_date} onChange={handleChange} className="col-span-3" required />
           </div>
-          {errors.due_date && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.due_date}</div>}
           {userProfile?.role === 'admin' ? (
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="assigned_to" className="text-right">
@@ -256,7 +262,6 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
                   )}
                 </SelectContent>
               </Select>
-              {errors.assigned_to && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.assigned_to}</div>}
             </div>
           ) : (
             <div className="grid grid-cols-4 items-center gap-4">
