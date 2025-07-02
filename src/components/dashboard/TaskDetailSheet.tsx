@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Edit, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Tables } from '@/integrations/supabase/types';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
 
 // These types should ideally be in a shared file, but are here for now to match TasksView
 type TaskUpdate = {
@@ -121,6 +122,13 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
 
     const [status, setStatus] = React.useState(task.status);
     const [saving, setSaving] = React.useState(false);
+    // --- Staff update form state ---
+    const [updateComment, setUpdateComment] = React.useState('');
+    const [updateImages, setUpdateImages] = React.useState<File[]>([]);
+    const [submittingUpdate, setSubmittingUpdate] = React.useState(false);
+    const [formError, setFormError] = React.useState<string | null>(null);
+    const fileInputRef = React.useRef<HTMLInputElement>(null);
+    // ---
 
     React.useEffect(() => {
         if (task) {
@@ -135,6 +143,60 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
       await onStatusChange(task.id, newStatus);
       setSaving(false);
     };
+
+    // --- Staff update form logic ---
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (e.target.files) {
+        setUpdateImages(Array.from(e.target.files));
+      }
+    };
+
+    const handleUpdateSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setFormError(null);
+      if (!updateComment.trim()) {
+        setFormError('Comment is required.');
+        return;
+      }
+      setSubmittingUpdate(true);
+      let imageUrls: string[] = [];
+      if (updateImages.length > 0) {
+        // Upload each image to Supabase Storage
+        for (const file of updateImages) {
+          const fileExt = file.name.split('.').pop();
+          const filePath = `task-updates/${task.id}/${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${fileExt}`;
+          const { data, error } = await supabase.storage.from('task-media').upload(filePath, file);
+          if (error) {
+            setFormError('Image upload failed.');
+            setSubmittingUpdate(false);
+            return;
+          }
+          const { data: publicUrlData } = supabase.storage.from('task-media').getPublicUrl(filePath);
+          if (publicUrlData?.publicUrl) {
+            imageUrls.push(publicUrlData.publicUrl);
+          }
+        }
+      }
+      // Insert new update into task_updates
+      const { error: insertError } = await supabase.from('task_updates').insert({
+        task_id: task.id,
+        notes: updateComment,
+        image_urls: imageUrls,
+        update_type: 'progress',
+      });
+      if (insertError) {
+        setFormError('Failed to add update.');
+        setSubmittingUpdate(false);
+        return;
+      }
+      // Optionally: refetch updates (or trigger parent to refetch task)
+      setUpdateComment('');
+      setUpdateImages([]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      setSubmittingUpdate(false);
+      window.location.reload(); // TEMP: reload to refresh updates; ideally, refetch task in parent
+    };
+    // ---
 
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
@@ -197,6 +259,32 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
             </div>
             <hr />
             {renderTaskUpdates(task)}
+            {/* Staff update form */}
+            {userRole === 'staff' && (
+              <form className="mt-6 space-y-3" onSubmit={handleUpdateSubmit}>
+                <h4 className="text-sm font-medium">Add Update</h4>
+                {formError && <div className="text-red-500 text-sm">{formError}</div>}
+                <textarea
+                  className="w-full border rounded p-2 text-sm"
+                  rows={3}
+                  placeholder="Add a comment..."
+                  value={updateComment}
+                  onChange={e => setUpdateComment(e.target.value)}
+                  required
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  className="block text-sm"
+                />
+                <Button type="submit" disabled={submittingUpdate || !updateComment.trim()} className="w-full">
+                  {submittingUpdate ? 'Submitting...' : 'Submit Update'}
+                </Button>
+              </form>
+            )}
             {task.completion_notes && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
                 <h5 className="font-semibold mb-2">Completion Notes</h5>
