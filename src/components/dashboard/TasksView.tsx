@@ -13,6 +13,7 @@ import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
 import { TaskDetailSheet } from './TaskDetailSheet';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { StaffTaskDetailModal } from './StaffTaskDetailModal';
 
 interface TasksViewProps {
   userRole: string;
@@ -85,6 +86,9 @@ export function TasksView({ userRole }: TasksViewProps) {
   const [updateModalMode, setUpdateModalMode] = useState<'progress' | 'completion'>('progress');
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  // Staff modal state
+  const [staffDetailTask, setStaffDetailTask] = useState<Task | null>(null);
+  const [staffDetailOpen, setStaffDetailOpen] = useState(false);
 
   useEffect(() => {
     refreshTasks();
@@ -351,7 +355,9 @@ export function TasksView({ userRole }: TasksViewProps) {
               </h3>
               <div className="space-y-3">
                 {groupTasks.map((task) => (
-                  <TaskCard key={task.id} task={task} onStatusChange={refreshTasks} />
+                  <div key={task.id} onClick={() => { setStaffDetailTask(task); setStaffDetailOpen(true); }}>
+                    <TaskCard task={task} onStatusChange={refreshTasks} />
+                  </div>
                 ))}
                 {groupTasks.length === 0 && (
                   <div className="text-sm text-gray-500">No tasks in this category.</div>
@@ -508,6 +514,15 @@ export function TasksView({ userRole }: TasksViewProps) {
           refreshTasks();
         }}
       />
+      {/* Staff Task Detail Modal */}
+      {userRole === 'staff' && staffDetailTask && (
+        <StaffTaskDetailModal
+          open={staffDetailOpen}
+          onOpenChange={(open) => { setStaffDetailOpen(open); if (!open) setStaffDetailTask(null); }}
+          task={staffDetailTask}
+          onChange={refreshTasks}
+        />
+      )}
     </div>
   );
 }
