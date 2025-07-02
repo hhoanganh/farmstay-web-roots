@@ -67,6 +67,10 @@ export function TasksView({ userRole }: TasksViewProps) {
     visibleTasks = tasks.filter(task => task.assigned_to === userProfile.id);
   }
 
+  // Split tasks into room and tree tasks (move to top level)
+  const roomTasks = visibleTasks.filter(task => task.room_id);
+  const treeTasks = visibleTasks.filter(task => task.tree_id);
+
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -527,29 +531,34 @@ export function TasksView({ userRole }: TasksViewProps) {
           </Button>
         </div>
       </div>
-      {/* Tasks Grid */}
+      {/* Room Tasks Section */}
+      <h2 className="text-2xl font-caveat text-[hsl(var(--text-accent))] mb-4 mt-8">Room Tasks</h2>
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {visibleTasks.map((task) => (
+        {roomTasks.map((task) => (
           <div key={task.id} onClick={() => handleCardClick(task)}>
             <TaskCard task={task} />
           </div>
         ))}
       </div>
-      {visibleTasks.length === 0 && (
-        <div className="text-center py-12">
-          <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
-          <h3 
-            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
-            style={{ fontFamily: 'Caveat, cursive' }}
-          >
-            No tasks found
-          </h3>
-          <p 
-            className="text-[hsl(var(--text-secondary))]"
-            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-          >
-            All clear! No tasks to show.
-          </p>
+      {roomTasks.length === 0 && (
+        <div className="text-center py-8">
+          <CheckSquare className="h-10 w-10 mx-auto mb-2 text-[hsl(var(--text-secondary))]" />
+          <div className="text-[hsl(var(--text-secondary))]">No room tasks found.</div>
+        </div>
+      )}
+      {/* Tree Tasks Section */}
+      <h2 className="text-2xl font-caveat text-[hsl(var(--text-accent))] mb-4 mt-12">Tree Tasks</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {treeTasks.map((task) => (
+          <div key={task.id} onClick={() => handleCardClick(task)}>
+            <TaskCard task={task} />
+          </div>
+        ))}
+      </div>
+      {treeTasks.length === 0 && (
+        <div className="text-center py-8">
+          <CheckSquare className="h-10 w-10 mx-auto mb-2 text-[hsl(var(--text-secondary))]" />
+          <div className="text-[hsl(var(--text-secondary))]">No tree tasks found.</div>
         </div>
       )}
       {/* Modals */}
