@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useTasks } from '@/hooks/useTasks';
 import { TaskCard } from './TaskCard';
 import { TaskDetailSheet } from './TaskDetailSheet';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface TasksViewProps {
   userRole: string;
@@ -67,9 +68,13 @@ export function TasksView({ userRole }: TasksViewProps) {
     visibleTasks = tasks.filter(task => task.assigned_to === userProfile.id);
   }
 
-  // Split tasks into room and tree tasks (move to top level)
-  const roomTasks = visibleTasks.filter(task => task.room_id);
-  const treeTasks = visibleTasks.filter(task => task.tree_id);
+  // Tab state for room/tree
+  const [tab, setTab] = useState<'room' | 'tree'>('room');
+
+  // Filtered tasks for the selected tab
+  const filteredTasks = tab === 'room'
+    ? visibleTasks.filter(task => task.room_id)
+    : visibleTasks.filter(task => task.tree_id);
 
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
@@ -531,34 +536,36 @@ export function TasksView({ userRole }: TasksViewProps) {
           </Button>
         </div>
       </div>
-      {/* Room Tasks Section */}
-      <h2 className="text-2xl font-caveat text-[hsl(var(--text-accent))] mb-4 mt-8">Room Tasks</h2>
+      {/* Tabs for Room/Tree Tasks */}
+      <Tabs value={tab} onValueChange={v => setTab(v as 'room' | 'tree')} className="mb-6">
+        <TabsList className="w-full grid grid-cols-2 max-w-xs">
+          <TabsTrigger value="room">Room Tasks</TabsTrigger>
+          <TabsTrigger value="tree">Tree Tasks</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      {/* Tasks Grid for Selected Tab */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {roomTasks.map((task) => (
+        {filteredTasks.map((task) => (
           <div key={task.id} onClick={() => handleCardClick(task)}>
             <TaskCard task={task} />
           </div>
         ))}
       </div>
-      {roomTasks.length === 0 && (
-        <div className="text-center py-8">
-          <CheckSquare className="h-10 w-10 mx-auto mb-2 text-[hsl(var(--text-secondary))]" />
-          <div className="text-[hsl(var(--text-secondary))]">No room tasks found.</div>
-        </div>
-      )}
-      {/* Tree Tasks Section */}
-      <h2 className="text-2xl font-caveat text-[hsl(var(--text-accent))] mb-4 mt-12">Tree Tasks</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {treeTasks.map((task) => (
-          <div key={task.id} onClick={() => handleCardClick(task)}>
-            <TaskCard task={task} />
-          </div>
-        ))}
-      </div>
-      {treeTasks.length === 0 && (
-        <div className="text-center py-8">
-          <CheckSquare className="h-10 w-10 mx-auto mb-2 text-[hsl(var(--text-secondary))]" />
-          <div className="text-[hsl(var(--text-secondary))]">No tree tasks found.</div>
+      {filteredTasks.length === 0 && (
+        <div className="text-center py-12">
+          <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
+          <h3 
+            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
+            No tasks found
+          </h3>
+          <p 
+            className="text-[hsl(var(--text-secondary))]"
+            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+          >
+            All clear! No tasks to show.
+          </p>
         </div>
       )}
       {/* Modals */}
