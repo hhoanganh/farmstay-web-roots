@@ -12,6 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/providers/AuthProvider';
+import { Calendar as BigCalendar, dateFnsLocalizer, Event as RBCEvent } from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { enUS } from 'date-fns/locale';
 
 interface BookingsViewProps {
   userRole: string;
@@ -53,6 +56,17 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
   const [guestPhone, setGuestPhone] = useState('');
   const [guestNotes, setGuestNotes] = useState('');
+
+  const locales = {
+    'en-US': enUS,
+  };
+  const localizer = dateFnsLocalizer({
+    format,
+    parse: (str, fmt, options) => new Date(str),
+    startOfWeek: () => 0,
+    getDay: date => date.getDay(),
+    locales,
+  });
 
   useEffect(() => {
     fetchRooms();
@@ -114,6 +128,16 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   const filteredRooms = rooms.filter(room =>
     room.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Map bookings to calendar events
+  const calendarEvents: RBCEvent[] = bookings.map(booking => ({
+    id: booking.id,
+    title: `${rooms.find(r => r.id === booking.room_id)?.name || 'Room'}: ${booking.customers?.full_name || 'Unknown Guest'}`,
+    start: new Date(booking.check_in_date),
+    end: new Date(booking.check_out_date),
+    resource: booking,
+    allDay: true,
+  }));
 
   return (
     <div className="p-8">
@@ -271,25 +295,29 @@ export function BookingsView({ userRole }: BookingsViewProps) {
         </TabsContent>
 
         <TabsContent value="calendar" className="mt-6">
-          <Card className="border-[hsl(var(--border-primary))]">
-            <CardContent className="p-8">
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
-                <h3 
-                  className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
-                  style={{ fontFamily: 'Caveat, cursive' }}
-                >
-                  Calendar View
-                </h3>
-                <p 
-                  className="text-[hsl(var(--text-secondary))]"
-                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                >
-                  Interactive calendar showing all bookings will be implemented here
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="bg-white rounded shadow border-[hsl(var(--border-primary))] p-2 md:p-6">
+            <BigCalendar
+              localizer={localizer}
+              events={calendarEvents}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 600 }}
+              popup
+              views={['month', 'week', 'day']}
+              onSelectEvent={event => {
+                const booking = bookings.find(b => b.id === event.id);
+                if (booking) handleEditBooking(booking);
+              }}
+              eventPropGetter={event => {
+                // Color by booking status
+                let backgroundColor = '#e0e7ff';
+                if (event.resource?.booking_status === 'cancelled') backgroundColor = '#fee2e2';
+                if (event.resource?.booking_status === 'confirmed') backgroundColor = '#bbf7d0';
+                return { style: { backgroundColor, borderRadius: 6, color: '#222', border: 'none' } };
+              }}
+              tooltipAccessor={event => `${event.title}\n${format(event.start, 'yyyy-MM-dd')} → ${format(event.end, 'yyyy-MM-dd')}`}
+            />
+          </div>
         </TabsContent>
       </Tabs>
 

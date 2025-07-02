@@ -19,4 +19,8 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  test: {
+    setupFiles: ["./src/vitest.setup.ts"],
+    environment: 'jsdom',
+  },
 }));
