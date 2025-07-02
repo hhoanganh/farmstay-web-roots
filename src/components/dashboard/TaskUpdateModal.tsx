@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tables } from '@/integrations/supabase/types';
@@ -114,6 +114,7 @@ export function TaskUpdateModal({ isOpen, onClose, onSuccess, task, mode }: Task
           <DialogTitle>
             {mode === 'completion' ? 'Complete Task' : 'Add Progress Update'}
           </DialogTitle>
+          <DialogDescription>Add a progress update or complete the task.</DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4">

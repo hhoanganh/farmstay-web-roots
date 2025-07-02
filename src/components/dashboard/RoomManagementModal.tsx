@@ -5,7 +5,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -183,6 +184,7 @@ export function RoomManagementModal({ open, onClose, refreshRooms }: RoomManagem
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Delete Room</DialogTitle>
+              <DialogDescription>Manage rooms for the homestay.</DialogDescription>
             </DialogHeader>
             <div>Are you sure you want to delete this room? This action cannot be undone.</div>
             <DialogFooter>

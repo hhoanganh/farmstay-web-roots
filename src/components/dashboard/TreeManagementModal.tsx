@@ -5,7 +5,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -152,6 +153,7 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
       <DialogContent className="max-w-lg overflow-y-auto max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Manage Trees</DialogTitle>
+          <DialogDescription>Manage trees for the farm.</DialogDescription>
         </DialogHeader>
         <div className="mb-4 space-y-4">
           <Button onClick={() => openForm()} className="w-full">+ Add Tree</Button>

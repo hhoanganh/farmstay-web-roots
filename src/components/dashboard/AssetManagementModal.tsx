@@ -1,10 +1,10 @@
-
 import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RoomManagement } from './RoomManagement';
@@ -26,6 +26,7 @@ export function AssetManagementModal({ open, onClose }: AssetManagementModalProp
           >
             Manage Farm Assets
           </DialogTitle>
+          <DialogDescription>Manage farm assets.</DialogDescription>
         </DialogHeader>
         
         <Tabs defaultValue="rooms" className="w-full">

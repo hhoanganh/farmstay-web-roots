@@ -157,12 +157,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
       <DialogContent className="max-w-lg w-full p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{mode === 'create' ? 'Create New Task' : 'Update Task'}</DialogTitle>
-          <DialogDescription>
-            {userProfile?.role === 'admin'
-              ? `${mode === 'create' ? 'Create a new task' : 'Edit the task'} for your staff.`
-              : `${mode === 'create' ? 'Create a new task' : 'Edit the task'} for yourself.`
-            }
-          </DialogDescription>
+          <DialogDescription>Fill in the details for the task.</DialogDescription>
         </DialogHeader>
         {/* Error messages block - full width, stacked, mobile-friendly */}
         {Object.values(errors).length > 0 && (
