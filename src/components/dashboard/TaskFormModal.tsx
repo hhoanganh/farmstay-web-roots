@@ -71,7 +71,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Validation in visual order
+    // Validation in visual order: tree/room first, then others
     const newErrors: { [key: string]: string } = {};
     if (!formData.room_id && !formData.tree_id) newErrors.related = 'Select a room or a tree';
     if (!formData.title.trim()) newErrors.title = 'Title is required';
@@ -89,9 +89,12 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
       ...formData,
       room_id: formData.room_id || null,
       tree_id: formData.tree_id || null,
+      created_by: userProfile?.id || null,
     };
     if (submitData.room_id) submitData.tree_id = null;
     if (submitData.tree_id) submitData.room_id = null;
+    // Remove evidence_required if present
+    delete submitData.evidence_required;
 
     // Logging payload for debugging
     console.log('Submitting task payload:', submitData);
@@ -214,12 +217,12 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             <Label htmlFor="priority" className="text-right">
               Priority
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('priority', value)} defaultValue={formData.priority === 'medium' ? 'low' : formData.priority}>
+            <Select onValueChange={(value) => handleSelectChange('priority', value)} value={formData.priority}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
               </SelectContent>
             </Select>
@@ -253,6 +256,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
                   )}
                 </SelectContent>
               </Select>
+              {errors.assigned_to && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.assigned_to}</div>}
             </div>
           ) : (
             <div className="grid grid-cols-4 items-center gap-4">
@@ -269,7 +273,6 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               />
             </div>
           )}
-          {errors.assigned_to && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.assigned_to}</div>}
           <div className="flex justify-end">
             <Button type="submit">{mode === 'create' ? 'Create Task' : 'Update Task'}</Button>
           </div>
