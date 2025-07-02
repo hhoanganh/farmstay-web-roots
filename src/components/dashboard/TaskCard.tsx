@@ -102,15 +102,6 @@ export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }>
               </p>
             )}
           </div>
-          {/* Status update button for assigned staff */}
-          {isAssignedStaff && nextStatus && (
-            <Button
-              className="mt-2 w-full sm:w-auto bg-blue-600 text-white font-semibold rounded-md py-2 px-4 text-center text-base sm:text-sm"
-              onClick={handleStatusUpdate}
-            >
-              {buttonLabel}
-            </Button>
-          )}
           {children}
         </div>
       </CardContent>
