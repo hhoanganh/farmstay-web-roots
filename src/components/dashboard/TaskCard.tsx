@@ -12,7 +12,7 @@ interface TaskCardProps {
   children?: React.ReactNode;
 }
 
-export const TaskCard: React.FC<TaskCardProps> = ({ task, children }) => {
+export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }> = ({ task, children, onStatusChange }) => {
   const { userProfile } = useAuth();
   const { updateTaskStatus } = useTasks(userProfile?.role, userProfile?.id);
   const { toast } = useToast();
@@ -39,6 +39,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, children }) => {
     try {
       await updateTaskStatus(task.id, nextStatus);
       toast({ title: 'Task updated', description: `Status set to ${nextStatus}`, variant: 'default' });
+      if (onStatusChange) onStatusChange();
     } catch (err) {
       toast({ title: 'Error', description: 'Could not update task status', variant: 'destructive' });
     }

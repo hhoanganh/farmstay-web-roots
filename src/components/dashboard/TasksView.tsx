@@ -481,7 +481,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               <div className="space-y-3">
                 {groupTasks.map((task) => (
                   <div key={task.id} onClick={() => handleCardClick(task)} className="cursor-pointer">
-                    <TaskCard task={task} />
+                    <TaskCard task={task} onStatusChange={refreshTasks} />
                   </div>
                 ))}
                 {groupTasks.length === 0 && (
