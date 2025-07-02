@@ -492,43 +492,68 @@ export function TasksView({ userRole }: TasksViewProps) {
             className="text-4xl text-[hsl(var(--text-accent))] mb-2"
             style={{ fontFamily: 'Caveat, cursive' }}
           >
-            {userRole === 'admin' ? 'Task Management' : 'My Assigned Tasks'}
+            Tasks
           </h1>
           <p 
             className="text-[hsl(var(--text-secondary))]"
             style={{ fontFamily: 'IBM Plex Mono, monospace' }}
           >
-            {userRole === 'admin' 
-              ? 'Manage tasks for all staff members'
-              : 'View and update your assigned tasks'
-            }
+            Manage staff tasks and assignments
           </p>
+          {/* Mobile-only button below title */}
+          <div className="flex gap-2 mt-4 sm:hidden">
+            <Button
+              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1"
+              style={{ fontFamily: 'Inter, sans-serif' }}
+              onClick={handleCreateClick}
+            >
+              Add New Task
+            </Button>
+          </div>
         </div>
-        {userRole === 'admin' && (
-          <Button
-            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring-focus))] h-12"
+        <div className="hidden sm:flex gap-2">
+          <Button 
+            className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold h-12"
             style={{ fontFamily: 'Inter, sans-serif' }}
             onClick={handleCreateClick}
           >
-            <Plus className="h-4 w-4 mr-2" />
-            Create Task
+            Add New Task
           </Button>
-        )}
+        </div>
       </div>
-
-      {/* Content */}
-      {userRole === 'admin' ? renderAdminView() : renderStaffView()}
-
-      {/* Task Form Modal */}
+      {/* Tasks Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {tasks.map((task) => (
+          <div key={task.id} onClick={() => handleCardClick(task)}>
+            <TaskCard task={task} />
+          </div>
+        ))}
+      </div>
+      {tasks.length === 0 && (
+        <div className="text-center py-12">
+          <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
+          <h3 
+            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
+            No tasks found
+          </h3>
+          <p 
+            className="text-[hsl(var(--text-secondary))]"
+            style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+          >
+            All clear! No tasks to show.
+          </p>
+        </div>
+      )}
+      {/* Modals */}
       <TaskFormModal
         open={modalOpen}
         onOpenChange={setModalOpen}
         onSuccess={handleModalSuccess}
-        onDelete={handleModalDelete}
         task={selectedTask}
         mode={modalMode}
       />
-
       {/* Task Update Modal */}
       <TaskUpdateModal
         isOpen={updateModalOpen}
@@ -537,7 +562,6 @@ export function TasksView({ userRole }: TasksViewProps) {
         task={selectedTask!}
         mode={updateModalMode}
       />
-
       {/* Task Detail Sheet for Admin */}
       <TaskDetailSheet 
         task={detailTask}

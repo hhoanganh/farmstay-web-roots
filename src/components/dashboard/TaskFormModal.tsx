@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast"
 import {
@@ -136,13 +135,12 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             <Label htmlFor="priority" className="text-right">
               Priority
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('priority', value)} defaultValue={formData.priority}>
+            <Select onValueChange={(value) => handleSelectChange('priority', value)} defaultValue={formData.priority === 'medium' ? 'low' : formData.priority}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select priority" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="low">Low</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
               </SelectContent>
             </Select>
