@@ -51,7 +51,15 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
   };
 
   const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      if (name === 'room_id') {
+        return { ...prev, room_id: value, tree_id: '' };
+      }
+      if (name === 'tree_id') {
+        return { ...prev, tree_id: value, room_id: '' };
+      }
+      return { ...prev, [name]: value };
+    });
   };
 
   const handleSwitchChange = (name: string, checked: boolean) => {
@@ -61,6 +69,15 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim()) return;
+
+    // Only keep the selected (room or tree), set the other to null/empty
+    const submitData = {
+      ...formData,
+      room_id: formData.room_id || null,
+      tree_id: formData.tree_id || null,
+    };
+    if (submitData.room_id) submitData.tree_id = null;
+    if (submitData.tree_id) submitData.room_id = null;
     
     try {
       // Mock submission - replace with actual API call
@@ -123,7 +140,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             <Label htmlFor="room_id" className="text-right">
               Room
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('room_id', value)} value={formData.room_id} disabled={!!formData.tree_id}>
+            <Select onValueChange={(value) => handleSelectChange('room_id', value)} value={formData.room_id}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select room" />
               </SelectTrigger>
@@ -144,7 +161,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             <Label htmlFor="tree_id" className="text-right">
               Tree
             </Label>
-            <Select onValueChange={(value) => handleSelectChange('tree_id', value)} value={formData.tree_id} disabled={!!formData.room_id}>
+            <Select onValueChange={(value) => handleSelectChange('tree_id', value)} value={formData.tree_id}>
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select tree" />
               </SelectTrigger>
