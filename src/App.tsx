@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +24,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminBookings from "./pages/admin/Bookings";
 import AdminTrees from "./pages/admin/Trees";
+import AdminTasks from "./pages/admin/Tasks";
 import AdminPages from "./pages/admin/content/Pages";
 import AdminJournal from "./pages/admin/content/Journal";
 import AdminStaff from "./pages/admin/settings/Staff";
@@ -65,6 +65,7 @@ const App = () => (
             <Route path="admin/dashboard" element={<AdminDashboard />} />
             <Route path="admin/bookings" element={<AdminBookings />} />
             <Route path="admin/trees" element={<AdminTrees />} />
+            <Route path="admin/tasks" element={<AdminTasks />} />
           </Route>
 
           {/* Routes accessible only to admin */}
