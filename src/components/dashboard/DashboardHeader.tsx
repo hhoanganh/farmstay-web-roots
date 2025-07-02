@@ -51,6 +51,11 @@ export function DashboardHeader() {
       {userProfile && (
         <span className="ml-auto mr-4 text-[hsl(var(--text-accent))] font-medium whitespace-nowrap">
           {userProfile.full_name || userProfile.email}
+          {userProfile.role && (
+            <span className="ml-2 px-2 py-1 rounded bg-[hsl(var(--background-secondary))] text-xs font-semibold uppercase align-middle">
+              {userProfile.role}
+            </span>
+          )}
         </span>
       )}
       <button
