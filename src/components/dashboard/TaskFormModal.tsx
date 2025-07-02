@@ -45,6 +45,8 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
     evidence_required: task?.evidence_required || false
   });
 
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -68,7 +70,17 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) return;
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.title.trim()) newErrors.title = 'Title is required';
+    if (!formData.priority) newErrors.priority = 'Priority is required';
+    if (!formData.due_date) newErrors.due_date = 'Due date is required';
+    if (userProfile?.role === 'admin' && !formData.assigned_to) newErrors.assigned_to = 'Assignee is required';
+    if (!formData.room_id && !formData.tree_id) newErrors.related = 'Select a room or a tree';
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
 
     // Only keep the selected (room or tree), set the other to null/empty
     const submitData = {
@@ -178,12 +190,14 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               </SelectContent>
             </Select>
           </div>
+          {errors.related && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.related}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title
             </Label>
-            <Input type="text" id="title" name="title" value={formData.title} onChange={handleChange} className="col-span-3" />
+            <Input type="text" id="title" name="title" value={formData.title} onChange={handleChange} className="col-span-3" required />
           </div>
+          {errors.title && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.title}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="description" className="text-right">
               Description
@@ -204,12 +218,14 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               </SelectContent>
             </Select>
           </div>
+          {errors.priority && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.priority}</div>}
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="due_date" className="text-right">
               Due Date
             </Label>
-            <Input type="date" id="due_date" name="due_date" value={formData.due_date} onChange={handleChange} className="col-span-3" />
+            <Input type="date" id="due_date" name="due_date" value={formData.due_date} onChange={handleChange} className="col-span-3" required />
           </div>
+          {errors.due_date && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.due_date}</div>}
           {userProfile?.role === 'admin' ? (
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="assigned_to" className="text-right">
@@ -247,6 +263,7 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
               />
             </div>
           )}
+          {errors.assigned_to && <div className="col-span-4 text-red-500 text-sm -mt-2 mb-2 text-center">{errors.assigned_to}</div>}
           <div className="flex justify-end">
             <Button type="submit">{mode === 'create' ? 'Create Task' : 'Update Task'}</Button>
           </div>
