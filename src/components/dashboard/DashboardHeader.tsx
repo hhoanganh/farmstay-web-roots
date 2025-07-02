@@ -1,12 +1,12 @@
 import { useAuth } from '@/providers/AuthProvider';
 import { Link, useLocation } from 'react-router-dom';
-import { Book, TreePine, FileText, BookOpen, Users, Home } from 'lucide-react';
+import { Book, TreePine, FileText, BookOpen, Users, Home, CheckSquare } from 'lucide-react';
 import { useAuthSession } from '@/hooks/useAuthSession';
 
 const navLinks = [
   { href: '/admin/bookings', label: 'Bookings', icon: <Book className="w-5 h-5" /> },
   { href: '/admin/trees', label: 'Trees', icon: <TreePine className="w-5 h-5" /> },
-  { href: '/admin/content/pages', label: 'Pages', icon: <FileText className="w-5 h-5" /> },
+  { href: '/admin/tasks', label: 'Tasks', icon: <CheckSquare className="w-5 h-5" /> },
   { href: '/admin/content/journal', label: 'Journal', icon: <BookOpen className="w-5 h-5" /> },
 ];
 
