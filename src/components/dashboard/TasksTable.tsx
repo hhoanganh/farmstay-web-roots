@@ -40,17 +40,28 @@ function isOverdue(task: any) {
 }
 
 const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRole: string, assignees?: any[] }) => {
-  // Remove all filter state
-  // const [statusFilter, setStatusFilter] = useState('all');
-  // const [priorityFilter, setPriorityFilter] = useState('all');
-  // const [assigneeFilter, setAssigneeFilter] = useState('all');
-  // const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [assigneeFilter, setAssigneeFilter] = useState('all');
+  const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
-  // No filtering, just show all tasks
-  const filteredTasks = tasks;
+  // Filtered tasks (no tab filter)
+  const filteredTasks = useMemo(() => {
+    return tasks.filter(task => {
+      // Status filter
+      if (statusFilter !== 'all' && task.status?.toLowerCase() !== statusFilter) return false;
+      // Priority filter
+      if (priorityFilter !== 'all' && task.priority?.toLowerCase() !== priorityFilter) return false;
+      // Assignee filter (admin only)
+      if (userRole === 'admin' && assigneeFilter !== 'all' && task.assigned_to !== assigneeFilter) return false;
+      // Search
+      if (search && !(`${task.title} ${task.description || ''}`.toLowerCase().includes(search.toLowerCase()))) return false;
+      return true;
+    });
+  }, [tasks, statusFilter, priorityFilter, assigneeFilter, search, userRole]);
 
   // Unique assignees for filter dropdown
   const uniqueAssignees = useMemo(() => {
@@ -77,6 +88,52 @@ const TasksTable = ({ tasks, userRole, assignees = [] }: { tasks: any[], userRol
             Create New Task
           </Button>
         </div>
+      </div>
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch sm:items-end">
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--text-secondary))] h-4 w-4" />
+          <Input
+            placeholder="Search tasks..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-10 border-[hsl(var(--border-primary))]"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-32 border-[hsl(var(--border-primary))]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            <SelectItem value="to do">New</SelectItem>
+            <SelectItem value="in progress">In Progress</SelectItem>
+            <SelectItem value="done">Done</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+          <SelectTrigger className="w-32 border-[hsl(var(--border-primary))]">
+            <SelectValue placeholder="Priority" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Priority</SelectItem>
+            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="low">Low</SelectItem>
+          </SelectContent>
+        </Select>
+        {userRole === 'admin' && (
+          <Select value={assigneeFilter} onValueChange={setAssigneeFilter}>
+            <SelectTrigger className="w-40 border-[hsl(var(--border-primary))]">
+              <SelectValue placeholder="Assignee" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Assignees</SelectItem>
+              {uniqueAssignees.map(([id, name]) => (
+                <SelectItem key={id} value={id || ''}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
       {/* Table (desktop) */}
       <div className="hidden sm:block">
