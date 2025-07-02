@@ -61,6 +61,12 @@ export function TasksView({ userRole }: TasksViewProps) {
     addTaskUpdate,
   } = useTasks(userRole, userProfile?.id);
 
+  // Filter tasks for staff
+  let visibleTasks = tasks;
+  if (userRole === 'staff' && userProfile?.id) {
+    visibleTasks = tasks.filter(task => task.assigned_to === userProfile.id);
+  }
+
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
@@ -308,7 +314,7 @@ export function TasksView({ userRole }: TasksViewProps) {
       );
     }
     
-    if (tasks.length === 0) {
+    if (visibleTasks.length === 0) {
       return (
         <Card className="border-[hsl(var(--border-primary))]">
           <CardContent className="p-8 text-center">
@@ -327,7 +333,7 @@ export function TasksView({ userRole }: TasksViewProps) {
     return (
       <div className="space-y-8">
         {statusGroups.map(group => {
-          const groupTasks = tasks.filter(t => group.match(t.status.toLowerCase()));
+          const groupTasks = visibleTasks.filter(t => group.match(t.status.toLowerCase()));
           return (
             <div key={group.label}>
               <h3
@@ -456,7 +462,7 @@ export function TasksView({ userRole }: TasksViewProps) {
     return (
       <div className="space-y-8">
         {statusGroups.map(group => {
-          const groupTasks = tasks.filter(t => group.match(t.status.toLowerCase()));
+          const groupTasks = visibleTasks.filter(t => group.match(t.status.toLowerCase()));
           return (
             <div key={group.label}>
               <h3
@@ -523,13 +529,13 @@ export function TasksView({ userRole }: TasksViewProps) {
       </div>
       {/* Tasks Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {tasks.map((task) => (
+        {visibleTasks.map((task) => (
           <div key={task.id} onClick={() => handleCardClick(task)}>
             <TaskCard task={task} />
           </div>
         ))}
       </div>
-      {tasks.length === 0 && (
+      {visibleTasks.length === 0 && (
         <div className="text-center py-12">
           <CheckSquare className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
           <h3 

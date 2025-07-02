@@ -48,6 +48,11 @@ export function DashboardHeader() {
         </Link>
       )}
       <div className="flex-1" />
+      {userProfile && (
+        <span className="ml-auto mr-4 text-[hsl(var(--text-accent))] font-medium whitespace-nowrap">
+          {userProfile.full_name || userProfile.email}
+        </span>
+      )}
       <button
         onClick={handleLogout}
         className="ml-auto px-3 py-2 rounded text-[hsl(var(--text-accent))] hover:bg-[hsl(var(--background-secondary))] font-semibold whitespace-nowrap"
