@@ -120,6 +120,48 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
         </DialogHeader>
         <form onSubmit={handleSubmit} className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="room_id" className="text-right">
+              Room
+            </Label>
+            <Select onValueChange={(value) => handleSelectChange('room_id', value)} value={formData.room_id} disabled={!!formData.tree_id}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select room" />
+              </SelectTrigger>
+              <SelectContent>
+                {roomsLoading ? (
+                  <SelectItem value="" disabled>Loading...</SelectItem>
+                ) : roomsError ? (
+                  <SelectItem value="" disabled>Error</SelectItem>
+                ) : (
+                  rooms?.map(room => (
+                    <SelectItem key={room.id} value={room.id}>{room.name}</SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="tree_id" className="text-right">
+              Tree
+            </Label>
+            <Select onValueChange={(value) => handleSelectChange('tree_id', value)} value={formData.tree_id} disabled={!!formData.room_id}>
+              <SelectTrigger className="col-span-3">
+                <SelectValue placeholder="Select tree" />
+              </SelectTrigger>
+              <SelectContent>
+                {treesLoading ? (
+                  <SelectItem value="" disabled>Loading...</SelectItem>
+                ) : treesError ? (
+                  <SelectItem value="" disabled>Error</SelectItem>
+                ) : (
+                  trees?.map(tree => (
+                    <SelectItem key={tree.id} value={tree.id}>{tree.name}</SelectItem>
+                  ))
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="title" className="text-right">
               Title
             </Label>
@@ -151,89 +193,43 @@ export function TaskFormModal({ open, onOpenChange, onSuccess, task, mode }: Tas
             </Label>
             <Input type="date" id="due_date" name="due_date" value={formData.due_date} onChange={handleChange} className="col-span-3" />
           </div>
-          {userProfile?.role === 'admin' && (
-            <>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="assigned_to" className="text-right">
-                  Assign to
-                </Label>
-                <Select onValueChange={(value) => handleSelectChange('assigned_to', value)} value={formData.assigned_to}>
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select staff" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {profilesLoading ? (
-                      <SelectItem value="" disabled>Loading...</SelectItem>
-                    ) : profilesError ? (
-                      <SelectItem value="" disabled>Error</SelectItem>
-                    ) : (
-                      profiles?.map(profile => (
-                        <SelectItem key={profile.id} value={profile.id}>{profile.full_name}</SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
-              {formData.assigned_to && (
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <div className="text-right"></div>
-                  <Button type="button" variant="outline" onClick={() => handleQuickAssign(userProfile?.id || '')} className="col-span-3">
-                    Quick Assign to Me
-                  </Button>
-                </div>
-              )}
-            </>
-          )}
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="room_id" className="text-right">
-              Room
-            </Label>
-            <Select onValueChange={(value) => handleSelectChange('room_id', value)} value={formData.room_id}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select room" />
-              </SelectTrigger>
-              <SelectContent>
-                {roomsLoading ? (
-                  <SelectItem value="" disabled>Loading...</SelectItem>
-                ) : roomsError ? (
-                  <SelectItem value="" disabled>Error</SelectItem>
-                ) : (
-                  rooms?.map(room => (
-                    <SelectItem key={room.id} value={room.id}>{room.name}</SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="tree_id" className="text-right">
-              Tree
-            </Label>
-            <Select onValueChange={(value) => handleSelectChange('tree_id', value)} value={formData.tree_id}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select tree" />
-              </SelectTrigger>
-              <SelectContent>
-                {treesLoading ? (
-                  <SelectItem value="" disabled>Loading...</SelectItem>
-                ) : treesError ? (
-                  <SelectItem value="" disabled>Error</SelectItem>
-                ) : (
-                  trees?.map(tree => (
-                    <SelectItem key={tree.id} value={tree.id}>{tree.name}</SelectItem>
-                  ))
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="evidence_required" className="text-right">
-              Evidence Required
-            </Label>
-            <div className="col-span-3 flex items-center space-x-2">
-              <Switch id="evidence_required" name="evidence_required" checked={formData.evidence_required} onCheckedChange={(checked) => handleSwitchChange('evidence_required', checked)} />
+          {userProfile?.role === 'admin' ? (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="assigned_to" className="text-right">
+                Assign to
+              </Label>
+              <Select onValueChange={(value) => handleSelectChange('assigned_to', value)} value={formData.assigned_to}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select staff" />
+                </SelectTrigger>
+                <SelectContent>
+                  {profilesLoading ? (
+                    <SelectItem value="" disabled>Loading...</SelectItem>
+                  ) : profilesError ? (
+                    <SelectItem value="" disabled>Error</SelectItem>
+                  ) : (
+                    profiles?.map(profile => (
+                      <SelectItem key={profile.id} value={profile.id}>{profile.full_name}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
             </div>
-          </div>
+          ) : (
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="assigned_to" className="text-right">
+                Assign to
+              </Label>
+              <Input
+                type="text"
+                id="assigned_to"
+                name="assigned_to"
+                value={userProfile?.full_name || ''}
+                disabled
+                className="col-span-3 bg-gray-100"
+              />
+            </div>
+          )}
           <div className="flex justify-end">
             <Button type="submit">{mode === 'create' ? 'Create Task' : 'Update Task'}</Button>
           </div>

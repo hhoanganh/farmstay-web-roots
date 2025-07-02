@@ -140,7 +140,7 @@ export function TasksView({ userRole }: TasksViewProps) {
     switch (currentStatus.toLowerCase()) {
       case 'to do':
       case 'todo':
-        return 'In Progress';
+        return 'Doing';
       case 'in progress':
       case 'in_progress':
         return 'Done';
@@ -308,7 +308,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   const renderStaffView = () => {
     const statusGroups = [
       { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
-      { label: 'In Progress', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
       { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
     ];
 
@@ -455,7 +455,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   const renderAdminView = () => {
     const statusGroups = [
       { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
-      { label: 'In Progress', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
       { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
     ];
     if (loading) {
