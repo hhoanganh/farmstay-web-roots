@@ -355,12 +355,9 @@ export function TasksView({ userRole }: TasksViewProps) {
               </h3>
               <div className="space-y-3">
                 {groupTasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onStatusChange={refreshTasks}
-                    onCardClick={() => { setStaffDetailTask(task); setStaffDetailOpen(true); }}
-                  />
+                  <div key={task.id} onClick={() => { setStaffDetailTask(task); setStaffDetailOpen(true); }} className="cursor-pointer">
+                    <TaskCard task={task} onStatusChange={refreshTasks} />
+                  </div>
                 ))}
                 {groupTasks.length === 0 && (
                   <div className="text-sm text-gray-500">No tasks in this category.</div>

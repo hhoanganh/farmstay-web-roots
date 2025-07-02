@@ -10,10 +10,9 @@ import { useToast } from '@/hooks/use-toast';
 interface TaskCardProps {
   task: Task;
   children?: React.ReactNode;
-  onCardClick?: (e: React.MouseEvent) => void;
 }
 
-export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }> = ({ task, children, onStatusChange, onCardClick }) => {
+export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }> = ({ task, children, onStatusChange }) => {
   const { userProfile } = useAuth();
   const { updateTaskStatus } = useTasks(userProfile?.role, userProfile?.id);
   const { toast } = useToast();
@@ -47,7 +46,7 @@ export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }>
   };
 
   return (
-    <Card className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer" onClick={onCardClick}>
+    <Card className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer">
       <CardContent className="p-4">
         <div className="flex flex-col items-start">
           <div className="flex justify-between items-start w-full mb-2">
