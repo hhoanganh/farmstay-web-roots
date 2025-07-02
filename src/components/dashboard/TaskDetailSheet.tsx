@@ -81,13 +81,13 @@ const getStatusColor = (status: string) => {
     }
 };
 
-const renderTaskUpdates = (task: Task) => {
-    if (!task.updates?.length) return null;
+const renderTaskUpdates = (updates: TaskUpdate[]) => {
+    if (!updates?.length) return null;
 
     return (
       <div className="mt-4 space-y-3">
         <h4 className="text-sm font-medium">Updates</h4>
-        {task.updates.map((update) => (
+        {updates.map((update) => (
           <div key={update.id} className="bg-[hsl(var(--background-secondary))] p-3 rounded-md">
             <div className="flex justify-between items-start mb-2">
               <span className="text-xs text-[hsl(var(--text-secondary))]">
@@ -130,12 +130,26 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
     const [formError, setFormError] = React.useState<string | null>(null);
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     // ---
+    const [localUpdates, setLocalUpdates] = React.useState<TaskUpdate[]>(task.updates || []);
 
     React.useEffect(() => {
         if (task) {
             setStatus(task.status);
+            fetchUpdates();
         }
     }, [task]);
+
+    // Fetch latest updates for this task
+    const fetchUpdates = async () => {
+      const { data, error } = await supabase
+        .from('task_updates')
+        .select('*, created_by_profile:profiles(full_name)')
+        .eq('task_id', task.id)
+        .order('created_at', { ascending: true });
+      if (!error && data) {
+        setLocalUpdates(data as TaskUpdate[]);
+      }
+    };
 
     const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newStatus = e.target.value;
@@ -186,6 +200,7 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
       setUpdateImages([]);
       if (fileInputRef.current) fileInputRef.current.value = '';
       setSubmittingUpdate(false);
+      await fetchUpdates(); // Refresh only this task's updates
     };
     // ---
 
@@ -249,7 +264,7 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
               )}
             </div>
             <hr />
-            {renderTaskUpdates(task)}
+            {renderTaskUpdates(localUpdates)}
             {/* Staff update form */}
             {userRole === 'staff' && (
               <form className="mt-6 space-y-3" onSubmit={handleUpdateSubmit}>
