@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Calendar, Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { format } from 'date-fns';
+import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { BookingModal } from './BookingModal';
 import { RoomManagementModal } from './RoomManagementModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -62,9 +62,9 @@ export function BookingsView({ userRole }: BookingsViewProps) {
   };
   const localizer = dateFnsLocalizer({
     format,
-    parse: (str, fmt, options) => new Date(str),
-    startOfWeek: () => 0,
-    getDay: date => date.getDay(),
+    parse,
+    startOfWeek,
+    getDay,
     locales,
   });
 
