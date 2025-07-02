@@ -153,10 +153,8 @@ export function TasksView({ userRole }: TasksViewProps) {
     setModalOpen(true);
   };
   const handleCardClick = (task: Task) => {
-    if (userRole === 'admin') {
-      setDetailTask(task);
-      setDetailOpen(true);
-    }
+    setDetailTask(task);
+    setDetailOpen(true);
   };
   const handleModalSuccess = () => {
     refreshTasks();
@@ -351,7 +349,7 @@ export function TasksView({ userRole }: TasksViewProps) {
               </h3>
               <div className="space-y-3">
                 {groupTasks.map((task) => (
-                  <div key={task.id} onClick={() => { setDetailTask(task); setDetailOpen(true); }} className="cursor-pointer">
+                  <div key={task.id} onClick={() => handleCardClick(task)} className="cursor-pointer">
                     <TaskCard task={task} onStatusChange={refreshTasks} />
                   </div>
                 ))}
