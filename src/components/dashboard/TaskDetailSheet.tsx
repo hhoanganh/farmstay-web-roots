@@ -53,8 +53,7 @@ const getStatusIcon = (status: string) => {
       case 'to do':
       case 'todo':
         return <Clock className="h-4 w-4" />;
-      case 'in progress':
-      case 'in_progress':
+      case 'doing':
         return <AlertCircle className="h-4 w-4" />;
       case 'done':
       case 'completed':
@@ -69,8 +68,7 @@ const getStatusColor = (status: string) => {
       case 'to do':
       case 'todo':
         return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'in progress':
-      case 'in_progress':
+      case 'doing':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'done':
       case 'completed':
@@ -116,7 +114,7 @@ export const TaskDetailSheet: React.FC<TaskDetailSheetProps> = ({ task, open, us
 
     const statusOptions = [
       { value: 'To Do', label: 'To Do' },
-      { value: 'In Progress', label: 'In Progress' },
+      { value: 'Doing', label: 'Doing' },
       { value: 'Done', label: 'Done' },
     ];
 

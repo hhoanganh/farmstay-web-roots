@@ -25,9 +25,9 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, children }) => {
   let buttonLabel = '';
   if (isAssignedStaff) {
     if (task.status?.toLowerCase() === 'to do' || task.status?.toLowerCase() === 'todo') {
-      nextStatus = 'In Progress';
+      nextStatus = 'Doing';
       buttonLabel = 'Start';
-    } else if (task.status?.toLowerCase() === 'in progress' || task.status?.toLowerCase() === 'in_progress') {
+    } else if (task.status?.toLowerCase() === 'doing') {
       nextStatus = 'Done';
       buttonLabel = 'Complete';
     }
@@ -60,7 +60,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, children }) => {
                 <Badge className={
                   task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo'
                     ? 'bg-gray-100 text-gray-800 border-gray-200'
-                    : task.status.toLowerCase() === 'in progress' || task.status.toLowerCase() === 'in_progress'
+                    : task.status.toLowerCase() === 'doing'
                     ? 'bg-blue-100 text-blue-800 border-blue-200'
                     : task.status.toLowerCase() === 'done' || task.status.toLowerCase() === 'completed'
                     ? 'bg-green-100 text-green-800 border-green-200'
@@ -68,8 +68,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, children }) => {
                 } variant="outline">
                   {task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo'
                     ? 'New'
-                    : task.status.toLowerCase() === 'in progress' || task.status.toLowerCase() === 'in_progress'
-                    ? 'In Progress'
+                    : task.status.toLowerCase() === 'doing'
+                    ? 'Doing'
                     : task.status.toLowerCase() === 'done' || task.status.toLowerCase() === 'completed'
                     ? 'Done'
                     : task.status}

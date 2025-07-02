@@ -12,8 +12,7 @@ function getStatusColor(status: string) {
     case 'to do':
     case 'todo':
       return 'bg-gray-100 text-gray-800 border-gray-200';
-    case 'in progress':
-    case 'in_progress':
+    case 'doing':
       return 'bg-blue-100 text-blue-800 border-blue-200';
     case 'done':
     case 'completed':
@@ -124,7 +123,7 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="to do">New</SelectItem>
-            <SelectItem value="in progress">In Progress</SelectItem>
+            <SelectItem value="doing">Doing</SelectItem>
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>
         </Select>

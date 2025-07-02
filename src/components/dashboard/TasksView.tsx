@@ -96,8 +96,7 @@ export function TasksView({ userRole }: TasksViewProps) {
       case 'to do':
       case 'todo':
         return <Clock className="h-4 w-4" />;
-      case 'in progress':
-      case 'in_progress':
+      case 'doing':
         return <AlertCircle className="h-4 w-4" />;
       case 'done':
       case 'completed':
@@ -112,8 +111,7 @@ export function TasksView({ userRole }: TasksViewProps) {
       case 'to do':
       case 'todo':
         return 'bg-gray-100 text-gray-800 border-gray-200';
-      case 'in progress':
-      case 'in_progress':
+      case 'doing':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'done':
       case 'completed':
@@ -141,8 +139,7 @@ export function TasksView({ userRole }: TasksViewProps) {
       case 'to do':
       case 'todo':
         return 'Doing';
-      case 'in progress':
-      case 'in_progress':
+      case 'doing':
         return 'Done';
       default:
         return currentStatus;
@@ -210,7 +207,7 @@ export function TasksView({ userRole }: TasksViewProps) {
     if (!detailTask) return null;
     const statusOptions = [
       { value: 'To Do', label: 'To Do' },
-      { value: 'In Progress', label: 'In Progress' },
+      { value: 'Doing', label: 'Doing' },
       { value: 'Done', label: 'Done' },
     ];
     const [status, setStatus] = React.useState(detailTask.status);
@@ -308,7 +305,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   const renderStaffView = () => {
     const statusGroups = [
       { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
-      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'doing' },
       { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
     ];
 
@@ -455,7 +452,7 @@ export function TasksView({ userRole }: TasksViewProps) {
   const renderAdminView = () => {
     const statusGroups = [
       { label: 'To Do', icon: <Clock className="h-5 w-5" />, match: (s: string) => s === 'to do' || s === 'todo' },
-      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'in progress' || s === 'in_progress' },
+      { label: 'Doing', icon: <AlertCircle className="h-5 w-5" />, match: (s: string) => s === 'doing' },
       { label: 'Done', icon: <CheckCircle className="h-5 w-5" />, match: (s: string) => s === 'done' || s === 'completed' },
     ];
     if (loading) {

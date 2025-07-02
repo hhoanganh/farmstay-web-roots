@@ -92,7 +92,7 @@ export function TaskUpdateModal({ isOpen, onClose, onSuccess, task, mode }: Task
         await supabase
           .from('tasks')
           .update({ 
-            status: 'In Progress',
+            status: 'Doing',
             completion_notes: null,
             completion_image_urls: null 
           })
