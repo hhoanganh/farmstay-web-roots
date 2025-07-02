@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Home, TreePine, Search } from 'lucide-react';
+import { TaskFormModal } from './TaskFormModal';
 
 function getStatusColor(status: string) {
   switch (status?.toLowerCase()) {
@@ -39,11 +40,17 @@ function isOverdue(task: any) {
 }
 
 const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: any[] }) => {
-  const [tab, setTab] = useState<'room' | 'tree'>('room');
+  const [tab, setTab] = useState<'all' | 'room' | 'tree'>('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
   const [search, setSearch] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+  const [selectedTask, setSelectedTask] = useState<any | null>(null);
+
+  // Debug print
+  console.log('AdminTasksTable tasks:', tasks);
 
   // Filtered tasks by tab/type
   const filteredTasks = useMemo(() => {
@@ -51,6 +58,7 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
       // Tab filter
       if (tab === 'room' && !task.room_id) return false;
       if (tab === 'tree' && !task.tree_id) return false;
+      // 'all' tab shows everything
       // Status filter
       if (statusFilter !== 'all' && task.status?.toLowerCase() !== statusFilter) return false;
       // Priority filter
@@ -74,16 +82,30 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
     return Array.from(map.entries());
   }, [tasks]);
 
-  // Responsive: table on desktop, cards on mobile
   return (
     <div className="w-full">
-      {/* Tabs for Room/Tree */}
-      <Tabs value={tab} onValueChange={v => setTab(v as 'room' | 'tree')} className="mb-4">
-        <TabsList className="w-full grid grid-cols-2">
-          <TabsTrigger value="room"><Home className="inline mr-2" />Room Tasks</TabsTrigger>
-          <TabsTrigger value="tree"><TreePine className="inline mr-2" />Tree Tasks</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {/* Page Header with Create Button */}
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+        <div>
+          <Tabs value={tab} onValueChange={v => setTab(v as 'all' | 'room' | 'tree')} className="mb-2 sm:mb-0">
+            <TabsList className="w-full grid grid-cols-3 max-w-xs">
+              <TabsTrigger value="all">All Tasks</TabsTrigger>
+              <TabsTrigger value="room"><Home className="inline mr-2" />Room Tasks</TabsTrigger>
+              <TabsTrigger value="tree"><TreePine className="inline mr-2" />Tree Tasks</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+        {/* Create New Task button */}
+        <div className="flex gap-2 mt-4 sm:mt-0 sm:ml-4">
+          <Button
+            className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1 sm:w-auto"
+            style={{ fontFamily: 'Inter, sans-serif' }}
+            onClick={() => { setModalMode('create'); setSelectedTask(null); setModalOpen(true); }}
+          >
+            Create New Task
+          </Button>
+        </div>
+      </div>
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch sm:items-end">
         <div className="relative flex-1 max-w-xs">
@@ -191,6 +213,14 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
           </div>
         ))}
       </div>
+      {/* Task creation modal */}
+      <TaskFormModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        onSuccess={() => setModalOpen(false)}
+        task={selectedTask}
+        mode={modalMode}
+      />
     </div>
   );
 };
