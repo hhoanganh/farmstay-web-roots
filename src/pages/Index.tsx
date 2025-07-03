@@ -6,7 +6,6 @@ import ImageWrapper from '../components/ImageWrapper';
 import TeaserSection from '../components/TeaserSection';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import CallToActionSection from '../components/CallToActionSection';
-import timelapseVideo from '/videos/timelapse.mp4'; // Import the video for asset hashing
 
 const Homepage = () => {
   const homestayAnimation = useScrollAnimation();
@@ -28,7 +27,7 @@ const Homepage = () => {
           className="absolute top-0 left-0 w-full h-full object-cover z-0"
         >
           {/* Video imported for asset hashing by Vite. Place the original video in `public/videos`. */}
-          <source src={timelapseVideo} type="video/mp4" />
+          <source src="https://github.com/hhoanganh/farmstay-web-roots/releases/download/herovideo/timelapse.mp4" type="video/mp4" />
           Your browser does not support the video tag.
         </video>
 
