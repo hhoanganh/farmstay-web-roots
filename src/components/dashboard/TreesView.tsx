@@ -59,13 +59,13 @@ export function TreesView({ userRole }: TreesViewProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-[hsl(var(--green)/0.1)] text-[hsl(var(--green))] border-[hsl(var(--green)/0.2)]';
       case 'rented':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]';
       case 'maintenance':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]';
     }
   };
 

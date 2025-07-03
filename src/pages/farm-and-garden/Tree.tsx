@@ -120,11 +120,11 @@ const TreeDetailPage: React.FC = () => {
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-[hsl(var(--text-accent))] mb-2" style={{ fontFamily: 'Caveat, cursive' }}>{tree.name}</h1>
         <div className="flex justify-center gap-2 mb-2">
-          <Badge className="bg-green-100 text-green-800 border-green-200" variant="outline">{tree.type || 'Tree'}</Badge>
-          <Badge className="bg-blue-100 text-blue-800 border-blue-200" variant="outline">{tree.status || 'Healthy'}</Badge>
+          <Badge className="bg-[hsl(var(--green)/0.1)] text-[hsl(var(--green))] border-[hsl(var(--green)/0.2)]" variant="outline">{tree.type || 'Tree'}</Badge>
+          <Badge className="bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]" variant="outline">{tree.status || 'Healthy'}</Badge>
         </div>
         <p className="text-[hsl(var(--text-secondary))] mb-2" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{tree.description || 'No description available.'}</p>
-        <p className="text-xs text-gray-400 mb-2 flex items-center justify-center"><Calendar className="h-4 w-4 mr-1" /> Planted {tree.created_at ? new Date(tree.created_at).toLocaleDateString() : 'Unknown'}</p>
+        <p className="text-xs text-[hsl(var(--stone))] mb-2 flex items-center justify-center"><Calendar className="h-4 w-4 mr-1" /> Planted {tree.created_at ? new Date(tree.created_at).toLocaleDateString() : 'Unknown'}</p>
       </div>
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4" style={{ fontFamily: 'Caveat, cursive' }}>Tree Story & Updates</h2>
@@ -135,21 +135,21 @@ const TreeDetailPage: React.FC = () => {
             {timeline.map(entry => (
               <Card key={entry.type + '-' + entry.id} className="border-[hsl(var(--border-primary))]">
                 <CardHeader className="flex flex-row items-center gap-2">
-                  <span className="text-xs text-gray-400">{new Date(entry.date).toLocaleString()}</span>
+                  <span className="text-xs text-[hsl(var(--stone))]">{new Date(entry.date).toLocaleString()}</span>
                   {entry.type === 'update' && (
-                    <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200" variant="outline">Update</Badge>
+                    <Badge className="bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]" variant="outline">Update</Badge>
                   )}
                   {entry.type === 'task' && (
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-200" variant="outline">Task</Badge>
+                    <Badge className="bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]" variant="outline">Task</Badge>
                   )}
                   {entry.type === 'update' && (entry as any).updateType && (
-                    <Badge className="bg-blue-100 text-blue-800 border-blue-200" variant="outline">{(entry as any).updateType.charAt(0).toUpperCase() + (entry as any).updateType.slice(1)}</Badge>
+                    <Badge className="bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]" variant="outline">{(entry as any).updateType.charAt(0).toUpperCase() + (entry as any).updateType.slice(1)}</Badge>
                   )}
                   {entry.type === 'task' && (entry as any).status && (
-                    <Badge className="bg-gray-100 text-gray-800 border-gray-200" variant="outline">{(entry as any).status}</Badge>
+                    <Badge className="bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]" variant="outline">{(entry as any).status}</Badge>
                   )}
                   {entry.type === 'update' && (entry as any).author && (
-                    <span className="ml-2 text-xs text-gray-500">by {(entry as any).author}</span>
+                    <span className="ml-2 text-xs text-[hsl(var(--stone))]">by {(entry as any).author}</span>
                   )}
                 </CardHeader>
                 <CardContent>

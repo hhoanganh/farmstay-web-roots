@@ -140,7 +140,7 @@ export const StaffTaskDetailModal: React.FC<StaffTaskDetailModalProps> = ({ open
                 ))}
               </SelectContent>
             </Select>
-            {saving && <span className="text-xs text-gray-400 ml-2">Saving...</span>}
+            {saving && <span className="text-xs text-[hsl(var(--stone))] ml-2">Saving...</span>}
           </div>
           <Textarea
             placeholder="Add a note..."

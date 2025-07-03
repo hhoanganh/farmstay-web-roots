@@ -60,12 +60,12 @@ export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }>
               {task.status && (
                 <Badge className={
                   task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo'
-                    ? 'bg-gray-100 text-gray-800 border-gray-200'
+                    ? 'bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]'
                     : task.status.toLowerCase() === 'doing'
-                    ? 'bg-blue-100 text-blue-800 border-blue-200'
+                    ? 'bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]'
                     : task.status.toLowerCase() === 'done' || task.status.toLowerCase() === 'completed'
-                    ? 'bg-green-100 text-green-800 border-green-200'
-                    : 'bg-gray-100 text-gray-800 border-gray-200'
+                    ? 'bg-[hsl(var(--green)/0.1)] text-[hsl(var(--green))] border-[hsl(var(--green)/0.2)]'
+                    : 'bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]'
                 } variant="outline">
                   {task.status.toLowerCase() === 'to do' || task.status.toLowerCase() === 'todo'
                     ? 'To Do'
@@ -77,7 +77,7 @@ export const TaskCard: React.FC<TaskCardProps & { onStatusChange?: () => void }>
                 </Badge>
               )}
               {task.priority && (
-                <Badge className={task.priority === 'high' ? 'bg-red-100 text-red-800 border-red-200' : 'bg-green-100 text-green-800 border-green-200'} variant="outline">
+                <Badge className={task.priority === 'high' ? 'bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]' : 'bg-[hsl(var(--green)/0.1)] text-[hsl(var(--green))] border-[hsl(var(--green)/0.2)]'} variant="outline">
                   {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
                 </Badge>
               )}

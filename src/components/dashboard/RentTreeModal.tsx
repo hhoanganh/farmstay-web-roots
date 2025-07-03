@@ -302,14 +302,14 @@ export function RentTreeModal({ open, onClose, refreshTrees, tree }: RentTreeMod
         {/* If tree is rented, show rental info and End Rental button */}
         {tree && tree.status === 'rented' && currentRental ? (
           <div className="space-y-4">
-            <div className="bg-gray-50 p-4 rounded">
+            <div className="bg-[hsl(var(--stone)/0.05)] p-4 rounded">
               <div className="font-semibold mb-2">Renter Info</div>
               <div>Name: {currentRental.customers?.full_name || 'Unknown'}</div>
               <div>Email: {currentRental.customers?.email || 'Unknown'}</div>
               <div>Phone: {currentRental.customers?.phone || 'Unknown'}</div>
               <div className="mt-2">Rental Period: {currentRental.start_date} → {currentRental.end_date}</div>
             </div>
-            {error && <div className="text-red-600 text-sm">{error}</div>}
+            {error && <div className="text-[hsl(var(--brown))] text-sm">{error}</div>}
             <DialogFooter>
               <Button onClick={handleEndRental} disabled={loading} className="w-full" variant="destructive">
                 {loading ? 'Ending...' : 'End Rental'}
@@ -356,7 +356,7 @@ export function RentTreeModal({ open, onClose, refreshTrees, tree }: RentTreeMod
               <Input id="end" type="date" value={endDate} onChange={e => setEndDate(e.target.value)} required disabled={loading} />
             </div>
           </div>
-          {error && <div className="text-red-600 text-sm">{error}</div>}
+          {error && <div className="text-[hsl(var(--brown))] text-sm">{error}</div>}
           <DialogFooter>
             <Button type="submit" disabled={loading} className="w-full">{loading ? 'Saving...' : 'Add Rental'}</Button>
             <Button type="button" variant="outline" onClick={onClose} className="w-full">Cancel</Button>

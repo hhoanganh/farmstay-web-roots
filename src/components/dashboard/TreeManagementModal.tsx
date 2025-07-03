@@ -278,8 +278,8 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
             </Select>
             <Label>Image</Label>
             <Input type="file" accept="image/*" onChange={handleImageUpload} disabled={loading || uploading} />
-            {uploading && <div className="text-sm text-blue-600">Uploading...</div>}
-            {uploadError && <div className="text-sm text-red-600">{uploadError}</div>}
+            {uploading && <div className="text-sm text-[hsl(var(--focus))]">Uploading...</div>}
+            {uploadError && <div className="text-sm text-[hsl(var(--brown))]">{uploadError}</div>}
             {imageUrl && (
               <div className="mt-2">
                 <img src={imageUrl} alt="Tree" className="w-full max-h-40 object-contain rounded" />

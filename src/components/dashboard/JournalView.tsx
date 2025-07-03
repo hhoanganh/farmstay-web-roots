@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -116,7 +115,8 @@ export function JournalView() {
                       >
                         {article.title}
                       </h3>
-                      <Badge variant="outline" className="text-xs">
+                      <Badge variant="outline" className="text-xs border-[hsl(var(--brown)/0.2)] hover:bg-[hsl(var(--brown)/0.05)] text-[hsl(var(--brown))]"
+                      >
                         Published
                       </Badge>
                     </div>
