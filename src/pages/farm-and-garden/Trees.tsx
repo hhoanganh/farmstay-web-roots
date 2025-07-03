@@ -63,8 +63,7 @@ const Trees: React.FC = () => {
   return (
     <div className="p-6 md:p-12 max-w-6xl mx-auto">
       <Link to="/farm-and-garden/trees" className="inline-flex items-center text-[hsl(var(--text-accent))] mb-6 hover:underline focus:underline font-medium">
-        <ArrowLeft className="h-4 w-4 mr-1" />
-        <span>Back to all tree types</span>
+        <span>← Back to Tree Stories</span>
       </Link>
       <div className="mb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-[hsl(var(--text-accent))] mb-2" style={{ fontFamily: 'Caveat, cursive' }}>{intro.title}</h1>
