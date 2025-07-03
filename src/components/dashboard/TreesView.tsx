@@ -76,7 +76,10 @@ export function TreesView({ userRole }: TreesViewProps) {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
+          <h1 
+            className="text-4xl text-[hsl(var(--text-accent))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
             Trees
           </h1>
           <p 
@@ -208,7 +211,10 @@ export function TreesView({ userRole }: TreesViewProps) {
       {filteredTrees.length === 0 && (
         <div className="text-center py-12">
           <TreePine className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
-          <h3 className="text-xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
+          <h3 
+            className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
             No trees found
           </h3>
           <p 

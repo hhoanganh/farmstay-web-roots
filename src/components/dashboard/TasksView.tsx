@@ -450,7 +450,10 @@ export function TasksView({ userRole }: TasksViewProps) {
       {/* Page Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
+          <h1 
+            className="text-4xl text-[hsl(var(--text-accent))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
             Tasks
           </h1>
           <p 

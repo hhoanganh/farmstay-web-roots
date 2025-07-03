@@ -15,7 +15,6 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Calendar as BigCalendar, dateFnsLocalizer, Event as RBCEvent } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { enUS } from 'date-fns/locale';
-import { AdminDataTable } from './AdminDataTable';
 
 interface BookingsViewProps {
   userRole: string;
@@ -42,45 +41,6 @@ interface Booking {
     full_name: string;
   };
 }
-
-const columns = [
-  {
-    accessorKey: 'guest',
-    header: 'Guest',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'room',
-    header: 'Room',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'checkin',
-    header: 'Check-in',
-    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'checkout',
-    header: 'Check-out',
-    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'total',
-    header: 'Total',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-];
 
 export function BookingsView({ userRole }: BookingsViewProps) {
   const { session, userProfile } = useAuth();
@@ -179,22 +139,15 @@ export function BookingsView({ userRole }: BookingsViewProps) {
     allDay: true,
   }));
 
-  // Transform bookings as needed to match column keys
-  const data = bookings.map(booking => ({
-    guest: booking.customers?.full_name || 'Unknown Guest',
-    room: rooms.find(r => r.id === booking.room_id)?.name || 'Unknown Room',
-    checkin: booking.check_in_date,
-    checkout: booking.check_out_date,
-    status: booking.booking_status,
-    total: booking.price,
-  }));
-
   return (
     <div className="p-8">
       {/* Page Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
+          <h1 
+            className="text-4xl text-[hsl(var(--text-accent))] mb-2"
+            style={{ fontFamily: 'Caveat, cursive' }}
+          >
             Bookings
           </h1>
           <p 
@@ -310,12 +263,27 @@ export function BookingsView({ userRole }: BookingsViewProps) {
                         {roomBookings.length === 0 ? (
                           <div className="text-sm text-gray-500">No bookings for this room.</div>
                         ) : (
-                          <AdminDataTable
-                            columns={columns}
-                            data={data.filter(d => d.room === room.name)}
-                            filterable
-                            pagination
-                          />
+                          <ul className="space-y-2">
+                            {roomBookings.map(booking => (
+                              <li key={booking.id} className="flex items-center justify-between border rounded p-2">
+                                <div>
+                                  <div className="font-medium">{booking.customers?.full_name || 'Unknown Guest'}</div>
+                                  <div className="text-xs text-gray-500">
+                                    {format(new Date(booking.check_in_date), 'yyyy-MM-dd')} → {format(new Date(booking.check_out_date), 'yyyy-MM-dd')}
+                                  </div>
+                                  <div className="text-xs">Status: {booking.booking_status}</div>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button size="sm" variant="outline" onClick={() => handleEditBooking(booking)}>
+                                    Edit
+                                  </Button>
+                                  <Button size="sm" variant="destructive" onClick={() => handleDeleteBooking(booking)}>
+                                    Delete
+                                  </Button>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
                         )}
                       </div>
                     </div>
