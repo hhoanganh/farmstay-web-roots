@@ -30,8 +30,8 @@ vi.mock('@/hooks/useTasks', () => ({
 }));
 
 // Mock useAuth to provide a staff user
-vi.mock('@/providers/AuthProvider', async (importOriginal) => {
-  const actual = await importOriginal();
+vi.mock('@/providers/AuthProvider', async () => {
+  const actual = await vi.importActual('@/providers/AuthProvider');
   return {
     ...actual,
     useAuth: () => ({ userProfile: { id: 'staff-1', role: 'staff', full_name: 'Staff User' } })

@@ -33,6 +33,12 @@ interface Tree {
   created_at?: string;
 }
 
+// Add TimelineEntry type to help TypeScript
+
+type TimelineEntry =
+  | { type: 'update'; id: string; date: string; notes: string; images: string[]; author?: string; updateType?: string }
+  | { type: 'task'; id: string; date: string; notes: string; status: string };
+
 const TreeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [tree, setTree] = useState<Tree | null>(null);
@@ -67,24 +73,28 @@ const TreeDetailPage: React.FC = () => {
   }, [id]);
 
   // Merge and sort updates and tasks by date
-  const timeline = [
-    ...updates.map(u => ({
-      type: 'update',
-      id: u.id,
-      date: u.created_at,
-      notes: u.notes,
-      images: u.image_urls,
-      author: u.created_by_profile?.full_name,
-      updateType: u.update_type,
-    })),
-    ...tasks.map(t => ({
-      type: 'task',
-      id: t.id,
-      date: t.created_at,
-      notes: t.title + (t.description ? `: ${t.description}` : ''),
-      status: t.status,
-    })),
-  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  function buildTimeline(updates: TaskUpdate[], tasks: Task[]): TimelineEntry[] {
+    return [
+      ...updates.map(u => ({
+        type: 'update' as const,
+        id: u.id,
+        date: u.created_at,
+        notes: u.notes,
+        images: u.image_urls,
+        author: u.created_by_profile?.full_name,
+        updateType: u.update_type,
+      })),
+      ...tasks.map(t => ({
+        type: 'task' as const,
+        id: t.id,
+        date: t.created_at,
+        notes: t.title + (t.description ? `: ${t.description}` : ''),
+        status: t.status,
+      })),
+    ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
+
+  const timeline = buildTimeline(updates, tasks);
 
   if (loading) {
     return <div className="text-center py-12 text-[hsl(var(--text-secondary))]">Loading tree story...</div>;
