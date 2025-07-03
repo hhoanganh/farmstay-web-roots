@@ -179,10 +179,10 @@ export function BookingsView({ userRole }: BookingsViewProps) {
     allDay: true,
   }));
 
-  const getNights = (checkIn: string, checkOut: string) => {
+  const getNights = (checkIn, checkOut) => {
     const inDate = new Date(checkIn);
     const outDate = new Date(checkOut);
-    return Math.max(1, Math.round((outDate.getTime() - inDate.getTime()) / (1000 * 60 * 60 * 24)));
+    return Math.max(1, Math.round((outDate - inDate) / (1000 * 60 * 60 * 24)));
   };
 
   // Transform bookings as needed to match column keys

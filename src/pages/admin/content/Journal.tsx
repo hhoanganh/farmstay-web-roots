@@ -1,7 +1,6 @@
-
 import AdminLayout from '../AdminLayout';
 import React from 'react';
-import JournalView from '@/components/dashboard/JournalView';
+import { JournalView } from '@/components/dashboard/JournalView';
 
 const AdminJournal = () => {
   return (

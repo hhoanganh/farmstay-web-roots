@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,25 +33,11 @@ interface Tree {
   created_at?: string;
 }
 
-interface TimelineUpdateEntry {
-  type: 'update';
-  id: string;
-  date: string;
-  notes: string;
-  images: string[];
-  author?: string;
-  updateType?: string;
-}
+// Add TimelineEntry type to help TypeScript
 
-interface TimelineTaskEntry {
-  type: 'task';
-  id: string;
-  date: string;
-  notes: string;
-  status: string;
-}
-
-type TimelineEntry = TimelineUpdateEntry | TimelineTaskEntry;
+type TimelineEntry =
+  | { type: 'update'; id: string; date: string; notes: string; images: string[]; author?: string; updateType?: string }
+  | { type: 'task'; id: string; date: string; notes: string; status: string };
 
 const TreeDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -89,27 +74,24 @@ const TreeDetailPage: React.FC = () => {
 
   // Merge and sort updates and tasks by date
   function buildTimeline(updates: TaskUpdate[], tasks: Task[]): TimelineEntry[] {
-    const updateEntries: TimelineUpdateEntry[] = updates.map(u => ({
-      type: 'update',
-      id: u.id,
-      date: u.created_at,
-      notes: u.notes,
-      images: u.image_urls,
-      author: u.created_by_profile?.full_name,
-      updateType: u.update_type,
-    }));
-
-    const taskEntries: TimelineTaskEntry[] = tasks.map(t => ({
-      type: 'task',
-      id: t.id,
-      date: t.created_at,
-      notes: t.title + (t.description ? `: ${t.description}` : ''),
-      status: t.status,
-    }));
-
-    return [...updateEntries, ...taskEntries].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    return [
+      ...updates.map(u => ({
+        type: 'update' as const,
+        id: u.id,
+        date: u.created_at,
+        notes: u.notes,
+        images: u.image_urls,
+        author: u.created_by_profile?.full_name,
+        updateType: u.update_type,
+      })),
+      ...tasks.map(t => ({
+        type: 'task' as const,
+        id: t.id,
+        date: t.created_at,
+        notes: t.title + (t.description ? `: ${t.description}` : ''),
+        status: t.status,
+      })),
+    ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }
 
   const timeline = buildTimeline(updates, tasks);
@@ -160,21 +142,21 @@ const TreeDetailPage: React.FC = () => {
                   {entry.type === 'task' && (
                     <Badge className="bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]" variant="outline">Task</Badge>
                   )}
-                  {entry.type === 'update' && (entry as TimelineUpdateEntry).updateType && (
-                    <Badge className="bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]" variant="outline">{(entry as TimelineUpdateEntry).updateType?.charAt(0).toUpperCase() + (entry as TimelineUpdateEntry).updateType?.slice(1)}</Badge>
+                  {entry.type === 'update' && (entry as any).updateType && (
+                    <Badge className="bg-[hsl(var(--brown)/0.1)] text-[hsl(var(--brown))] border-[hsl(var(--brown)/0.2)]" variant="outline">{(entry as any).updateType.charAt(0).toUpperCase() + (entry as any).updateType.slice(1)}</Badge>
                   )}
-                  {entry.type === 'task' && (entry as TimelineTaskEntry).status && (
-                    <Badge className="bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]" variant="outline">{(entry as TimelineTaskEntry).status}</Badge>
+                  {entry.type === 'task' && (entry as any).status && (
+                    <Badge className="bg-[hsl(var(--stone)/0.1)] text-[hsl(var(--stone))] border-[hsl(var(--stone)/0.2)]" variant="outline">{(entry as any).status}</Badge>
                   )}
-                  {entry.type === 'update' && (entry as TimelineUpdateEntry).author && (
-                    <span className="ml-2 text-xs text-[hsl(var(--stone))]">by {(entry as TimelineUpdateEntry).author}</span>
+                  {entry.type === 'update' && (entry as any).author && (
+                    <span className="ml-2 text-xs text-[hsl(var(--stone))]">by {(entry as any).author}</span>
                   )}
                 </CardHeader>
                 <CardContent>
                   <div className="mb-2 text-[hsl(var(--text-primary))]" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{entry.notes}</div>
-                  {entry.type === 'update' && (entry as TimelineUpdateEntry).images && (entry as TimelineUpdateEntry).images.length > 0 && (
+                  {entry.type === 'update' && (entry as any).images && (entry as any).images.length > 0 && (
                     <div className="grid grid-cols-2 gap-2 mt-2">
-                      {(entry as TimelineUpdateEntry).images.map((url: string, idx: number) => (
+                      {(entry as any).images.map((url: string, idx: number) => (
                         <img key={idx} src={url} alt={`Update ${idx + 1}`} className="rounded-md w-full h-32 object-cover" />
                       ))}
                     </div>

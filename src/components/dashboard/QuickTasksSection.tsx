@@ -1,4 +1,3 @@
-
 // ABOUTME: This component displays a grid of quick-action buttons on the dashboard.
 // ABOUTME: It shows different tasks based on the user's role (admin vs. staff).
 import { useState } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { BookingModal } from './BookingModal';
 import { TreeUpdateModal } from './TreeUpdateModal';
 import { ArticleModal } from './ArticleModal';
-import AssetManagementModal from './AssetManagementModal';
+import { AssetManagementModal } from './AssetManagementModal';
 import { StaffManagementModal } from './StaffManagementModal';
 
 interface QuickTasksSectionProps {
