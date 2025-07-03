@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TreePine, ArrowLeft } from 'lucide-react';
+import TreeDetail from '@/components/TreeDetail';
+import { createClient } from '@supabase/supabase-js';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -26,15 +28,56 @@ const treeTypeIntros: Record<string, { title: string; intro: string }> = {
   },
 };
 
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
 const Trees: React.FC = () => {
   const query = useQuery();
   const type = query.get('type')?.toLowerCase() || '';
+  const id = query.get('id');
   const { trees, loading } = useTrees();
 
   // Scroll to top when 'type' param changes
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [type]);
+
+  // Fetch tree updates
+  const fetchTreeUpdates = React.useCallback(async (treeId: string) => {
+    const { data, error } = await supabase
+      .from('tree_updates')
+      .select('*')
+      .eq('tree_id', treeId)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }, []);
+
+  // Fetch tree tasks
+  const fetchTreeTasks = React.useCallback(async (treeId: string) => {
+    const { data, error } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('tree_id', treeId)
+      .order('completed_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  }, []);
+
+  if (id) {
+    const tree = trees.find(tree => tree.id === id);
+    if (!tree) {
+      return <div className="py-12 text-center text-red-500">Tree not found.</div>;
+    }
+    return (
+      <TreeDetail
+        tree={tree}
+        fetchTreeUpdates={fetchTreeUpdates}
+        fetchTreeTasks={fetchTreeTasks}
+      />
+    );
+  }
 
   if (!type) {
     // No type param: show tree type selection
