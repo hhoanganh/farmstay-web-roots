@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
+import { AdminDataTable } from './AdminDataTable';
 
 interface StaffTaskDetailModalProps {
   open: boolean;
@@ -18,6 +19,32 @@ const statusOptions = [
   { value: 'To Do', label: 'To Do' },
   { value: 'Doing', label: 'Doing' },
   { value: 'Done', label: 'Done' },
+];
+
+const columns = [
+  {
+    accessorKey: 'task',
+    header: 'Task',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'assigned',
+    header: 'Assigned',
+    cell: info => info.getValue(),
+  },
+  {
+    accessorKey: 'due',
+    header: 'Due Date',
+    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
+    enableSorting: true,
+  },
 ];
 
 export const StaffTaskDetailModal: React.FC<StaffTaskDetailModalProps> = ({ open, onOpenChange, task, onChange }) => {
@@ -121,6 +148,16 @@ export const StaffTaskDetailModal: React.FC<StaffTaskDetailModalProps> = ({ open
     };
   }, [onOpenChange]);
 
+  // Transform staffTasks as needed to match column keys
+  const data = [
+    {
+      task: task.title,
+      status: task.status,
+      assigned: task.assigned_to_profile?.full_name || '-',
+      due: task.due_date,
+    },
+  ];
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent ref={sheetContentRef} className="w-full max-w-md mx-auto p-6">
@@ -170,6 +207,14 @@ export const StaffTaskDetailModal: React.FC<StaffTaskDetailModalProps> = ({ open
                 ))}
               </div>
             )}
+          </div>
+          <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
+            <AdminDataTable
+              columns={columns}
+              data={data}
+              filterable
+              pagination
+            />
           </div>
         </div>
       </SheetContent>

@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,7 @@ import { TreePine, Plus, Search, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { TreeManagementModal } from './TreeManagementModal';
 import { TreeUpdateModal } from './TreeUpdateModal';
+import { AdminDataTable } from './AdminDataTable';
 
 interface TreesViewProps {
   userRole: string;
@@ -23,7 +25,39 @@ interface Tree {
   created_at?: string;
 }
 
-export function TreesView({ userRole }: TreesViewProps) {
+const columns = [
+  {
+    accessorKey: 'name',
+    header: 'Name',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'planted',
+    header: 'Planted',
+    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'location',
+    header: 'Location',
+    cell: info => info.getValue(),
+  },
+];
+
+export default function TreesView({ userRole }: TreesViewProps) {
   const [trees, setTrees] = useState<Tree[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -70,6 +104,16 @@ export function TreesView({ userRole }: TreesViewProps) {
   };
 
   const uniqueTypes = [...new Set(trees.map(tree => tree.type).filter(Boolean))];
+
+  // Transform trees as needed to match column keys
+  const data = filteredTrees.map(tree => ({
+    name: tree.name,
+    type: tree.type,
+    status: tree.status,
+    planted: tree.created_at,
+    location: tree.description || '-',
+    // ...add other fields as needed
+  }));
 
   return (
     <div className="p-8">
@@ -153,56 +197,13 @@ export function TreesView({ userRole }: TreesViewProps) {
       </div>
 
       {/* Trees Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredTrees.map((tree) => {
-          return (
-            <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() => {
-                setSelectedTree(tree);
-                setUpdateModalOpen(true);
-              }}
-            >
-              <CardHeader>
-                <div className="flex flex-col items-start">
-                  <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-2 w-full">
-                    {tree.image_url ? (
-                      <img
-                        src={tree.image_url}
-                        alt={tree.name}
-                        className="w-full h-full object-cover rounded-md max-h-40"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="text-xs">No Image</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-start w-full">
-                    <CardTitle 
-                      className="text-[hsl(var(--text-primary))]"
-                      style={{ fontFamily: 'Caveat, cursive' }}
-                    >
-                      {tree.name}
-                    </CardTitle>
-                    <Badge className={getStatusColor(tree.status || 'unknown')} variant="outline">
-                      {tree.status || 'Unknown status'}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <p 
-                    className="text-sm text-[hsl(var(--text-secondary))] line-clamp-2"
-                    style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-                  >
-                    {tree.description || 'No description available'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+      <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
+        <AdminDataTable
+          columns={columns}
+          data={data}
+          filterable
+          pagination
+        />
       </div>
 
       {filteredTrees.length === 0 && (

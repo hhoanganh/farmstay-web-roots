@@ -179,6 +179,12 @@ export function BookingsView({ userRole }: BookingsViewProps) {
     allDay: true,
   }));
 
+  const getNights = (checkIn, checkOut) => {
+    const inDate = new Date(checkIn);
+    const outDate = new Date(checkOut);
+    return Math.max(1, Math.round((outDate - inDate) / (1000 * 60 * 60 * 24)));
+  };
+
   // Transform bookings as needed to match column keys
   const data = bookings.map(booking => ({
     guest: booking.customers?.full_name || 'Unknown Guest',
@@ -186,7 +192,12 @@ export function BookingsView({ userRole }: BookingsViewProps) {
     checkin: booking.check_in_date,
     checkout: booking.check_out_date,
     status: booking.booking_status,
-    total: booking.price,
+    total: (() => {
+      const room = rooms.find(r => r.id === booking.room_id);
+      if (!room) return '-';
+      const nights = getNights(booking.check_in_date, booking.check_out_date);
+      return `$${room.price * nights}`;
+    })(),
   }));
 
   return (
