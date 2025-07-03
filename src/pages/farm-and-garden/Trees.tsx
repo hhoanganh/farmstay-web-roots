@@ -31,6 +31,11 @@ const Trees: React.FC = () => {
   const type = query.get('type')?.toLowerCase() || '';
   const { trees, loading } = useTrees();
 
+  // Scroll to top when 'type' param changes
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [type]);
+
   if (!type) {
     // No type param: show tree type selection
     return (
