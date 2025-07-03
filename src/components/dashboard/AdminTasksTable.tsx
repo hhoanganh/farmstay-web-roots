@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, Home, TreePine, Search } from 'lucide-react';
 import { TaskFormModal } from './TaskFormModal';
+import { AdminDataTable } from './AdminDataTable';
 
 function getStatusColor(status: string) {
   switch (status?.toLowerCase()) {
@@ -37,6 +38,49 @@ function isOverdue(task: any) {
   if (!task.due_date || task.status?.toLowerCase() === 'done' || task.status?.toLowerCase() === 'completed') return false;
   return new Date(task.due_date) < new Date();
 }
+
+const columns = [
+  {
+    accessorKey: 'title',
+    header: 'Title',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'type',
+    header: 'Type',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'related',
+    header: 'Related',
+    cell: info => info.getValue(),
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'priority',
+    header: 'Priority',
+    cell: info => info.getValue(),
+    enableSorting: true,
+  },
+  {
+    accessorKey: 'assignee',
+    header: 'Assignee',
+    cell: info => info.getValue(),
+  },
+  {
+    accessorKey: 'due_date',
+    header: 'Due Date',
+    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
+    enableSorting: true,
+  },
+];
 
 const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: any[] }) => {
   const [tab, setTab] = useState<'all' | 'room' | 'tree'>('all');
@@ -80,6 +124,17 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
     });
     return Array.from(map.entries());
   }, [tasks]);
+
+  // Transform tasks as needed to match column keys
+  const data = filteredTasks.map(task => ({
+    title: task.title,
+    type: task.room_id ? <Home className="inline w-4 h-4 mr-1" /> : <TreePine className="inline w-4 h-4 mr-1" />,
+    related: task.room?.name || task.tree?.name || '-',
+    status: <Badge className={getStatusColor(task.status)}>{task.status}</Badge>,
+    priority: <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>,
+    assignee: task.assigned_to_profile?.full_name || '-',
+    due_date: task.due_date,
+  }));
 
   return (
     <div className="w-full">
@@ -151,44 +206,12 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
       </div>
       {/* Table (desktop) */}
       <div className="hidden sm:block">
-        <table className="min-w-full border rounded-lg overflow-hidden">
-          <thead className="bg-[hsl(var(--background-secondary))]">
-            <tr>
-              <th className="p-2 text-left">Title</th>
-              <th className="p-2 text-left">Type</th>
-              <th className="p-2 text-left">Related</th>
-              <th className="p-2 text-left">Status</th>
-              <th className="p-2 text-left">Priority</th>
-              <th className="p-2 text-left">Assignee</th>
-              <th className="p-2 text-left">Due Date</th>
-              <th className="p-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTasks.length === 0 && (
-              <tr><td colSpan={8} className="text-center py-8">No tasks found</td></tr>
-            )}
-            {filteredTasks.map(task => (
-              <tr key={task.id} className={
-                `${task.priority === 'high' ? 'border-l-4 border-red-400' : ''} ${isOverdue(task) ? 'bg-yellow-50' : ''}`
-              }>
-                <td className="p-2 font-medium">{task.title}</td>
-                <td className="p-2">
-                  {task.room_id ? <Home className="inline w-4 h-4 mr-1" /> : <TreePine className="inline w-4 h-4 mr-1" />}
-                  {task.room_id ? 'Room' : 'Tree'}
-                </td>
-                <td className="p-2">{task.room?.name || task.tree?.name || '-'}</td>
-                <td className="p-2"><Badge className={getStatusColor(task.status)}>{task.status}</Badge></td>
-                <td className="p-2"><Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge></td>
-                <td className="p-2">{task.assigned_to_profile?.full_name || '-'}</td>
-                <td className="p-2">{task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}</td>
-                <td className="p-2">
-                  <Button size="sm" variant="outline">Edit</Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <AdminDataTable
+          columns={columns}
+          data={data}
+          filterable
+          pagination
+        />
       </div>
       {/* Cards (mobile) */}
       <div className="sm:hidden space-y-4">

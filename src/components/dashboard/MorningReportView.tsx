@@ -174,10 +174,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
     <div className="p-8">
       {/* Page Header */}
       <div className="mb-8">
-        <h1 
-          className="text-4xl text-[hsl(var(--text-accent))] mb-2"
-          style={{ fontFamily: 'Caveat, cursive' }}
-        >
+        <h1 className="text-3xl md:text-4xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
           Morning Report
         </h1>
         <p 
@@ -190,10 +187,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
 
       {/* Today's Focus - Metrics */}
       <div className="mb-8">
-        <h2 
-          className="text-2xl text-[hsl(var(--text-accent))] mb-4"
-          style={{ fontFamily: 'Caveat, cursive' }}
-        >
+        <h2 className="text-2xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
           Today's Focus
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -277,10 +271,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
 
       {/* Quick Tasks */}
       <div className="mb-8">
-        <h2 
-          className="text-2xl text-[hsl(var(--text-accent))] mb-4"
-          style={{ fontFamily: 'Caveat, cursive' }}
-        >
+        <h2 className="text-2xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
           Quick Tasks
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -290,10 +281,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
                 <div className="flex items-start space-x-3">
                   <task.icon className="h-5 w-5 text-[hsl(var(--text-accent))] mt-0.5" />
                   <div className="flex-1">
-                    <h3 
-                      className="font-medium text-[hsl(var(--text-primary))] mb-1"
-                      style={{ fontFamily: 'Inter, sans-serif' }}
-                    >
+                    <h3 className="text-xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
                       {task.title}
                     </h3>
                     <p 
@@ -312,10 +300,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
 
       {/* Recent Activity */}
       <div>
-        <h2 
-          className="text-2xl text-[hsl(var(--text-accent))] mb-4"
-          style={{ fontFamily: 'Caveat, cursive' }}
-        >
+        <h2 className="text-2xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
           Recent Activity
         </h2>
         <Card className="border-[hsl(var(--border-primary))]">
@@ -336,10 +321,7 @@ export function MorningReportView({ userRole }: MorningReportViewProps) {
                     <div className="w-2 h-2 bg-[hsl(var(--text-accent))] rounded-full mt-2"></div>
                     <div className="flex-1">
                       <div className="flex items-center justify-between">
-                        <h4 
-                          className="font-medium text-[hsl(var(--text-primary))]"
-                          style={{ fontFamily: 'Inter, sans-serif' }}
-                        >
+                        <h4 className="text-xl mb-2" style={{ fontFamily: 'Caveat, cursive' }}>
                           {activity.title}
                         </h4>
                         <span 
