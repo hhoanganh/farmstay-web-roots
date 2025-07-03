@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useTrees } from '@/hooks/useTrees';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TreePine, ArrowLeft } from 'lucide-react';
 import TreeDetail from '@/components/TreeDetail';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/integrations/supabase/client';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -27,10 +28,6 @@ const treeTypeIntros: Record<string, { title: string; intro: string }> = {
     intro: 'Follow the journey of our creamy avocado trees. See how they thrive and imagine being part of their story.'
   },
 };
-
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Trees: React.FC = () => {
   const query = useQuery();

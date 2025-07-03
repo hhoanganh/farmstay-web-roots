@@ -228,7 +228,6 @@ export type Database = {
           created_by: string | null
           description: string | null
           due_date: string | null
-          evidence_required: boolean | null
           id: string
           priority: string | null
           room_id: string | null
@@ -246,7 +245,6 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           due_date?: string | null
-          evidence_required?: boolean | null
           id?: string
           priority?: string | null
           room_id?: string | null
@@ -264,7 +262,6 @@ export type Database = {
           created_by?: string | null
           description?: string | null
           due_date?: string | null
-          evidence_required?: boolean | null
           id?: string
           priority?: string | null
           room_id?: string | null
@@ -303,6 +300,51 @@ export type Database = {
           },
           {
             foreignKeyName: "tasks_tree_id_fkey"
+            columns: ["tree_id"]
+            isOneToOne: false
+            referencedRelation: "trees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tree_rentals: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          end_date: string
+          id: string
+          start_date: string
+          status: string
+          tree_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          end_date: string
+          id?: string
+          start_date: string
+          status?: string
+          tree_id: string
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          end_date?: string
+          id?: string
+          start_date?: string
+          status?: string
+          tree_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tree_rentals_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tree_rentals_tree_id_fkey"
             columns: ["tree_id"]
             isOneToOne: false
             referencedRelation: "trees"
@@ -374,52 +416,7 @@ export type Database = {
           type?: string | null
         }
         Relationships: []
-      },
-      tree_rentals: {
-        Row: {
-          id: string;
-          tree_id: string;
-          customer_id: string;
-          start_date: string;
-          end_date: string;
-          status: string;
-          created_at: string | null;
-        };
-        Insert: {
-          id?: string;
-          tree_id: string;
-          customer_id: string;
-          start_date: string;
-          end_date: string;
-          status?: string;
-          created_at?: string | null;
-        };
-        Update: {
-          id?: string;
-          tree_id?: string;
-          customer_id?: string;
-          start_date?: string;
-          end_date?: string;
-          status?: string;
-          created_at?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "tree_rentals_tree_id_fkey";
-            columns: ["tree_id"];
-            isOneToOne: false;
-            referencedRelation: "trees";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "tree_rentals_customer_id_fkey";
-            columns: ["customer_id"];
-            isOneToOne: false;
-            referencedRelation: "customers";
-            referencedColumns: ["id"];
-          }
-        ];
-      },
+      }
     }
     Views: {
       [_ in never]: never
