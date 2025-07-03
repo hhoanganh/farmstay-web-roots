@@ -1,11 +1,12 @@
-
 import React from 'react';
 import { AdminDataTable } from './AdminDataTable';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { BookOpen, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 interface Article {
   id: string;
@@ -21,121 +22,68 @@ const columns = [
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: (info: any) => info.getValue(),
+    cell: info => info.getValue(),
     enableSorting: true,
   },
   {
     accessorKey: 'author',
     header: 'Author',
-    cell: (info: any) => info.getValue() || 'Unknown',
+    cell: info => info.getValue(),
     enableSorting: true,
   },
   {
-    accessorKey: 'created_at',
+    accessorKey: 'date',
     header: 'Date',
-    cell: (info: any) => {
-      const date = info.getValue();
-      return date ? new Date(date).toLocaleDateString() : '-';
-    },
+    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
     enableSorting: true,
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: (info: any) => (
-      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-        Published
-      </span>
-    ),
-    enableSorting: false,
+    cell: info => info.getValue(),
+    enableSorting: true,
   },
 ];
 
 export default function JournalView() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
 
   useEffect(() => {
     fetchArticles();
   }, []);
 
   const fetchArticles = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase
-        .from('articles')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error fetching articles:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch articles',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
+    if (!error && data) {
+      setArticles(data);
     }
   };
 
   const handleDeleteArticle = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this article?')) return;
-
-    try {
+    if (confirm('Are you sure you want to delete this article?')) {
       const { error } = await supabase
         .from('articles')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'Article deleted successfully',
-      });
-
-      setArticles(articles.filter(article => article.id !== id));
-    } catch (error) {
-      console.error('Error deleting article:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete article',
-        variant: 'destructive',
-      });
+      if (!error) {
+        setArticles(articles.filter(article => article.id !== id));
+      }
     }
   };
 
-  const rowActions = (article: Article) => (
-    <div className="flex items-center gap-2">
-      <Button variant="outline" size="sm">
-        <Eye className="h-4 w-4" />
-      </Button>
-      <Button variant="outline" size="sm">
-        <Edit className="h-4 w-4" />
-      </Button>
-      <Button 
-        variant="outline" 
-        size="sm"
-        onClick={() => handleDeleteArticle(article.id)}
-      >
-        <Trash2 className="h-4 w-4" />
-      </Button>
-    </div>
-  );
-
-  if (isLoading) {
-    return (
-      <div className="p-8">
-        <div className="flex items-center justify-center py-8">
-          <div className="text-[hsl(var(--text-secondary))]">Loading articles...</div>
-        </div>
-      </div>
-    );
-  }
+  // Transform articles as needed to match column keys
+  const data = articles.map(article => ({
+    title: article.title,
+    author: article.author_id || '-',
+    date: article.created_at,
+    status: 'Published',
+    // ...add other fields as needed
+  }));
 
   return (
     <div className="p-8">
@@ -162,13 +110,14 @@ export default function JournalView() {
       </div>
 
       {/* Articles List */}
-      <AdminDataTable
-        columns={columns}
-        data={articles}
-        rowActions={rowActions}
-        filterable
-        pagination
-      />
+      <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
+        <AdminDataTable
+          columns={columns}
+          data={data}
+          filterable
+          pagination
+        />
+      </div>
     </div>
   );
 }
