@@ -187,26 +187,18 @@ const FarmAndGarden = () => {
 
       {/* Tree Category Showcase Section */}
       <section className="py-16">
-        <div className="max-w-6xl mx-auto">
-          <div 
-            ref={showcaseAnimation.ref}
-            className={`text-center mb-16 fade-in-scroll ${showcaseAnimation.isVisible ? 'visible' : ''}`}
-          >
-            <h2 
-              className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]"
-              style={{ fontFamily: 'Caveat, cursive' }}
-            >
-              Which Tree Will You Nurture?
-            </h2>
-            <p 
-              className="text-lg text-[hsl(var(--stone))] max-w-2xl mx-auto leading-relaxed"
-              style={{ fontFamily: 'IBM Plex Mono, monospace' }}
-            >
-              Our avocados, mangos, and durians are more than just trees—they are living journals. Find the one that speaks to you and begin following its journey.
-            </p>
-          </div>
-
-          <TreeCategoryShowcase />
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="text-4xl md:text-5xl mb-6 text-[hsl(var(--text-primary))]" style={{ fontFamily: 'Caveat, cursive' }}>
+            Ready to Meet Our Trees?
+          </h2>
+          <p className="text-lg text-[hsl(var(--text-secondary))] max-w-2xl mx-auto leading-relaxed mb-8" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+            Explore our living library of avocados, mangos, and durians. Find the one that speaks to you and begin following its journey.
+          </p>
+          <Link to="/farm-and-garden/trees">
+            <button className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold px-8 py-4 rounded-lg shadow-lg hover:shadow-xl transition-all text-xl">
+              Meet Our Trees
+            </button>
+          </Link>
         </div>
       </section>
     </main>
