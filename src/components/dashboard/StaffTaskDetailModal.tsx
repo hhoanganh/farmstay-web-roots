@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,10 +9,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { Tables } from '@/integrations/supabase/types';
 import { AdminDataTable } from './AdminDataTable';
 
+interface TaskWithProfile extends Tables<'tasks'> {
+  assigned_to_profile?: {
+    full_name: string;
+  };
+}
+
 interface StaffTaskDetailModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  task: Tables<'tasks'> & { updates?: any[] };
+  task: TaskWithProfile & { updates?: any[] };
   onChange: () => void;
 }
 

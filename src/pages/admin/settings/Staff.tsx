@@ -1,6 +1,7 @@
+
 import AdminLayout from '../AdminLayout';
 import React from 'react';
-import { StaffView } from '@/components/dashboard/StaffView';
+import StaffView from '@/components/dashboard/StaffView';
 
 const AdminStaff = () => {
   return (

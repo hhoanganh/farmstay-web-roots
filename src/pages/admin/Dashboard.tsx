@@ -5,10 +5,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/providers/AuthProvider';
 import { MorningReportView } from '@/components/dashboard/MorningReportView';
 import { BookingsView } from '@/components/dashboard/BookingsView';
-import { TreesView } from '@/components/dashboard/TreesView';
+import TreesView from '@/components/dashboard/TreesView';
 import { TasksView } from '@/components/dashboard/TasksView';
-import { JournalView } from '@/components/dashboard/JournalView';
-import { StaffView } from '@/components/dashboard/StaffView';
+import JournalView from '@/components/dashboard/JournalView';
+import StaffView from '@/components/dashboard/StaffView';
 import { DashboardHeader } from '@/components/dashboard/DashboardHeader';
 
 const AdminDashboard = () => {
