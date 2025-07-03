@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   useReactTable,
@@ -44,9 +45,9 @@ export function AdminDataTable<T extends object>({
   return (
     <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
       {filterable && (
-        <div className="p-2 flex items-center gap-2">
+        <div className="p-4 border-b border-[hsl(var(--border-primary))]">
           <input
-            className="border border-[hsl(var(--border-primary))] rounded px-3 py-2 min-h-[44px] font-inter focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring-focus))]"
+            className="w-full max-w-sm border border-[hsl(var(--border-primary))] rounded px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[hsl(var(--ring-focus))]"
             placeholder="Search..."
             value={globalFilter}
             onChange={e => setGlobalFilter(e.target.value)}
@@ -60,43 +61,50 @@ export function AdminDataTable<T extends object>({
               {headerGroup.headers.map(header => (
                 <th
                   key={header.id}
-                  className="px-4 py-3 text-left font-inter text-[hsl(var(--text-primary))] text-sm font-semibold select-none cursor-pointer"
+                  className="px-6 py-3 text-left text-xs font-medium text-[hsl(var(--text-secondary))] uppercase tracking-wider cursor-pointer select-none"
                   onClick={header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined}
-                  style={{ minWidth: 80 }}
                 >
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                  {header.column.getIsSorted() === 'asc' && ' ▲'}
-                  {header.column.getIsSorted() === 'desc' && ' ▼'}
+                  <div className="flex items-center gap-2">
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanSort() && (
+                      <span className="text-xs">
+                        {header.column.getIsSorted() === 'asc' && '↑'}
+                        {header.column.getIsSorted() === 'desc' && '↓'}
+                        {!header.column.getIsSorted() && '↕'}
+                      </span>
+                    )}
+                  </div>
                 </th>
               ))}
-              {rowActions && <th className="px-4 py-3"></th>}
+              {rowActions && <th className="px-6 py-3 relative"><span className="sr-only">Actions</span></th>}
             </tr>
           ))}
         </thead>
-        <tbody className="bg-[hsl(var(--background-primary))]">
+        <tbody className="bg-[hsl(var(--background-primary))] divide-y divide-[hsl(var(--border-primary))]">
           {table.getRowModel().rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length + (rowActions ? 1 : 0)}>{emptyState}</td>
+              <td colSpan={columns.length + (rowActions ? 1 : 0)} className="px-6 py-8 text-center">
+                {emptyState}
+              </td>
             </tr>
           ) : (
             table.getRowModel().rows.map(row => (
-              <tr key={row.id} className="border-b border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-secondary))]">
+              <tr key={row.id} className="hover:bg-[hsl(var(--background-secondary))]">
                 {row.getVisibleCells().map(cell => (
-                  <td
-                    key={cell.id}
-                    className="px-4 py-3 font-inter text-[hsl(var(--text-primary))] text-sm align-middle min-h-[44px]"
-                  >
+                  <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-[hsl(var(--text-primary))]">
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}
-                {rowActions && <td className="px-4 py-3">{rowActions(row.original)}</td>}
+                {rowActions && (
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    {rowActions(row.original)}
+                  </td>
+                )}
               </tr>
             ))
           )}
         </tbody>
       </table>
-      {/* Pagination (simple client-side) */}
-      {/* Add advanced pagination as needed */}
     </div>
   );
-} 
+}

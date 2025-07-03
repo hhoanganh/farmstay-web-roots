@@ -1,10 +1,11 @@
+
 import React, { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, Home, TreePine, Search } from 'lucide-react';
+import { User, Home, TreePine, Search, Edit } from 'lucide-react';
 import { TaskFormModal } from './TaskFormModal';
 import { AdminDataTable } from './AdminDataTable';
 
@@ -43,41 +44,74 @@ const columns = [
   {
     accessorKey: 'title',
     header: 'Title',
-    cell: info => info.getValue(),
+    cell: (info: any) => info.getValue(),
     enableSorting: true,
   },
   {
     accessorKey: 'type',
     header: 'Type',
-    cell: info => info.getValue(),
+    cell: (info: any) => {
+      const task = info.row.original;
+      return (
+        <div className="flex items-center gap-1">
+          {task.room_id ? <Home className="w-4 h-4" /> : <TreePine className="w-4 h-4" />}
+          <span className="text-xs">
+            {task.room_id ? 'Room' : 'Tree'}
+          </span>
+        </div>
+      );
+    },
     enableSorting: true,
   },
   {
     accessorKey: 'related',
     header: 'Related',
-    cell: info => info.getValue(),
+    cell: (info: any) => {
+      const task = info.row.original;
+      return task.room?.name || task.tree?.name || '-';
+    },
   },
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: info => info.getValue(),
+    cell: (info: any) => {
+      const status = info.getValue();
+      return (
+        <Badge className={getStatusColor(status)} variant="outline">
+          {status}
+        </Badge>
+      );
+    },
     enableSorting: true,
   },
   {
     accessorKey: 'priority',
     header: 'Priority',
-    cell: info => info.getValue(),
+    cell: (info: any) => {
+      const priority = info.getValue();
+      return (
+        <Badge className={getPriorityColor(priority)} variant="outline">
+          {priority}
+        </Badge>
+      );
+    },
     enableSorting: true,
   },
   {
     accessorKey: 'assignee',
     header: 'Assignee',
-    cell: info => info.getValue(),
+    cell: (info: any) => {
+      const task = info.row.original;
+      return task.assigned_to_profile?.full_name || '-';
+    },
   },
   {
     accessorKey: 'due_date',
     header: 'Due Date',
-    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
+    cell: (info: any) => {
+      const date = info.getValue();
+      return date ? new Date(date).toLocaleDateString() : '-';
+    },
     enableSorting: true,
   },
 ];
@@ -92,16 +126,12 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
   const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
   const [selectedTask, setSelectedTask] = useState<any | null>(null);
 
-  // Debug print
-  console.log('AdminTasksTable tasks:', tasks);
-
   // Filtered tasks by tab/type
   const filteredTasks = useMemo(() => {
     return tasks.filter(task => {
       // Tab filter
       if (tab === 'room' && !task.room_id) return false;
       if (tab === 'tree' && !task.tree_id) return false;
-      // 'all' tab shows everything
       // Status filter
       if (statusFilter !== 'all' && task.status?.toLowerCase() !== statusFilter) return false;
       // Priority filter
@@ -125,43 +155,57 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
     return Array.from(map.entries());
   }, [tasks]);
 
-  // Transform tasks as needed to match column keys
-  const data = filteredTasks.map(task => ({
-    title: task.title,
-    type: task.room_id ? <Home className="inline w-4 h-4 mr-1" /> : <TreePine className="inline w-4 h-4 mr-1" />,
-    related: task.room?.name || task.tree?.name || '-',
-    status: <Badge className={getStatusColor(task.status)}>{task.status}</Badge>,
-    priority: <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>,
-    assignee: task.assigned_to_profile?.full_name || '-',
-    due_date: task.due_date,
-  }));
+  const rowActions = (task: any) => (
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          setSelectedTask(task);
+          setModalMode('edit');
+          setModalOpen(true);
+        }}
+      >
+        <Edit className="h-4 w-4" />
+      </Button>
+    </div>
+  );
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
       {/* Page Header with Create Button */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
         <div>
           <Tabs value={tab} onValueChange={v => setTab(v as 'all' | 'room' | 'tree')} className="mb-2 sm:mb-0">
             <TabsList className="w-full grid grid-cols-3 max-w-xs">
               <TabsTrigger value="all">All Tasks</TabsTrigger>
-              <TabsTrigger value="room"><Home className="inline mr-2" />Room Tasks</TabsTrigger>
-              <TabsTrigger value="tree"><TreePine className="inline mr-2" />Tree Tasks</TabsTrigger>
+              <TabsTrigger value="room" className="flex items-center gap-1">
+                <Home className="w-4 h-4" />
+                <span className="hidden sm:inline">Room</span>
+              </TabsTrigger>
+              <TabsTrigger value="tree" className="flex items-center gap-1">
+                <TreePine className="w-4 h-4" />
+                <span className="hidden sm:inline">Tree</span>
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        {/* Create New Task button */}
         <div className="flex gap-2 mt-4 sm:mt-0 sm:ml-4">
           <Button
-            className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1 sm:w-auto"
-            style={{ fontFamily: 'Inter, sans-serif' }}
-            onClick={() => { setModalMode('create'); setSelectedTask(null); setModalOpen(true); }}
+            className="bg-[hsl(var(--interactive-primary))] text-[hsl(var(--interactive-primary-foreground))] font-semibold flex-1 sm:w-auto"
+            onClick={() => { 
+              setModalMode('create'); 
+              setSelectedTask(null); 
+              setModalOpen(true); 
+            }}
           >
             Create New Task
           </Button>
         </div>
       </div>
+
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-2 mb-4 items-stretch sm:items-end">
+      <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-end">
         <div className="relative flex-1 max-w-xs">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[hsl(var(--text-secondary))] h-4 w-4" />
           <Input
@@ -177,7 +221,7 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="to do">New</SelectItem>
+            <SelectItem value="to do">To Do</SelectItem>
             <SelectItem value="doing">Doing</SelectItem>
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>
@@ -189,6 +233,7 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
           <SelectContent>
             <SelectItem value="all">All Priority</SelectItem>
             <SelectItem value="high">High</SelectItem>
+            <SelectItem value="medium">Medium</SelectItem>
             <SelectItem value="low">Low</SelectItem>
           </SelectContent>
         </Select>
@@ -204,37 +249,16 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
           </SelectContent>
         </Select>
       </div>
-      {/* Table (desktop) */}
-      <div className="hidden sm:block">
-        <AdminDataTable
-          columns={columns}
-          data={data}
-          filterable
-          pagination
-        />
-      </div>
-      {/* Cards (mobile) */}
-      <div className="sm:hidden space-y-4">
-        {filteredTasks.length === 0 && (
-          <div className="text-center py-8">No tasks found</div>
-        )}
-        {filteredTasks.map(task => (
-          <div key={task.id} className={`rounded-lg border p-4 shadow-sm ${task.priority === 'high' ? 'border-red-400' : ''} ${isOverdue(task) ? 'bg-yellow-50' : ''}`}>
-            <div className="flex items-center gap-2 mb-2">
-              {task.room_id ? <Home className="w-5 h-5" /> : <TreePine className="w-5 h-5" />}
-              <span className="font-semibold text-lg">{task.title}</span>
-              <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
-              <Badge className={getPriorityColor(task.priority)}>{task.priority}</Badge>
-            </div>
-            <div className="text-sm mb-1"><strong>Related:</strong> {task.room?.name || task.tree?.name || '-'}</div>
-            <div className="text-sm mb-1"><strong>Assignee:</strong> {task.assigned_to_profile?.full_name || '-'}</div>
-            <div className="text-sm mb-1"><strong>Due:</strong> {task.due_date ? new Date(task.due_date).toLocaleDateString() : '-'}</div>
-            <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="outline" className="flex-1">Edit</Button>
-            </div>
-          </div>
-        ))}
-      </div>
+
+      {/* Table */}
+      <AdminDataTable
+        columns={columns}
+        data={filteredTasks}
+        rowActions={rowActions}
+        filterable={false}
+        pagination
+      />
+
       {/* Task creation modal */}
       <TaskFormModal
         open={modalOpen}
@@ -247,4 +271,4 @@ const AdminTasksTable = ({ tasks, assignees = [] }: { tasks: any[], assignees?: 
   );
 };
 
-export default AdminTasksTable; 
+export default AdminTasksTable;
