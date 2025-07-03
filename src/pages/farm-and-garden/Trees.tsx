@@ -5,7 +5,7 @@ import TreeCategoryShowcase from '@/components/TreeCategoryShowcase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { TreePine } from 'lucide-react';
+import { TreePine, ArrowLeft } from 'lucide-react';
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -57,6 +57,10 @@ const Trees: React.FC = () => {
 
   return (
     <div className="p-6 md:p-12 max-w-6xl mx-auto">
+      <Link to="/farm-and-garden/trees" className="inline-flex items-center text-[hsl(var(--text-accent))] mb-6 hover:underline focus:underline font-medium">
+        <ArrowLeft className="h-4 w-4 mr-1" />
+        <span>Back to all tree types</span>
+      </Link>
       <div className="mb-8 text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-[hsl(var(--text-accent))] mb-2" style={{ fontFamily: 'Caveat, cursive' }}>{intro.title}</h1>
         <p className="text-lg text-[hsl(var(--text-secondary))] mb-4" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>{intro.intro}</p>
