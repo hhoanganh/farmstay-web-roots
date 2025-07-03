@@ -133,7 +133,7 @@ const Homepage = () => {
                 to="/farm-and-garden" 
                   className="relative z-10 flex items-center justify-center text-[hsl(var(--text-accent))] font-medium transition-opacity focus:outline-none focus:ring-2 focus:ring-[hsl(var(--focus))] focus:ring-offset-2 rounded-sm px-3 py-2 min-h-[44px] w-fit focus-visible:[background-color:hsl(var(--stone)/0.2)] hover:[background-color:hsl(var(--stone)/0.2)]"
               >
-                Meet the trees →
+                Learn about our farm & adoption story →
               </Link>
             </div>
           </div>
