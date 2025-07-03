@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -23,38 +22,59 @@ import { useToast } from '@/hooks/use-toast';
 interface TreeUpdateModalProps {
   open: boolean;
   onClose: () => void;
+  treeId?: string;
 }
 
-export function TreeUpdateModal({ open, onClose }: TreeUpdateModalProps) {
+export function TreeUpdateModal({ open, onClose, treeId }: TreeUpdateModalProps) {
   const [trees, setTrees] = useState<any[]>([]);
-  const [selectedTree, setSelectedTree] = useState('');
+  const [selectedTree, setSelectedTree] = useState(treeId || '');
   const [activity, setActivity] = useState('');
   const [notes, setNotes] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (open) {
+    if (open && !treeId) {
       fetchTrees();
     }
-  }, [open]);
+    if (treeId) {
+      setSelectedTree(treeId);
+    }
+  }, [open, treeId]);
 
   const fetchTrees = async () => {
     const { data } = await supabase
       .from('trees')
       .select('*')
       .order('name');
-    
     if (data) {
       setTrees(data);
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setImageFile(e.target.files?.[0] || null);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    let finalImageUrl = imageUrl;
+    if (imageFile) {
+      const fileExt = imageFile.name.split('.').pop();
+      const fileName = `tree-update-${selectedTree}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+      const { error: uploadError } = await supabase.storage.from('tree-images').upload(filePath, imageFile, { upsert: true });
+      if (uploadError) {
+        toast({ title: 'Failed to upload image', description: uploadError.message, variant: 'destructive' });
+        setLoading(false);
+        return;
+      }
+      const { data } = supabase.storage.from('tree-images').getPublicUrl(filePath);
+      finalImageUrl = data.publicUrl;
+    }
     try {
       const { error } = await supabase
         .from('tree_updates')
@@ -62,20 +82,16 @@ export function TreeUpdateModal({ open, onClose }: TreeUpdateModalProps) {
           tree_id: selectedTree,
           activity,
           notes,
-          image_url: imageUrl || null,
+          image_url: finalImageUrl || null,
         });
-
       if (error) throw error;
-
       toast({
         title: 'Success',
         description: 'Tree update posted successfully',
       });
-
-      // Reset form
-      setSelectedTree('');
       setActivity('');
       setNotes('');
+      setImageFile(null);
       setImageUrl('');
       onClose();
     } catch (error) {
@@ -111,24 +127,24 @@ export function TreeUpdateModal({ open, onClose }: TreeUpdateModalProps) {
             Post Tree Update
           </DialogTitle>
         </DialogHeader>
-        
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="tree">Tree</Label>
-            <Select value={selectedTree} onValueChange={setSelectedTree} required>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a tree" />
-              </SelectTrigger>
-              <SelectContent>
-                {trees.map((tree) => (
-                  <SelectItem key={tree.id} value={tree.id}>
-                    {tree.name} ({tree.type})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
+          {!treeId && (
+            <div>
+              <Label htmlFor="tree">Tree</Label>
+              <Select value={selectedTree} onValueChange={setSelectedTree} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a tree" />
+                </SelectTrigger>
+                <SelectContent>
+                  {trees.map((tree) => (
+                    <SelectItem key={tree.id} value={tree.id}>
+                      {tree.name} ({tree.type})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div>
             <Label htmlFor="activity">Activity</Label>
             <Select value={activity} onValueChange={setActivity} required>
@@ -144,7 +160,6 @@ export function TreeUpdateModal({ open, onClose }: TreeUpdateModalProps) {
               </SelectContent>
             </Select>
           </div>
-
           <div>
             <Label htmlFor="notes">Notes</Label>
             <Textarea
@@ -155,20 +170,32 @@ export function TreeUpdateModal({ open, onClose }: TreeUpdateModalProps) {
               rows={3}
             />
           </div>
-
           <div>
-            <Label htmlFor="image">Image URL (optional)</Label>
+            <Label htmlFor="image">Image (optional)</Label>
             <Input
               id="image"
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={loading}
+            />
+            {imageFile && (
+              <div className="mt-2">
+                <img src={URL.createObjectURL(imageFile)} alt="Preview" className="w-full max-h-40 object-contain rounded" />
+              </div>
+            )}
+            <Input
+              id="imageUrl"
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
-              placeholder="https://example.com/image.jpg"
+              placeholder="Or paste an image URL"
+              className="mt-2"
+              disabled={loading}
             />
           </div>
-
           <div className="flex gap-2 pt-4">
-            <Button type="submit" disabled={loading} className="flex-1">
+            <Button type="submit" disabled={loading || !selectedTree || !activity} className="flex-1">
               {loading ? 'Posting...' : 'Post Update'}
             </Button>
             <Button type="button" variant="outline" onClick={onClose}>

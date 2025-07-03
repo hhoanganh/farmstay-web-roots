@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { TreePine, Plus, Search, Filter } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { TreeManagementModal } from './TreeManagementModal';
-import { RentTreeModal } from './RentTreeModal';
+import { TreeUpdateModal } from './TreeUpdateModal';
 
 interface TreesViewProps {
   userRole: string;
@@ -29,13 +29,11 @@ export function TreesView({ userRole }: TreesViewProps) {
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
   const [treeModalOpen, setTreeModalOpen] = useState(false);
-  const [rentModalOpen, setRentModalOpen] = useState(false);
-  const [selectedTree, setSelectedTree] = useState<any | null>(null);
-  const [rentals, setRentals] = useState<any[]>([]);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [selectedTree, setSelectedTree] = useState<any>(null);
 
   useEffect(() => {
     fetchTrees();
-    fetchRentals();
   }, []);
 
   const fetchTrees = async () => {
@@ -47,20 +45,6 @@ export function TreesView({ userRole }: TreesViewProps) {
     if (!error && data) {
       setTrees(data);
     }
-  };
-
-  const fetchRentals = async () => {
-    // Fetch all active rentals and join with customers
-    const { data } = await supabase
-      .from('tree_rentals')
-      .select('*, customers:customer_id(full_name), tree_id')
-      .eq('status', 'active');
-    setRentals(data || []);
-  };
-
-  // Helper to get current rental for a tree
-  const getCurrentRental = (treeId: string) => {
-    return rentals.find(r => r.tree_id === treeId);
   };
 
   const filteredTrees = trees.filter(tree => {
@@ -114,13 +98,6 @@ export function TreesView({ userRole }: TreesViewProps) {
             >
               Manage Trees
             </Button>
-            <Button
-              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold flex-1"
-              style={{ fontFamily: 'Inter, sans-serif' }}
-              onClick={() => { setSelectedTree(null); setRentModalOpen(true); }}
-            >
-              Add New Renter
-            </Button>
           </div>
         </div>
         <div className="hidden sm:flex gap-2">
@@ -132,15 +109,6 @@ export function TreesView({ userRole }: TreesViewProps) {
               style={{ fontFamily: 'Inter, sans-serif' }}
             >
               Manage Trees
-            </Button>
-          )}
-          {userRole === 'admin' && (
-            <Button
-              className="bg-[hsl(var(--background-secondary))] text-[hsl(var(--text-accent))] font-semibold h-12"
-              style={{ fontFamily: 'Inter, sans-serif' }}
-              onClick={() => { setSelectedTree(null); setRentModalOpen(true); }}
-            >
-              Add New Renter
             </Button>
           )}
         </div>
@@ -190,12 +158,11 @@ export function TreesView({ userRole }: TreesViewProps) {
       {/* Trees Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredTrees.map((tree) => {
-          const currentRental = tree.status === 'rented' ? getCurrentRental(tree.id) : null;
           return (
             <Card key={tree.id} className="border-[hsl(var(--border-primary))] hover:shadow-md transition-shadow cursor-pointer"
               onClick={() => {
                 setSelectedTree(tree);
-                setRentModalOpen(true);
+                setUpdateModalOpen(true);
               }}
             >
               <CardHeader>
@@ -224,15 +191,6 @@ export function TreesView({ userRole }: TreesViewProps) {
                       {tree.status || 'Unknown status'}
                     </Badge>
                   </div>
-                  {/* Show renter info if rented */}
-                  {currentRental && (
-                    <div className="mt-2 text-xs text-[hsl(var(--text-secondary))]">
-                      <div>Renter: {currentRental.customers?.full_name || 'Unknown'}</div>
-                      <div>
-                        {currentRental.start_date} → {currentRental.end_date}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </CardHeader>
               <CardContent>
@@ -274,15 +232,11 @@ export function TreesView({ userRole }: TreesViewProps) {
         onClose={() => setTreeModalOpen(false)}
         refreshTrees={fetchTrees}
       />
-      {/* RentTreeModal for both available and rented trees */}
-      <RentTreeModal
-        open={rentModalOpen}
-        onClose={() => {
-          setRentModalOpen(false);
-          setSelectedTree(null);
-        }}
-        refreshTrees={fetchTrees}
-        tree={selectedTree}
+      {/* Manual Update Modal for selected tree */}
+      <TreeUpdateModal
+        open={updateModalOpen}
+        onClose={() => setUpdateModalOpen(false)}
+        treeId={selectedTree?.id}
       />
     </div>
   );
