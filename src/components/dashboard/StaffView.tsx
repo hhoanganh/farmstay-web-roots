@@ -1,5 +1,4 @@
-import React from 'react';
-import { AdminDataTable } from './AdminDataTable';
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,36 +12,9 @@ interface Profile {
   full_name: string;
   role: string;
   created_at: string;
-  email?: string;
-  phone?: string;
 }
 
-const columns = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'role',
-    header: 'Role',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'email',
-    header: 'Email',
-    cell: info => info.getValue(),
-  },
-  {
-    accessorKey: 'phone',
-    header: 'Phone',
-    cell: info => info.getValue(),
-  },
-];
-
-export default function StaffView() {
+export function StaffView() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
   useEffect(() => {
@@ -84,14 +56,6 @@ export default function StaffView() {
     }
   };
 
-  // Transform staff as needed to match column keys
-  const data = profiles.map(member => ({
-    name: member.full_name,
-    role: member.role,
-    email: member.email || '-',
-    phone: member.phone || '-',
-  }));
-
   return (
     <div className="p-8">
       {/* Page Header */}
@@ -120,13 +84,103 @@ export default function StaffView() {
       </div>
 
       {/* Staff List */}
-      <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
-        <AdminDataTable
-          columns={columns}
-          data={data}
-          filterable
-          pagination
-        />
+      <div className="space-y-4">
+        {profiles.length === 0 ? (
+          <Card className="border-[hsl(var(--border-primary))]">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <Users className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
+                <h3 
+                  className="text-lg font-medium text-[hsl(var(--text-primary))] mb-2"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
+                  No Staff Members Yet
+                </h3>
+                <p 
+                  className="text-[hsl(var(--text-secondary))] mb-4"
+                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  Add team members to help manage the farm
+                </p>
+                <Button 
+                  className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Add First Staff Member
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          profiles.map((profile) => (
+            <Card key={profile.id} className="border-[hsl(var(--border-primary))]">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-[hsl(var(--text-accent))] rounded-full flex items-center justify-center">
+                      <span 
+                        className="text-white font-medium"
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        {profile.full_name ? profile.full_name.charAt(0).toUpperCase() : 'U'}
+                      </span>
+                    </div>
+                    
+                    <div>
+                      <h3 
+                        className="text-lg font-medium text-[hsl(var(--text-primary))]"
+                        style={{ fontFamily: 'Caveat, cursive' }}
+                      >
+                        {profile.full_name || 'Unknown User'}
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <Badge className={getRoleColor(profile.role)} variant="outline">
+                          {profile.role}
+                        </Badge>
+                        <span 
+                          className="text-sm text-[hsl(var(--text-secondary))]"
+                          style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                        >
+                          Joined: {format(new Date(profile.created_at), 'MMM dd, yyyy')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Mail className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    {profile.role !== 'admin' && (
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="border-red-200 hover:bg-red-50 text-red-600"
+                        onClick={() => handleRemoveStaff(profile.id)}
+                        style={{ fontFamily: 'Inter, sans-serif' }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

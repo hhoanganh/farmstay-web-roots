@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -13,41 +13,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { AdminDataTable } from './AdminDataTable';
 
-const columns = [
-  {
-    accessorKey: 'name',
-    header: 'Name',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'type',
-    header: 'Type',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'planted',
-    header: 'Planted',
-    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'location',
-    header: 'Location',
-    cell: info => info.getValue(),
-  },
-];
-
-export default function TreeManagement() {
+export function TreeManagement() {
   const [trees, setTrees] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newTree, setNewTree] = useState({
@@ -106,16 +73,6 @@ export default function TreeManagement() {
       });
     }
   };
-
-  // Transform trees as needed to match column keys
-  const data = trees.map(tree => ({
-    name: tree.name,
-    type: tree.type,
-    status: tree.status,
-    planted: tree.planted_at,
-    location: tree.location || '-',
-    // ...add other fields as needed
-  }));
 
   return (
     <div className="space-y-4">
@@ -184,13 +141,25 @@ export default function TreeManagement() {
         </form>
       )}
       
-      <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
-        <AdminDataTable
-          columns={columns}
-          data={data}
-          filterable
-          pagination
-        />
+      <div className="space-y-4">
+        {trees.map((tree) => (
+          <div key={tree.id} className="border border-[hsl(var(--border-primary))] rounded-lg p-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h4 className="font-medium">{tree.name}</h4>
+                <p className="text-sm text-[hsl(var(--text-secondary))]">
+                  Type: {tree.type || 'Not specified'}
+                </p>
+                <p className="text-sm text-[hsl(var(--text-secondary))]">
+                  Status: <span className="capitalize">{tree.status}</span>
+                </p>
+                {tree.description && (
+                  <p className="text-sm mt-2">{tree.description}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

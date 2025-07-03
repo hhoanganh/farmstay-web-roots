@@ -1,5 +1,3 @@
-import React from 'react';
-import { AdminDataTable } from './AdminDataTable';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,34 +16,7 @@ interface Article {
   created_at: string;
 }
 
-const columns = [
-  {
-    accessorKey: 'title',
-    header: 'Title',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'author',
-    header: 'Author',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'date',
-    header: 'Date',
-    cell: info => info.getValue() ? new Date(info.getValue()).toLocaleDateString() : '-',
-    enableSorting: true,
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    cell: info => info.getValue(),
-    enableSorting: true,
-  },
-];
-
-export default function JournalView() {
+export function JournalView() {
   const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
@@ -76,15 +47,6 @@ export default function JournalView() {
     }
   };
 
-  // Transform articles as needed to match column keys
-  const data = articles.map(article => ({
-    title: article.title,
-    author: article.author_id || '-',
-    date: article.created_at,
-    status: 'Published',
-    // ...add other fields as needed
-  }));
-
   return (
     <div className="p-8">
       {/* Page Header */}
@@ -110,13 +72,101 @@ export default function JournalView() {
       </div>
 
       {/* Articles List */}
-      <div className="overflow-x-auto rounded-lg border border-[hsl(var(--border-primary))] bg-[hsl(var(--background-primary))]">
-        <AdminDataTable
-          columns={columns}
-          data={data}
-          filterable
-          pagination
-        />
+      <div className="space-y-4">
+        {articles.length === 0 ? (
+          <Card className="border-[hsl(var(--border-primary))]">
+            <CardContent className="p-8">
+              <div className="text-center">
+                <BookOpen className="h-12 w-12 mx-auto mb-4 text-[hsl(var(--text-secondary))]" />
+                <h3 
+                  className="text-xl mb-2"
+                  style={{ fontFamily: 'Caveat, cursive' }}
+                >
+                  No Articles Yet
+                </h3>
+                <p 
+                  className="text-[hsl(var(--text-secondary))] mb-4"
+                  style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                >
+                  Start sharing your farm stories and experiences
+                </p>
+                <Button 
+                  className="bg-[hsl(var(--interactive-primary))] hover:bg-[hsl(var(--interactive-primary))]/90"
+                  style={{ fontFamily: 'Inter, sans-serif' }}
+                >
+                  Write Your First Article
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          articles.map((article) => (
+            <Card key={article.id} className="border-[hsl(var(--border-primary))]">
+              <CardContent className="p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <h3 
+                        className="text-xl font-medium text-[hsl(var(--text-primary))]"
+                        style={{ fontFamily: 'Caveat, cursive' }}
+                      >
+                        {article.title}
+                      </h3>
+                      <Badge variant="outline" className="text-xs border-[hsl(var(--brown)/0.2)] hover:bg-[hsl(var(--brown)/0.05)] text-[hsl(var(--brown))]"
+                      >
+                        Published
+                      </Badge>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 text-sm text-[hsl(var(--text-secondary))] mb-4">
+                      <span style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        Slug: /{article.slug}
+                      </span>
+                      <span style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        Created: {format(new Date(article.created_at), 'MMM dd, yyyy')}
+                      </span>
+                    </div>
+                    
+                    <p 
+                      className="text-[hsl(var(--text-secondary))] line-clamp-2"
+                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                    >
+                      {article.content ? article.content.substring(0, 200) + '...' : 'No content preview available'}
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 ml-4">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-[hsl(var(--border-primary))] hover:bg-[hsl(var(--background-primary))]"
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="border-red-200 hover:bg-red-50 text-red-600"
+                      onClick={() => handleDeleteArticle(article.id)}
+                      style={{ fontFamily: 'Inter, sans-serif' }}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );
