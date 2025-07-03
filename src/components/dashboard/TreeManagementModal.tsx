@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 
 interface TreeManagementModalProps {
   open: boolean;
@@ -45,6 +46,9 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [updateComment, setUpdateComment] = useState('');
+  const [updateImage, setUpdateImage] = useState<File | null>(null);
+  const [updateUploading, setUpdateUploading] = useState(false);
 
   useEffect(() => {
     if (open) fetchTrees();
@@ -148,6 +152,45 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
     setUploading(false);
   };
 
+  // Manual update image upload handler
+  const handleUpdateImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateImage(e.target.files?.[0] || null);
+  };
+
+  const handleManualUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTree) return;
+    setUpdateUploading(true);
+    let imageUrl = '';
+    if (updateImage) {
+      const fileExt = updateImage.name.split('.').pop();
+      const fileName = `tree-update-${selectedTree.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+      const { error: uploadError } = await supabase.storage.from('tree-images').upload(filePath, updateImage, { upsert: true });
+      if (uploadError) {
+        toast({ title: 'Failed to upload image', description: uploadError.message, variant: 'destructive' });
+        setUpdateUploading(false);
+        return;
+      }
+      const { data } = supabase.storage.from('tree-images').getPublicUrl(filePath);
+      imageUrl = data.publicUrl;
+    }
+    const { error } = await supabase.from('tree_updates').insert({
+      tree_id: selectedTree.id,
+      activity: 'Manual update',
+      notes: updateComment,
+      image_url: imageUrl || null,
+    });
+    setUpdateUploading(false);
+    if (error) {
+      toast({ title: 'Failed to add update', description: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: 'Update added' });
+      setUpdateComment('');
+      setUpdateImage(null);
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-lg overflow-y-auto max-h-[90vh]">
@@ -173,24 +216,45 @@ export function TreeManagementModal({ open, onClose, refreshTrees }: TreeManagem
         </div>
         {/* Edit Tree Form */}
         {selectedTree && !formOpen && (
-          <form onSubmit={e => { e.preventDefault(); openForm(selectedTree); }} className="space-y-3 border-t pt-4 mt-4">
-            <div className="flex flex-col gap-2">
-              <Label>Name</Label>
-              <Input value={selectedTree.name} disabled className="w-full" />
-              <Label>Type</Label>
-              <Input value={selectedTree.type} disabled className="w-full" />
-              <Label>Description</Label>
-              <Input value={selectedTree.description} disabled className="w-full" />
-              <Label>Status</Label>
-              <Input value={selectedTree.status} disabled className="w-full" />
-              <Label>Image URL</Label>
-              <Input value={selectedTree.image_url} disabled className="w-full" />
-            </div>
-            <div className="flex gap-2 pt-2">
-              <Button type="submit" className="w-full">Edit</Button>
-              <Button type="button" variant="destructive" className="w-full" onClick={() => { setTreeToDelete(selectedTree); setDeleteDialogOpen(true); }}>Delete</Button>
-            </div>
-          </form>
+          <>
+            <form onSubmit={e => { e.preventDefault(); openForm(selectedTree); }} className="space-y-3 border-t pt-4 mt-4">
+              <div className="flex flex-col gap-2">
+                <Label>Name</Label>
+                <Input value={selectedTree.name} disabled className="w-full" />
+                <Label>Type</Label>
+                <Input value={selectedTree.type} disabled className="w-full" />
+                <Label>Description</Label>
+                <Input value={selectedTree.description} disabled className="w-full" />
+                <Label>Status</Label>
+                <Input value={selectedTree.status} disabled className="w-full" />
+                <Label>Image URL</Label>
+                <Input value={selectedTree.image_url} disabled className="w-full" />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Button type="submit" className="w-full">Edit</Button>
+                <Button type="button" variant="destructive" className="w-full" onClick={() => { setTreeToDelete(selectedTree); setDeleteDialogOpen(true); }}>Delete</Button>
+              </div>
+            </form>
+            {/* Manual Update Form */}
+            <form onSubmit={handleManualUpdate} className="space-y-3 border-t pt-4 mt-4">
+              <Label>Add Manual Update</Label>
+              <Textarea
+                value={updateComment}
+                onChange={e => setUpdateComment(e.target.value)}
+                placeholder="Enter update/comment..."
+                rows={3}
+                required
+                className="w-full"
+              />
+              <Input type="file" accept="image/*" onChange={handleUpdateImageChange} disabled={updateUploading} />
+              {updateImage && (
+                <div className="mt-2">
+                  <img src={URL.createObjectURL(updateImage)} alt="Preview" className="w-full max-h-40 object-contain rounded" />
+                </div>
+              )}
+              <Button type="submit" disabled={updateUploading || !updateComment.trim()} className="w-full">{updateUploading ? 'Uploading...' : 'Add Update'}</Button>
+            </form>
+          </>
         )}
         {/* Add/Edit Tree Form */}
         {formOpen && (
